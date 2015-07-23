@@ -25,8 +25,30 @@ var classification = { type: 'classification'};
 var sap = { type: 'SAP'};
 var sci = { type: 'SCI'};
 var releaseCaveat = { type: 'Release Caveat'};
+
+
 Template.securityLabels.onCreated( function() {
+
+	Meteor.subscribe('accessPermissions');
+
 	var self = this;
+
+	self.securityLabelsInitialized = new ReactiveVar(false);
+	self.selectedClassificationLabelId = new ReactiveVar('');
+	self.selectedSciLabelIds = new ReactiveVar([]);
+	self.selectedSciLabelNames = {};
+	self.selectedSapLabelIds = new ReactiveVar([]);
+	self.selectedSapLabelNames = {};
+	self.selectedReltoLabelIds = new ReactiveVar([]);
+	self.selectedReltoLabelNames = {};
+
+	self.selectedLabelIds = [];
+	self.disabledLabelIds = [];
+	self.allowedLabels = [];
+
+	self.allowedLabelIds = [];
+
+
 
 	/**
 	 * Retrieve security labels of the specified type.
@@ -37,7 +59,8 @@ Template.securityLabels.onCreated( function() {
 		return _.filter(this.data.securityLabels, function(label) {
 			return label.type === type;
 		});
-	};
+	}
+
 	/**
 	 * Listens for JQuery 'chosen' plugin events fired when the user selects/deselects security labels.
 	 * Executes parent template callback function to notify of selection change event.
@@ -57,9 +80,29 @@ Template.securityLabels.onCreated( function() {
 		self.data.onSelectionChanged(params);
 	}
 
+
+	Meteor.call('getAllowedConversationPermissions', { userIds: [] }, function(error, result) {
+		if(error) {
+			alert(error);
+		}
+		else {
+			//# create shallow copies.  Adding id to both selected and disabled makes them "required"
+			//# in the UI because it selects the permission and doesn't allow the user to remove it.
+			self.selectedLabelIds = (result.selectedIds || []).slice(0);
+			self.disabledLabelIds = (result.disabledIds || []).slice(0);
+			//# initially select the default classification
+			//# TODO: fix the following line
+			//#instance.selectedLabelIds.push Meteor.settings.public.permission.classification.default
+			self.allowedLabels = result.allowed || [];
+			self.allowedLabelIds = _.pluck(self.allowedLabels, '_id');
+			//# Meteor will automatically re-run helper methods that populate select boxes.
+			self.securityLabelsInitialized.set(true);
+		}
+	});
 });
 
 Template.securityLabels.helpers( {
+
 	/**
 	 * Determine if the security label is selected or not.
 	 * @return {Boolean} 'selected' if label is selected.  Otherwise ''
@@ -132,17 +175,241 @@ Template.securityLabels.helpers( {
 	 */
 	selectDisabled : function(type) {
 		return Template.instance().getLabels(type).length > 0 ? '' : 'disabled';
-	}
+	},
+
+
+
+
+	classificationAutocompleteSettings: function() {
+		return {
+			limit: 4,
+			rules: [
+				{
+					collection: 'AccessPermissions',
+					subscription: 'accessPermissions',
+					field: 'label',
+					template: Template.labelSearch,
+					noMatchTemplate: Template.labelSearchEmpty,
+					matchAll: true,
+					filter: {
+						type: 'classification'
+					}
+				}
+			]
+		};
+	},
+
+	classificationTitle: function() {
+		return 'Classification';
+	},
+
+
+
+	sapAutocompleteSettings: function() {
+		return {
+			limit: 10,
+			rules: [
+				{
+					collection: 'AccessPermissions',
+					subscription: 'accessPermissions',
+					field: 'label',
+					template: Template.labelSearch,
+					noMatchTemplate: Template.labelSearchEmpty,
+					matchAll: true,
+					filter: {
+						type: 'SAP',
+						$and: [
+							{ _id: { $nin: Template.instance().selectedSciLabelIds.get() }},
+							{ _id: { $in:  Template.instance().allowedLabelIds }}
+						]
+					}
+				}
+			]
+		};
+	},
+
+	sapTitle: function() {
+		return 'SAP Labels';
+	},
+
+	selectedSapLabels: function() {
+		return Template.instance().selectedSapLabelIds.get();
+	},
+
+	sapLabel: function() {
+		return Template.instance().selectedSapLabelNames[this.valueOf()];
+	},
+
+
+
+	sciAutocompleteSettings: function() {
+		return {
+			limit: 10,
+			rules: [
+				{
+					collection: 'AccessPermissions',
+					subscription: 'accessPermissions',
+					field: 'label',
+					template: Template.labelSearch,
+					noMatchTemplate: Template.labelSearchEmpty,
+					matchAll: true,
+					filter: {
+						type: 'SCI',
+						$and: [
+							{ _id: { $nin: Template.instance().selectedSciLabelIds.get() }},
+							{ _id: { $in:  Template.instance().allowedLabelIds }}
+						]
+					}
+				}
+			]
+		};
+	},
+
+	securityLabelsInitialized: function() {
+		return Template.instance().securityLabelsInitialized.get();
+	},
+
+	sciTitle: function() {
+		return 'SCI Labels';
+	},
+
+	selectedSciLabels: function() {
+		return Template.instance().selectedSciLabelIds.get();
+	},
+
+	sciLabel: function() {
+		return Template.instance().selectedSciLabelNames[this.valueOf()];
+	},
+
+
+
+	reltoAutocompleteSettings: function() {
+		return {
+			limit: 10,
+			rules: [
+				{
+					collection: 'AccessPermissions',
+					subscription: 'accessPermissions',
+					field: 'label',
+					template: Template.labelSearch,
+					noMatchTemplate: Template.labelSearchEmpty,
+					matchAll: true,
+					filter: {
+						type: 'Release Caveat',
+						$and: [
+							{ _id: { $nin: Template.instance().selectedSciLabelIds.get() }},
+							{ _id: { $in:  Template.instance().allowedLabelIds }}
+						]
+					}
+				}
+			]
+		};
+	},
+
+	reltoTitle: function() {
+		return 'Release Caveats';
+	},
+
+	selectedReltoLabels: function() {
+		return Template.instance().selectedReltoLabelIds.get();
+	},
+
+	reltoLabel: function() {
+		return Template.instance().selectedReltoLabelNames[this.valueOf()];
+	},
+
 });
 
-Template.securityLabels.onRendered( function() {
-	// enable jquery plugin, chosen, that converts select boxes into tags
-	// see harvesthq.github.io/chosen/options.html
-	this.$('.chosen-select').chosen({
-		width: '100%',
-		display_selected_options : false,
-		// placeholder this may be clipped, but if we extend then the
-		// input box creates new line before necessary and looks odd
-		placeholder_text_multiple : 'optional'
-	}).change( Template.instance().labelSelectionChanged );
+
+
+Template.securityLabels.events({
+
+	// Classification
+	'autocompleteselect #classification-labels': function(event, instance, doc) {
+		instance.selectedClassificationLabelIds.set(doc._id);
+	},
+	/*
+	'click .remove-classification-label': function(e, instance) {
+		var self = this;
+		var sapLabelIds = _.reject(instance.selectedSapLabelIds.get(), function(_id) {
+			return _id === self.valueOf();
+		});
+		instance.selectedSapLabelIds.set(sapLabelIds);
+		$('#sap-labels').focus();
+	},
+	*/
+
+	// SAP
+	'autocompleteselect #sap-labels': function(event, instance, doc) {
+		instance.selectedSapLabelIds.set(instance.selectedSapLabelIds.get().concat(doc._id));
+		instance.selectedSapLabelNames[doc._id] = doc.label;
+		event.currentTarget.value = '';
+		event.currentTarget.focus();
+	},
+	'click .remove-sap-label': function(e, instance) {
+		var self = this;
+		var sapLabelIds = _.reject(instance.selectedSapLabelIds.get(), function(_id) {
+			return _id === self.valueOf();
+		});
+		instance.selectedSapLabelIds.set(sapLabelIds);
+		$('#sap-labels').focus();
+	},
+
+
+	// SCI
+	'autocompleteselect #sci-labels': function(event, instance, doc) {
+		instance.selectedSciLabelIds.set(instance.selectedSciLabelIds.get().concat(doc._id));
+		instance.selectedSciLabelNames[doc._id] = doc.label;
+		event.currentTarget.value = '';
+		event.currentTarget.focus();
+	},
+	'click .remove-sci-label': function(e, instance) {
+		var self = this;
+		var sciLabelIds = _.reject(instance.selectedSciLabelIds.get(), function(_id) {
+			return _id === self.valueOf();
+		});
+		instance.selectedSciLabelIds.set(sciLabelIds);
+		$('#sci-labels').focus();
+	},
+
+
+	// RELTO
+	'autocompleteselect #relto-labels': function(event, instance, doc) {
+		instance.selectedReltoLabelIds.set(instance.selectedReltoLabelIds.get().concat(doc._id));
+		instance.selectedReltoLabelNames[doc._id] = doc.label;
+		event.currentTarget.value = '';
+		event.currentTarget.focus();
+	},
+	'click .remove-relto-label': function(e, instance) {
+		var self = this;
+		var reltoLabelIds = _.reject(instance.selectedReltoLabelIds.get(), function(_id) {
+			return _id === self.valueOf();
+		});
+		instance.selectedReltoLabelIds.set(reltoLabelIds);
+		$('#relto-labels').focus();
+	},
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

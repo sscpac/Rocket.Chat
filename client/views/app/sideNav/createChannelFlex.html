@@ -11,6 +11,7 @@
 				<label for="channel-name">{{_ "Name"}}</label>
 				<input type="text" id="channel-name" class="required" dir="auto">
 			</div>
+
 			<div class="input-line">
 				<label for="channel-members">{{_ "Add_Members"}}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="channel-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
@@ -20,6 +21,8 @@
 					{{/each}}
 				</ul>
 			</div>
+
+
 			{{#if error.fields}}
 				<div class="input-error">
 					<strong>{{_ "Oops!"}}</strong>
@@ -34,11 +37,9 @@
 					{{{_ "Invalid_room_name" roomName}}}
 				</div>
 			{{/if}}
-                    	<div class="wrapper-label">
-				{{#if securityLabelsInitialized}}
-					{{> securityLabels securityLabelsContext}}
-				{{/if}}
-                    	</div>
+            
+			{{> securityLabels}}
+
 			<div class="input-submit">
 				<button class="button clean primary save-channel">{{_ "Save" }}</button>
 				<button class="button clean cancel-channel">{{_ "Cancel" }}</button>

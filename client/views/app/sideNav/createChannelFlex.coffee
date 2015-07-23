@@ -34,6 +34,26 @@ Template.createChannelFlex.helpers
 				}
 			]
 		}
+
+	sciAutocompleteSettings: ->
+		return {
+			limit: 5
+			rules: [
+				{
+					collection: 'AccessPermissions'
+					subscription: 'accessPermissions'
+					field: 'label'
+					template: Template.labelSearch
+					noMatchTemplate: Template.labelSearchEmpty
+					matchAll: true
+					filter: {
+						type: 'SCI'
+					}
+				}
+			]
+		}
+
+
 	securityLabelsContext: ->
 		return {
 			onSelectionChanged: Template.instance().onSelectionChanged
@@ -41,12 +61,14 @@ Template.createChannelFlex.helpers
 			isOptionDisabled: Template.instance().isOptionDisabled
 			securityLabels: Template.instance().allowedLabels
 		}
-	securityLabelsInitialized: ->
-		return Template.instance().securityLabelsInitialized.get()
+
 
 
 
 Template.createChannelFlex.events
+
+
+
 	'autocompleteselect #channel-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc.username
 
@@ -65,6 +87,9 @@ Template.createChannelFlex.events
 		Template.instance().selectedUsers.set(users)
 
 		$('#channel-members').focus()
+
+
+
 
 	'click header': (e, instance) ->
 		SideNav.closeFlex()
@@ -108,6 +133,10 @@ Template.createChannelFlex.events
 			instance.error.set({ fields: err })
 
 Template.createChannelFlex.onCreated ->
+
+
+	Meteor.subscribe 'accessPermissions'
+
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
@@ -121,6 +150,7 @@ Template.createChannelFlex.onCreated ->
 		instance.find('#channel-name').value = ''
 		instance.find('#channel-members').value = ''
 
+
 	# other conversation members
 	instance.otherMembers = _.without(instance.data.members, Meteor.userId())
 	# labels that all members have in common
@@ -130,6 +160,7 @@ Template.createChannelFlex.onCreated ->
 	# selected security label access permission ids
 	instance.selectedLabelIds = []
 	instance.disabledLabelIds = []
+
 	# adds/remove access permission ids from list of selected labels
 	instance.onSelectionChanged = (params) ->
 		if params.selected
@@ -138,11 +169,12 @@ Template.createChannelFlex.onCreated ->
 			# remove deselected if it exist
 			instance.selectedLabelIds = _.without(instance.selectedLabelIds, params.deselected)
 	instance.isOptionSelected = (id) ->
-		_.contains instance.selectedLabelIds, id
+		return _.contains instance.selectedLabelIds, id
 
 	# determine if label is disabled
 	instance.isOptionDisabled = (id) ->
-		_.contains instance.disabledLabelIds, id
+		return _.contains instance.disabledLabelIds, id
+
 	Meteor.call 'getAllowedConversationPermissions', { userIds: instance.otherMembers }, (error, result) ->
 		if error
 			alert error
