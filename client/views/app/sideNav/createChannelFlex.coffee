@@ -18,7 +18,7 @@ Template.createChannelFlex.helpers
 			rules: [
 				{
 					# @TODO maybe change this 'collection' and/or template
-					#collection: 'UserAndRoom'
+					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
 					field: 'username'
 					template: Template.userSearch

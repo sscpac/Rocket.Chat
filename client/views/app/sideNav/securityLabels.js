@@ -186,6 +186,7 @@ Template.securityLabels.helpers( {
 			rules: [
 				{
 					token: '#',
+					collection: 'AccessPermissions',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
@@ -211,6 +212,7 @@ Template.securityLabels.helpers( {
 			rules: [
 				{
 					token: '#',
+					collection: 'AccessPermissions',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
@@ -248,6 +250,7 @@ Template.securityLabels.helpers( {
 			rules: [
 				{
 					token: '#',
+					collection: 'AccessPermissions',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
@@ -289,6 +292,7 @@ Template.securityLabels.helpers( {
 			rules: [
 				{
 					token: '#',
+					collection: 'AccessPermissions',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
