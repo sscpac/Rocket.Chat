@@ -18,7 +18,7 @@ Template.createChannelFlex.helpers
 			rules: [
 				{
 					# @TODO maybe change this 'collection' and/or template
-					collection: 'UserAndRoom'
+					#collection: 'UserAndRoom'
 					subscription: 'roomSearch'
 					field: 'username'
 					template: Template.userSearch
@@ -31,24 +31,6 @@ Template.createChannelFlex.helpers
 							{ username: { $nin: Template.instance().selectedUsers.get() } }
 						]
 					sort: 'username'
-				}
-			]
-		}
-
-	sciAutocompleteSettings: ->
-		return {
-			limit: 5
-			rules: [
-				{
-					collection: 'AccessPermissions'
-					subscription: 'accessPermissions'
-					field: 'label'
-					template: Template.labelSearch
-					noMatchTemplate: Template.labelSearchEmpty
-					matchAll: true
-					filter: {
-						type: 'SCI'
-					}
 				}
 			]
 		}
@@ -66,8 +48,6 @@ Template.createChannelFlex.helpers
 
 
 Template.createChannelFlex.events
-
-
 
 	'autocompleteselect #channel-members': (event, instance, doc) ->
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc.username

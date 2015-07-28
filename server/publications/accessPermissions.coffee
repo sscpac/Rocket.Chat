@@ -5,8 +5,6 @@ Meteor.publish 'accessPermissions', (selector, options, collName) ->
 	console.log '[publish] accessPermissions -> '.green, 'selector:', selector, 'options:', options, 'collName:', collName
 
 	self = this
-	sub = null
-
 
 	sub = AccessPermissions.find(selector, { limit: 10, fields: { trigraph: 1, label: 1, type: 1 } }).observeChanges
 		added: (id, fields) ->

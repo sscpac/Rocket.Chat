@@ -1,11 +1,16 @@
 <template name="securityLabels">
 
 	{{#if securityLabelsInitialized}}
-
+	<br/>
+	<br/>
+	
 	<div class="input-line">
 		<label for="classification-labels">{{classificationTitle}}</label>
 		{{> inputAutocomplete settings=classificationAutocompleteSettings id="classification-labels" class="search"}}
 	</div>
+	
+	<br/>
+	<br/>
 
 	<div class="input-line">
 		<label for="sap-labels">{{sapTitle}}</label>
@@ -19,6 +24,9 @@
 
 	</div>
 
+	<br/>
+	<br/>
+
 	<div class="input-line">
 		<label for="sci-labels">{{sciTitle}}</label>
 		{{> inputAutocomplete settings=sciAutocompleteSettings id="sci-labels" class="search"}}
@@ -31,6 +39,9 @@
 
 	</div>
 
+	<br/>
+	<br/>
+	
 	<div class="input-line">
 		<label for="relto-labels">{{reltoTitle}}</label>
 		{{> inputAutocomplete settings=reltoAutocompleteSettings id="relto-labels" class="search"}}

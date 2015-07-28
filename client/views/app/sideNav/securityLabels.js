@@ -185,7 +185,7 @@ Template.securityLabels.helpers( {
 			limit: 4,
 			rules: [
 				{
-					collection: 'AccessPermissions',
+					token: '#',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
@@ -210,7 +210,7 @@ Template.securityLabels.helpers( {
 			limit: 10,
 			rules: [
 				{
-					collection: 'AccessPermissions',
+					token: '#',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
@@ -247,7 +247,7 @@ Template.securityLabels.helpers( {
 			limit: 10,
 			rules: [
 				{
-					collection: 'AccessPermissions',
+					token: '#',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
@@ -288,7 +288,7 @@ Template.securityLabels.helpers( {
 			limit: 10,
 			rules: [
 				{
-					collection: 'AccessPermissions',
+					token: '#',
 					subscription: 'accessPermissions',
 					field: 'label',
 					template: Template.labelSearch,
@@ -324,20 +324,12 @@ Template.securityLabels.helpers( {
 
 Template.securityLabels.events({
 
+
 	// Classification
 	'autocompleteselect #classification-labels': function(event, instance, doc) {
 		instance.selectedClassificationLabelIds.set(doc._id);
 	},
-	/*
-	'click .remove-classification-label': function(e, instance) {
-		var self = this;
-		var sapLabelIds = _.reject(instance.selectedSapLabelIds.get(), function(_id) {
-			return _id === self.valueOf();
-		});
-		instance.selectedSapLabelIds.set(sapLabelIds);
-		$('#sap-labels').focus();
-	},
-	*/
+
 
 	// SAP
 	'autocompleteselect #sap-labels': function(event, instance, doc) {
