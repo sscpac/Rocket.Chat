@@ -45,9 +45,6 @@ konecty:user-presence@1.2.4
 
 cfs:standard-packages
 cfs:gridfs
-#cfs:filesystem
-#cfs:s3
-#cfs:dropbox
 
 chrismbeckett:toastr
 francocatena:status
