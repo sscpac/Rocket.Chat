@@ -1,0 +1,18 @@
+<template name="contacts">
+	<h3>Contacts</h3>
+	<ul>
+		<div id="contact-list" class="collapse in">
+			{{#each contacts}}
+				<li>
+					<a class="">
+						<i class="icon-user"></i>
+						<span class='name'>{{name}}</span>
+					</a>
+				</li>
+			{{/each}}
+		</div>
+		{{#if contacts.count}}
+			<a data-toggle="collapse" data-target="#contact-list" href="#contact-list" class="collapse"></a>
+		{{/if}}
+	</ul>
+</template>
