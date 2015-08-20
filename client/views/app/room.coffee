@@ -195,7 +195,7 @@ Template.room.helpers
 		return {username: username, status: 'offline', customMessage: ''}
 
 	roomUsers: ->
-		room = ChatRoom.findOne(this._id, { reactive: false })
+		room = ChatRoom.findOne(this._id, { reactive: true })
 		users = []
 
 		for username in room?.usernames or []
