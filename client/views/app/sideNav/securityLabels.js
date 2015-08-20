@@ -65,6 +65,9 @@ Template.securityLabels.onCreated( function() {
 			self.determineWarningOptions('.search-choice');
 			self.determineWarningOptions('.chosen-single');
 		}
+		else if (params.deselected) {
+			self.determineWarningOptions(".active-result");
+		}
 	};
 
 
@@ -111,7 +114,6 @@ Template.securityLabels.onCreated( function() {
 		// update currently selected labels
 		self.determineWarningOptions('.search-choice');
 		self.determineWarningOptions('.chosen-single');
-		self.determineWarningOptions(".active-result");
 	});
 
 });
