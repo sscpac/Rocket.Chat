@@ -111,6 +111,7 @@ Template.securityLabels.onCreated( function() {
 		// update currently selected labels
 		self.determineWarningOptions('.search-choice');
 		self.determineWarningOptions('.chosen-single');
+		self.determineWarningOptions(".active-result");
 	});
 
 });
