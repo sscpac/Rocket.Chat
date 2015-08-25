@@ -3,3 +3,4 @@
 @ChatSubscription = new Meteor.Collection 'rocketchat_subscription'
 @UserAndRoom = new Meteor.Collection null
 @AccessPermissions = new Meteor.Collection 'accessPermissions'
+@ContactGroups = new Meteor.Collection 'ContactGroups'
