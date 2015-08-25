@@ -5,6 +5,9 @@ Template.privateGroupsFlex.helpers
 	name: ->
 		return Template.instance().selectedUserNames[this.valueOf()]
 
+	username: ->
+		return this.valueOf()
+
 	groupName: ->
 		return Template.instance().groupName.get()
 
@@ -20,7 +23,7 @@ Template.privateGroupsFlex.helpers
 					# @TODO maybe change this 'collection' and/or template
 					collection: 'UserAndRoom'
 					subscription: 'roomSearch'
-					field: 'username'
+					field: 'name'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
@@ -30,7 +33,7 @@ Template.privateGroupsFlex.helpers
 							{ _id: { $ne: Meteor.userId() } }
 							{ username: { $nin: Template.instance().selectedUsers.get() } }
 						]
-					sort: 'username'
+					sort: 'name'
 				}
 			]
 		}
@@ -60,7 +63,7 @@ Template.privateGroupsFlex.events
 		# TODO display full name.  Originally this displayed full name, but we changed this 
 		# when we reused this template to edit a room.  The room only has usernames, not the 
 		# full name and we have to add a Method call to retrieve the full name from a username
-		instance.selectedUserNames[doc.username] = doc.username
+		instance.selectedUserNames[doc.username] = doc.name
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
 		instance.updateWarnIds()
@@ -128,6 +131,7 @@ Template.privateGroupsFlex.events
 Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
+	# name field, NOT username
 	instance.selectedUserNames = {}
 	instance.error = new ReactiveVar []
 
@@ -238,7 +242,8 @@ Template.privateGroupsFlex.onCreated ->
 	instance.autorun (c) ->
 		list = Template.instance().warnUserIds.get()
 		$('.selected-user').each ->
-			user = $(this).text().trim()
+			# check against username, since name field not guaranteed to be unique
+			user = $(this).attr('data-username')
 			if _.contains list, user
 				$(this).css 'color', 'red'
 			else
@@ -275,13 +280,12 @@ Template.privateGroupsFlex.onCreated ->
 				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
 				instance.allowedLabels = options.allowed
 				instance.groupName.set(instance.room.name)
-				instance.room.usernames?.forEach (username) ->
-					# TODO use name field instead of username.  Room only has username
-					# so we need to make server call to get full name for a username
-					if username isnt Meteor.user().username
-						instance.selectedUserNames[username] = username
+				otherMembers = _.without(instance.room.usernames, Meteor.user().username)
+				otherMembers?.forEach (username) ->
+					user = Meteor.users.findOne( {_id: username} )
+					instance.selectedUserNames[username] = user?.name || username
 				# other conversation members
-				instance.selectedUsers.set _.without(instance.room.usernames, Meteor.user().username)
+				instance.selectedUsers.set otherMembers
 				instance.updateWarnIds()
 				instance.securityLabelsInitialized.set true
 
