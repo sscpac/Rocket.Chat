@@ -299,8 +299,13 @@ Template.room.helpers
 		Template.instance().accessPermissions.set roomData?.accessPermissions
 		return Template.instance().accessPermissions
 	canEditPermissions: ->
+		canEdit = false
 		roomData = Session.get('roomData' + this._id)
-		return roomData.t in ['d','p']
+		if roomData 
+			canEdit = roomData.t in ['d','p']
+
+		return canEdit
+
 
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
