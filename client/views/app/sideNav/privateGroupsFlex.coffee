@@ -111,8 +111,6 @@ Template.privateGroupsFlex.events
 					if err
 						return toastr.error err.reason
 					room = instance.room
-					# close the room with old name
-					RoomManager.close room.t + room.name
 					slugName = result.slugName
 					SideNav.closeFlex()
 					SideNav.setFlex null
@@ -272,10 +270,11 @@ Template.privateGroupsFlex.onCreated ->
 	instance.autorun (c) ->
 
 		roomId = instance.data.relabelRoom
+		typeName = instance.data.typeName
 		# check if we are relabeling the room
 		if roomId
 			# get a subscription to the room (in case we don't have one already)
-			Meteor.subscribe('room', roomId)
+			Meteor.subscribe('room', typeName)
 			# function will automatically re-run on changes to this session variable, thus
 			# it will essentially "wait" for the data to get set
 			if Session.get('roomData' + roomId)

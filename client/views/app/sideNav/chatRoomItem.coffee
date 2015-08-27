@@ -61,7 +61,7 @@ Template.chatRoomItem.events
 	'click .label-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
-		data = {relabelRoom: this.rid}
+		data = {relabelRoom: this.rid, typeName: this.t + this.name}
 		if this.t is 'd'
 			SideNav.setFlex "directMessagesFlex", data
 		else if this.t is 'p'
