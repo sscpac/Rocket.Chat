@@ -53,13 +53,6 @@ Template.privateHistory.onCreated ->
 	instance.autorun ->
 		filter = instance.searchFilter.get()
 		contentFlag = instance.searchContentsFlag.get()
-
-		# only bother to call the server if there is text to filter on
-		if filter
-			Meteor.call 'roomSearch', filter, contentFlag, (error, result) ->
-				unless error
-					instance.searchResult.set result
-
-		# if the search box is empty, just clear the result set
-		else
-			instance.searchResult.set []
+		Meteor.call 'roomSearch', filter, contentFlag, (error, result) ->
+			unless error
+				instance.searchResult.set result
