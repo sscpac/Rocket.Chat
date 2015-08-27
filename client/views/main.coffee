@@ -90,7 +90,7 @@ Template.main.helpers
 			return false
 
 	subsReady: ->
-		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers','accessPermissions'))
+		return not Meteor.userId()? or (FlowRouter.subsReady('userData', 'activeUsers', 'fullUsers','accessPermissions'))
 
 	hasUsername: ->
 		return Meteor.userId()? and Meteor.user().username?

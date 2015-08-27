@@ -1,4 +1,7 @@
 Meteor.publish 'activeUsers', ->
+	return this.ready();
+	###
+	this has been superceded by fullUsers 
 	unless this.userId
 		return this.ready()
 
@@ -15,3 +18,4 @@ Meteor.publish 'activeUsers', ->
 			status: 1
 			'profile.statusMessages': 1
 			utcOffset: 1
+	###
