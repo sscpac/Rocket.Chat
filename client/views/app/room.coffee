@@ -34,7 +34,7 @@ Template.room.helpers
 		if usernames.length is 0
 			return
 		names = usernames.map (username) ->
-			return getUser(username)?.name || username 
+			return getUser(username)?.name || username
 
 		if names.length is 1
 			name = names[0]
@@ -84,15 +84,7 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-
-			userData = {
-				name: getUser(username)?.name|| username
-				# not used, but if wanted, need to set in RoomManager 
-				#emails: Session.get('user_' + username + '_emails') || []
-				#phone: Session.get('user_' + username + '_phone')
-				username: String(username)
-			}
-
+			userData = getUserData(username)
 			if Meteor.user()?.admin is true
 				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
 
@@ -193,10 +185,10 @@ Template.room.helpers
 	userActiveByUsername: (username) ->
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
-			message = ''
+			message = 'userActiveByUsername'
 			statusMessages = Session.get('user_' + username + '_statusMessages')
 			if (statusMessages?)
-				message = statusMessages[status]
+				message = ': ' + statusMessages[status]
 			return {username: username, status: status, customMessage: message}
 		return {username: username, status: 'offline', customMessage: ''}
 
@@ -226,21 +218,8 @@ Template.room.helpers
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
 		userData = {}
-		if username 
-			message = ''
-			status = Session.get 'user_' + username + '_status'
-			if status in ['online', 'away', 'busy']
-				statusMessages = Session.get('user_' + username + '_statusMessages')
-				if (statusMessages?)
-					message = statusMessages[status]
-
-			userData = {
-				name: getUser(username)?.name || username
-				username: String(username)
-				# TODO modify to find user similar to if admin below
-				customMessage: message
-				status: status
-			}
+		if username
+			userData = getUserData(username)
 			if Meteor.user()?.admin is true
 				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
 
@@ -322,14 +301,14 @@ Template.room.helpers
 	utc: ->
 		if @utcOffset?
 			return "UTC #{@utcOffset}"
-	
+
 	phoneNumber: ->
 		return '' unless @phoneNumber
 		if @phoneNumber.length > 10
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
 		else
 			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
-	
+
 	lastLogin: ->
 		if @lastLogin
 			return moment(@lastLogin).format('LLL')
@@ -589,12 +568,12 @@ Template.room.events
 			closeOnConfirm: false
 			html: false
 		}, ->
-			swal 
+			swal
 				title: t('Deleted')
 				text: t('Your_entry_has_been_deleted')
 				type: 'success'
 				timer: 1000
-				showConfirmButton: false 
+				showConfirmButton: false
 
 			instance.chatMessages.deleteMsg(message)
 
@@ -681,7 +660,7 @@ Template.room.events
 				toastr.success t('User_has_been_deactivated')
 			if error
 				toastr.error error.reason
-	
+
 	'click .activate': ->
 		username = Session.get('showUserInfo')
 		user = Meteor.users.findOne { username: String(username) }
@@ -702,7 +681,7 @@ Template.room.events
 			SideNav.setFlex "directMessagesFlex", data
 		else if roomData.t is 'p'
 			SideNav.setFlex "privateGroupsFlex", data
-		else 
+		else
 			console.log "The room's security label cannot be modified" if window.rocketDebug
 			return
 
@@ -829,3 +808,23 @@ getUser = (username) ->
 	# convert user's username to name
 	allUsers = RoomManager.allUsers.get()
 	allUsers[username]
+
+getUserData = (username) ->
+	message = ''
+	status = Session.get 'user_' + username + '_status'
+	if status in ['online', 'away', 'busy']
+		statusMessages = Session.get('user_' + username + '_statusMessages')
+		if (statusMessages?)
+			message = ': ' + statusMessages[status]
+	else
+		status = 'offline'
+	userData = {
+		name: getUser(username)?.name || username
+		# not used, but if wanted, need to set in RoomManager
+		#emails: Session.get('user_' + username + '_emails') || []
+		#phone: Session.get('user_' + username + '_phone')
+		username: String(username)
+		customMessage: message
+		status: status
+	}
+	return userData

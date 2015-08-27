@@ -176,7 +176,7 @@
 									</div>
 									<div class="info">
 										<h3>{{name}}</h3>
-                                    	<span class="userStatus status-{{status}}">{{status}}:</span> <span class="customMessage">{{customMessage}}</span>
+                                    	<span class="userStatus status-{{status}}">{{status}}</span><span class="customMessage">{{customMessage}}</span>
 										{{#if isAdmin}}
 											<p>{{name}}</p>
 											{{#if utc}}<p><i class="icon-location"></i> {{utc}}</p>{{/if}}
@@ -231,6 +231,7 @@
 									</div>
 									<div class="info">
 										<h3>{{name}}</h3>
+                                                                            	<p><span class="userStatus status-{{status}}">{{status}}</span> <span class="customMessage">{{customMessage}}</span></p>
 										{{#if isAdmin}}
 											<p>{{name}}</p>
 											{{#if utc}}<p><i class="icon-location"></i> {{utc}}</p>{{/if}}
