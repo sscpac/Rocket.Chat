@@ -31,7 +31,7 @@ Template.room.helpers
 		if usernames.length is 0
 			return
 		names = usernames.map (username) ->
-			return getUser(username)?.name || username 
+			return getUser(username)?.name || username
 
 		if names.length is 1
 			name = names[0]
@@ -81,14 +81,7 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-
-			userData = {
-				name: getUser(username)?.name|| username
-				# not used, but if wanted, need to set in RoomManager 
-				#emails: Session.get('user_' + username + '_emails') || []
-				#phone: Session.get('user_' + username + '_phone')
-				username: String(username)
-			}
+			userData = getUserData(username)
 			return userData
 
 	userStatus: ->
@@ -206,6 +199,7 @@ Template.room.helpers
 				name: user?.name
 				username: username
 				status: user?.status
+				isOwner: username is room.u._id
 
 		users = _.sortBy users, 'lastName'
 
@@ -218,25 +212,8 @@ Template.room.helpers
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
 		userData = {}
-		if username 
-			message = ''
-			status = Session.get 'user_' + username + '_status'
-			if status in ['online', 'away', 'busy']
-				statusMessages = Session.get('user_' + username + '_statusMessages')
-				if (statusMessages?)
-					message = statusMessages[status]
-
-			userData = {
-				name: getUser(username)?.name || username
-				# name: Session.get('user_' + uid + '_name')
-				# emails: Session.get('user_' + uid + '_emails')
-				username: String(username)
-				customMessage: message
-				status: status
-			}
-		# phone = Session.get('user_' + uid + '_phone')
-		# if phone? and phone[0]?.phoneNumber
-		# 	userData.phone = phone[0]?.phoneNumber
+		if username
+			userData = getUserData(username)
 
 		return userData
 
@@ -305,6 +282,8 @@ Template.room.helpers
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
+	isOwner: ->
+		return this.isOwner
 
 Template.room.events
 
@@ -588,7 +567,7 @@ Template.room.events
 			SideNav.setFlex "directMessagesFlex", data
 		else if roomData.t is 'p'
 			SideNav.setFlex "privateGroupsFlex", data
-		else 
+		else
 			console.log "The room's security label cannot be modified" if window.rocketDebug
 			return
 
@@ -685,3 +664,23 @@ getUser = (username) ->
 	# convert user's username to name
 	allUsers = RoomManager.allUsers.get()
 	allUsers[username]
+
+getUserData = (username) ->
+	message = ''
+	status = Session.get 'user_' + username + '_status'
+	if status in ['online', 'away', 'busy']
+		statusMessages = Session.get('user_' + username + '_statusMessages')
+		if (statusMessages?)
+			message = ': ' + statusMessages[status]
+	else
+		status = 'offline'
+	userData = {
+		name: getUser(username)?.name || username
+		# not used, but if wanted, need to set in RoomManager
+		#emails: Session.get('user_' + username + '_emails') || []
+		#phone: Session.get('user_' + username + '_phone')
+		username: String(username)
+		customMessage: message
+		status: status
+	}
+	return userData

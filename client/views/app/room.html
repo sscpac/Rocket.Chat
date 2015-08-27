@@ -120,7 +120,7 @@
 										<li class='user-image user-card-room status-{{status}}'>
 											<a data-username="{{username}}" tabindex="0" title="{{username}}" class="status-{{status}}">
 												{{> avatar username=username}}
-												<p class="status-{{status}}">{{firstName}} {{lastName}}</p>
+												<p class="status-{{status}}">{{firstName}} {{lastName}} {{#if isOwner}}<span class="glyphicon-check" title="Owner/Creator of Group"></span>{{/if}}</p>
 											</a>
 										</li>
 									{{/each}}
@@ -135,7 +135,7 @@
 									</div>
 									<div class="info">
 										<h3>{{name}}</h3>
-                                    	<span class="userStatus status-{{status}}">{{status}}:</span> <span class="customMessage">{{customMessage}}</span>
+                                                                            	<span class="userStatus status-{{status}}">{{status}}</span><span class="customMessage">{{customMessage}}</span>
 										{{#if contactCode}}
 											<div class="contact-code">{{_ "Contact"}} {{contactCode}}</div>
 										{{/if}}
@@ -147,6 +147,7 @@
 											<p><i class="icon-phone"></i> {{phone}}</p>
 										{{/if}}
 										--}}
+                                                                            <span class="glyphicon-heart" title="Group Owner"></span>
 									</div>
 								</div>
 								<nav>
@@ -194,6 +195,7 @@
 									</div>
 									<div class="info">
 										<h3>{{name}}</h3>
+                                                                            	<p><span class="userStatus status-{{status}}">{{status}}</span> <span class="customMessage">{{customMessage}}</span></p>
 										{{#if contactCode}}
 											<div class="contact-code">{{_ "contact"}} {{contactCode}}</div>
 										{{/if}}
@@ -205,6 +207,7 @@
 											<p><i class="icon-phone"></i> {{phoneNumber}}</p>
 										{{/each}}
 										--}}
+                                                                            <span class="glyphicon-heart" title="Owner"></span>
 									</div>
 								</div>
 								<nav>
