@@ -2,7 +2,8 @@ Template.userStatus.helpers
 	myUserInfo: ->
 		visualStatus = t("online")
 		username = Meteor.user()?.username
-		switch Session.get('user_' + username + '_status')
+		status = Session.get('user_' + username + '_status')
+		switch status
 			when "away"
 				visualStatus = t("away")
 			when "busy"
@@ -10,20 +11,11 @@ Template.userStatus.helpers
 			when "offline"
 				visualStatus = t("invisible")
 		visualStatus = capitalizeWord(visualStatus)
+		customMessage = setStatusMessage(Session.get('user_' + username + '_statusMessages'), status)
 		return {
 			name: Meteor.user()?.name || username
-			status: Session.get('user_' + username + '_status')
-			customMessage : ->
-				message = ''
-				status = Session.get('user_' + username + '_status')
-				if Meteor.user()? and status?
-					username = Meteor.user().username
-					if status in ['online','away', 'busy']
-						$('.custom-message').css('display','block')
-						statusMessages = Session.get('user_' + username + '_statusMessages')
-						if (statusMessages?)
-							message = ': ' + statusMessages[status]
-				return message
+			status: status
+			customMessage : customMessage
 			visualStatus: visualStatus
 			_id: Meteor.userId()
 			username: username
@@ -82,8 +74,6 @@ Template.userStatus.events
 
 Template.userStatus.rendered = ->
 	AccountBox.init()
-	username = Meteor.user()?.username
-	setStatusMessage(Session.get('user_' + username + '_statusMessages'), Session.get('user_' + username + '_status'))
 	$('.custom-message').css('display','none')
 
 capitalizeWord = (word) ->
@@ -91,6 +81,7 @@ capitalizeWord = (word) ->
 
 setStatusMessage = (statusMessages, newStatus) ->
 	jCM = $('.custom-message')
+	message = ''
 	if newStatus in ['online','away', 'busy']
 		jCM.data('userStatus',newStatus).css('display','block').removeClass('status-online status-busy status-offline status-away').addClass('status-' + newStatus)
 		$('#label-custom-message').text(capitalizeWord(newStatus) + ' custom message')
@@ -101,3 +92,4 @@ setStatusMessage = (statusMessages, newStatus) ->
 		$('#custom-message-text').val(message)
 	else
 		jCM.css('display', 'none')
+	return message
