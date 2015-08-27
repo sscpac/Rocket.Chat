@@ -22,7 +22,7 @@ Template.userStatus.helpers
 						$('.custom-message').css('display','block')
 						statusMessages = Session.get('user_' + username + '_statusMessages')
 						if (statusMessages?)
-							message = statusMessages[status]
+							message = ': ' + statusMessages[status]
 				return message
 			visualStatus: visualStatus
 			_id: Meteor.userId()
@@ -67,7 +67,7 @@ Template.userStatus.events
 		event.preventDefault()
 		event.stopPropagation()
 		$('.custom-message').css('display','none')
-		
+
 	'click #account': (event) ->
 		SideNav.setFlex "accountFlex"
 		SideNav.openFlex()
