@@ -83,7 +83,7 @@ Template.directMessagesFlex.events
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'room', { _id: result.rid }
+					FlowRouter.go 'direct', { username: username}
 			else
 				Meteor.call 'createDirectMessage', username, accessPermissions, (err, result) ->
 					if err
@@ -222,7 +222,6 @@ Template.directMessagesFlex.onCreated ->
 	# input fields for the room.
 	#
 	instance.autorun (c) ->
-
 		roomId = instance.data.relabelRoom
 		# check if we are relabeling the room
 		if roomId
