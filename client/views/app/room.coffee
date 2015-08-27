@@ -244,7 +244,6 @@ Template.room.helpers
 			if Meteor.user()?.admin is true
 				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
 
-			console.log 'userdata: ', userData
 		return userData
 
 	seeAll: ->
