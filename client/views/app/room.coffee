@@ -81,7 +81,7 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-			userData = getUserData(username)
+			userData = getUserData(username, roomData)
 			return userData
 
 	userStatus: ->
@@ -199,8 +199,7 @@ Template.room.helpers
 				name: user?.name
 				username: username
 				status: user?.status
-				isOwner: username is room.u._id
-
+				isOwner: username is room.u?._id
 		users = _.sortBy users, 'lastName'
 
 		ret =
@@ -282,8 +281,6 @@ Template.room.helpers
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
-	isOwner: ->
-		return this.isOwner
 
 Template.room.events
 
