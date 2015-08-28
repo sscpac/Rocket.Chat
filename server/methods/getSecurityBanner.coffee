@@ -7,7 +7,7 @@ Meteor.methods
 
 		perms = new Jedis.AccessPermission permissionIds 
 			.toArray();
-		systemCountryCode = Jedis.accessManager.getPermissions(Jedis.settings.get('public').system.countryCode)
+		systemCountryCode = Jedis.accessManager.getPermissions(RocketChat.settings.get('System_CountryCode'))
 
 		if not systemCountryCode or systemCountryCode.length is 0
 			console.log 'System country not found.  Defaulting to USA'

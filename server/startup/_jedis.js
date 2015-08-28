@@ -1,8 +1,6 @@
 Jedis = this.Jedis || {};
-
 Meteor.startup( function() {
-	var defaultSettings;
-	var overwrite = false;
+	var settings;
 	var directoryService;
 	var users = [];
 	var addToGeneralInterval;
@@ -17,21 +15,25 @@ Meteor.startup( function() {
 	console.log("Loading Default System Settings");
 	try {
 		// JSON.parse is very syntax sensitive.  e.g. trailing comma with no following value 
-		// will cause an error. 
-		defaultSettings = JSON.parse(Assets.getText('defaultSettings.json')) || {};
-		Jedis.settings = new JedisSettings();
-		Jedis.settings.load(defaultSettings, overwrite);	
+	 	// will cause an error. 
+	 	settings = JSON.parse(Assets.getText('defaultSettings.json')) || {};
+		defineSettings(settings);
+
 	} catch(err) {
-		console.log('Error loading default settings: ' + err.message);
+	 	console.log('Error loading default settings: ' + err.message);
 	}
 
-	directoryService = new DirectoryService(Jedis.settings.get('ldap'));
+	directoryService = new DirectoryService(settings.ldap);
 	Jedis.accessManager = new AccessManager(directoryService);
 	Jedis.accessManager.loadAccessPermissions();
 
 	Jedis.accountManager = new AccountManager(directoryService);
 	Jedis.accountManager.loadUsers();
-
+	adminUserId = settings.mac.adminUsername;
+	if( adminUserId ) {
+		console.log('Set ' + adminUserId + ' as admin');
+		Jedis.accountManager.setAdmin(adminUserId);
+	}
 	// need to add users to the 'GENERAL' channel (created in initialData), but 
 	// it may not have been created yet.  So we need to periodically test if it 
 	// exists then add them when it does.  
@@ -52,8 +54,6 @@ Meteor.startup( function() {
 
 	// Register our custom login manager that authenticates via LDAP with Meteor's accounts package
 	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);	
-	// TODO checkt that forbidClientAccountCreation is true
-	//Accounts.config( {forbidClientAccountCreation:true});
 });
 
 var addUsersToLocation = function() {
@@ -264,4 +264,27 @@ var createChannel = function(name, displayName, members) {
 
 	return rid;
 }
+
+var defineSettings = function(config) {
+	// NOTE: initial values do NOT overwrite existing values. You have to use the admin UI to modify the setting
+	// once it exists in the collection
+	RocketChat.settings.addGroup( 'MAC');
+	// NOTE RocketChat only supports string and boolean values.
+	RocketChat.settings.add('Network_Classification', config.mac.networkClassification, { type: 'string', group: 'MAC', public: true });
+	RocketChat.settings.add('System_CountryCode', config.mac.systemCountryCode, { type: 'string', group: 'MAC', public: true });	
+	RocketChat.settings.add('Admin U', config.mac.adminUsername, { type: 'string', group: 'MAC', public: true });	
+
+	RocketChat.settings.addGroup( 'LDAP');
+	RocketChat.settings.add('url', config.ldap.url, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('userSearchBaseDNTemplate', config.ldap.userSearchBaseDNTemplate, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('adminBaseDN', config.ldap.admin.baseDN, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('adminCredentials', config.ldap.admin.credentials, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('accessDefsBaseDN', config.ldap.accessDefs.baseDN, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('accessDefsFilter', config.ldap.accessDefs.opts.filter, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('accessDefsScope', config.ldap.accessDefs.opts.scope, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('usersBaseDN', config.ldap.users.baseDN, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('usersFilter', config.ldap.users.opts.filter, { type: 'string', group: 'LDAP', public: false });	
+	RocketChat.settings.add('usersScope', config.ldap.users.opts.scope, { type: 'string', group: 'LDAP', public: false });	
+}
+
 
