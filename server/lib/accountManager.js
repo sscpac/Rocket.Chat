@@ -85,7 +85,22 @@ AccountManager = function(accountProvider) {
 
 	var upsertUser = function(user) {
 		var future = new Future();
-		Meteor.users.upsert({_id:user._id}, {$set: user}, function( err, result) {
+		var query = {_id:user._id};
+		var setOnInsert = { status : 'offline', statusConnection : 'offline' };
+		var fields = { 
+			username : user.username,
+			name : user.name,
+			emails : user.emails,
+			'profile.phone': user.profile.phone,
+			'profile.rank': user.profile.rank,
+			'profile.location': user.profile.location,
+			'profile.first_name': user.profile.first_name,
+			'profile.last_name': user.profile.last_name,
+			'profile.access': user.profile.access,
+		};
+
+		// individually set fields so we don't clobber existing child values.  e.g. profile.statusMessages
+		Meteor.users.upsert(query, {$set: fields, $setOnInsert: setOnInsert}, function( err, result) {
 			if( err ) {
 				future.return({error:err});
 
