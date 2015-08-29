@@ -272,7 +272,11 @@ var defineSettings = function(config) {
 	// NOTE RocketChat only supports string and boolean values.
 	RocketChat.settings.add('Network_Classification', config.mac.networkClassification, { type: 'string', group: 'MAC', public: true });
 	RocketChat.settings.add('System_CountryCode', config.mac.systemCountryCode, { type: 'string', group: 'MAC', public: true });	
-	RocketChat.settings.add('Admin U', config.mac.adminUsername, { type: 'string', group: 'MAC', public: true });	
+
+	/*
+	// It doesn't make sense to configure these settings through the UI because they are read in at startup
+	// and require a system restart to take effect
+	RocketChat.settings.add('Admin Username', config.mac.adminUsername, { type: 'string', group: 'MAC', public: true });	
 
 	RocketChat.settings.addGroup( 'LDAP');
 	RocketChat.settings.add('url', config.ldap.url, { type: 'string', group: 'LDAP', public: false });	
@@ -285,6 +289,7 @@ var defineSettings = function(config) {
 	RocketChat.settings.add('usersBaseDN', config.ldap.users.baseDN, { type: 'string', group: 'LDAP', public: false });	
 	RocketChat.settings.add('usersFilter', config.ldap.users.opts.filter, { type: 'string', group: 'LDAP', public: false });	
 	RocketChat.settings.add('usersScope', config.ldap.users.opts.scope, { type: 'string', group: 'LDAP', public: false });	
+	*/
 }
 
 
