@@ -20,7 +20,7 @@ Meteor.methods
 			throw new Meteor.Error 'invalid-arguments', "[methods] canAccessResource -> Resource Permissions not specified"
 
 		users = Meteor.users.find({_id: {$in : userIds }}).fetch()
-
+		console.log(users)
 		# check for invalid userId
 		unless users?.length is userIds.length
 			console.log '[methods] canAccessResource -> '.red, 'invalid user id(s)'

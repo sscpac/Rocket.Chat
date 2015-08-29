@@ -87,7 +87,8 @@ Meteor.methods
 				throw new Meteor.Error 'invalid-classification', "[methods] relabelRoom -> Classification cannot be downgraded"
 
 		# whew, finally update the room with new permissions
-		ChatRoom.update( {_id: room._id}, {$set: {accessPermissions : accessPermissionIds}} )
+		securityLabel = Jedis.legacyLabel( accessPermissionIds)
+		ChatRoom.update( {_id: room._id}, {$set: {accessPermissions : accessPermissionIds, securityLabel : securityLabel}} )
 		console.log '[methods] relabelRoom -> '.green, 'Relabeled room: ', roomId, ' new permissions: ', accessPermissionIds
 
 		return ChatRoom.findOne({_id: room._id})

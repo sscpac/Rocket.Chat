@@ -50,10 +50,8 @@ numberComparator = (first, second) ->
 beforeSaveMessage = (message) ->
 	roomId = message.rid
 	room = @ChatRoom.findOne({_id: roomId});
-	# only apply to direct message and private group rooms
-	if room?.t in ['d','p']
-		message.accessPermissions = room.accessPermissions
-		message.securityLabel = room.securityLabel
+	message.accessPermissions = room.accessPermissions
+	message.securityLabel = room.securityLabel
 			
 	return message
 
@@ -62,7 +60,7 @@ beforeCreateChannel = (user, room) ->
 		channelPermissions = Jedis.channelPermissions()
 		# default access permission
 		room.accessPermissions = channelPermissions
-		room.securityLabels = Jedis.legacyLabel[channelPermissions]
+		room.securityLabel = Jedis.legacyLabel(channelPermissions)
 
 # Add access permission and legacy security label field to message based on Room
 # only applies to Direct message and Private group messages

@@ -86,7 +86,7 @@ AccountManager = function(accountProvider) {
 	var upsertUser = function(user) {
 		var future = new Future();
 		var query = {_id:user._id};
-		var setOnInsert = { status : 'offline', statusConnection : 'offline' };
+		var setOnInsert = { status : 'offline', statusConnection : 'offline', active:true};
 		var fields = { 
 			username : user.username,
 			name : user.name,
