@@ -7,7 +7,7 @@ Meteor.startup( function() {
 	var users = [];
 	var addToGeneralInterval;
 
-	Meteor.users.find().observe({ 
+	Meteor.users.find().observe({
 		added: addUserToLocationChannel,
 		changed: updateUserLocationChannel,
 		removed: removeUserFromLocationChannel
@@ -16,27 +16,27 @@ Meteor.startup( function() {
 
 	console.log("Loading Default System Settings");
 	try {
-		// JSON.parse is very syntax sensitive.  e.g. trailing comma with no following value 
-		// will cause an error. 
+		// JSON.parse is very syntax sensitive.  e.g. trailing comma with no following value
+		// will cause an error.
 		defaultSettings = JSON.parse(Assets.getText('defaultSettings.json')) || {};
 		Jedis.settings = new JedisSettings();
-		Jedis.settings.load(defaultSettings, overwrite);	
+		Jedis.settings.load(defaultSettings, overwrite);
 	} catch(err) {
 		console.log('Error loading default settings: ' + err.message);
 	}
 
-	directoryService = new DirectoryService(Jedis.settings.get('ldap'));
+	directoryService = new MockProvider();// DirectoryService(Jedis.settings.get('ldap'));
 	Jedis.accessManager = new AccessManager(directoryService);
 	Jedis.accessManager.loadAccessPermissions();
 
 	Jedis.accountManager = new AccountManager(directoryService);
 	Jedis.accountManager.loadUsers();
 
-	// need to add users to the 'GENERAL' channel (created in initialData), but 
-	// it may not have been created yet.  So we need to periodically test if it 
-	// exists then add them when it does.  
+	// need to add users to the 'GENERAL' channel (created in initialData), but
+	// it may not have been created yet.  So we need to periodically test if it
+	// exists then add them when it does.
 	// !! the delay value has to be long enough to account for adding all the users
-	// otherwise it may try to re-insert the user into general  
+	// otherwise it may try to re-insert the user into general
 	addToGeneralInterval = Meteor.setInterval( function() {
 		var room = ChatRoom.findOne({_id:'GENERAL'})
 		if( room ) {
@@ -51,7 +51,7 @@ Meteor.startup( function() {
 	}, 10000)
 
 	// Register our custom login manager that authenticates via LDAP with Meteor's accounts package
-	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);	
+	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);
 	// TODO checkt that forbidClientAccountCreation is true
 	//Accounts.config( {forbidClientAccountCreation:true});
 });
@@ -135,7 +135,7 @@ var removeUserFromLocationChannel = function(user) {
 
 	ChatSubscription.remove({ 'u._id': user.username, rid: room._id });
 
-	/* 
+	/*
 	ChatMessage.insert
 		rid: room._id
 		ts: (new Date)
@@ -154,16 +154,16 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 		console.log( 'Room with id: ' + roomId + ' not found');
 		return
 	}
-	// add usernames to specified room and create subscription.  
+	// add usernames to specified room and create subscription.
 	users.forEach( function( user ) {
 
 		if( ! ChatSubscription.findOne({rid: roomId, 'u._id' : user._id }) ) {
 			// Non-existant ChatSubscription implies user missing from ChatRoom
-			ChatRoom.update( {_id: roomId }, 
+			ChatRoom.update( {_id: roomId },
 				{
 					// can't use addToSet because sort doesn't work.
-					$push : 
-					{ usernames : 
+					$push :
+					{ usernames :
 						{
 						$each : [user.username],
 						$sort : 1
@@ -220,7 +220,7 @@ var createChannel = function(name, members) {
 		name: name,
 		msgs: 0,
 		accessPermissions: Jedis.channelPermissions(),
-		securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())	
+		securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())
 	}
 
 	//RocketChat.callbacks.run('beforeCreateChannel', owner, room);
@@ -253,7 +253,7 @@ var createChannel = function(name, members) {
 	});
 
 	/*
-	Meteor.defer(function() { 
+	Meteor.defer(function() {
 		RocketChat.callbacks.run( 'afterCreateChannel', owner, room);
 	});
 	 */

@@ -147,7 +147,6 @@
 											<p><i class="icon-phone"></i> {{phone}}</p>
 										{{/if}}
 										--}}
-                                                                            <span class="glyphicon-heart" title="Group Owner"></span>
 									</div>
 								</div>
 								<nav>
@@ -195,7 +194,7 @@
 									</div>
 									<div class="info">
 										<h3>{{name}}</h3>
-									    <p><span class="userStatus status-{{status}}">{{status}}</span> <span class="customMessage">{{customMessage}}</span></p>
+									    <p>{{#if isOwner}}<span class="glyphicon-check" title="Direct message owner"></span>{{/if}} <span class="userStatus status-{{status}}">{{status}}</span> <span class="customMessage">{{customMessage}}</span></p>
 										{{#if contactCode}}
 											<div class="contact-code">{{_ "contact"}} {{contactCode}}</div>
 										{{/if}}

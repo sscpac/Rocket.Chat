@@ -212,7 +212,7 @@ Template.room.helpers
 		username = Session.get('showUserInfo')
 		userData = {}
 		if username
-			userData = getUserData(username)
+			userData = getUserData(username,Session.get('roomData' + this._id))
 
 		return userData
 
@@ -662,7 +662,7 @@ getUser = (username) ->
 	allUsers = RoomManager.allUsers.get()
 	allUsers[username]
 
-getUserData = (username) ->
+getUserData = (username,room) ->
 	message = ''
 	status = Session.get 'user_' + username + '_status'
 	if status in ['online', 'away', 'busy']
@@ -677,6 +677,7 @@ getUserData = (username) ->
 		#emails: Session.get('user_' + username + '_emails') || []
 		#phone: Session.get('user_' + username + '_phone')
 		username: String(username)
+		isOwner: username[0] is room?.u?._id
 		customMessage: message
 		status: status
 	}
