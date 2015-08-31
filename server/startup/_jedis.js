@@ -25,7 +25,7 @@ Meteor.startup( function() {
 		console.log('Error loading default settings: ' + err.message);
 	}
 
-	directoryService = new MockProvider();// DirectoryService(Jedis.settings.get('ldap'));
+	directoryService = DirectoryService(Jedis.settings.get('ldap'));
 	Jedis.accessManager = new AccessManager(directoryService);
 	Jedis.accessManager.loadAccessPermissions();
 
