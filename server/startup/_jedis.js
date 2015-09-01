@@ -1,4 +1,4 @@
-Jedis = this.Jedis || {};
+Jedis = Jedis || {};
 
 Meteor.startup( function() {
 	var defaultSettings;
@@ -12,7 +12,7 @@ Meteor.startup( function() {
 		changed: updateUserLocationChannel,
 		removed: removeUserFromLocationChannel
 		}
-	)
+	);
 
 	console.log("Loading Default System Settings");
 	try {
@@ -38,7 +38,7 @@ Meteor.startup( function() {
 	// !! the delay value has to be long enough to account for adding all the users
 	// otherwise it may try to re-insert the user into general
 	addToGeneralInterval = Meteor.setInterval( function() {
-		var room = ChatRoom.findOne({_id:'GENERAL'})
+		var room = ChatRoom.findOne({_id:'GENERAL'});
 		if( room ) {
 			// returns non-jedis users that will be added to GENERAL room if they aren't already added
 			users = Meteor.users.find().fetch();
@@ -48,7 +48,7 @@ Meteor.startup( function() {
 			addUsersToRoom(users, 'GENERAL', false);
 			Meteor.clearInterval(addToGeneralInterval);
 		}
-	}, 10000)
+	}, 10000);
 
 	// Register our custom login manager that authenticates via LDAP with Meteor's accounts package
 	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);
@@ -59,7 +59,7 @@ Meteor.startup( function() {
 var addUsersToLocation = function() {
 	var owner = Meteor.users.findOne({_id:'testadmin'});
 	var rawUsers = Meteor.users.rawCollection();
-	var pipeline = [{'$group': {_id:'$profile.location', usernames: {$push : "$username"}}}]
+	var pipeline = [{'$group': {_id:'$profile.location', usernames: {$push : "$username"}}}];
 	Meteor.wrapAsync( rawUsers.aggregate, rawUsers)(pipeline, function(err, usersByLocation) {
 		if( err ) {
 			console.log( err )
@@ -77,24 +77,24 @@ var addUsersToLocation = function() {
 		}
 
 	})
-}
+};
 
 var addUserToLocationChannel = function(user) {
 	var channel;
 	var chId;
 	if( _.isUndefined(user.profile) || _.isUndefined(user.profile.location) ) {
-		console.log('User missing location in profile')
+		console.log('User missing location in profile');
 		return
 	}
 
-	channel = ChatRoom.findOne({name:user.profile.location, t:'c'})
+	channel = ChatRoom.findOne({name:user.profile.location, t:'c'});
 	if( _.isUndefined(channel) ) {
 		chId = createChannel(user.profile.location, [user.username]);
 	} else {
 		chId = channel._id;
 	}
 	addUsersToRoom( [user], chId, false)
-}
+};
 
 var updateUserLocationChannel = function(newUser, oldUser) {
 	var oldLocation = '';
@@ -112,19 +112,19 @@ var updateUserLocationChannel = function(newUser, oldUser) {
 
 	removeUserFromLocationChannel(oldUser);
 	addUserToLocationChannel(newUser);
-}
+};
 
 var removeUserFromLocationChannel = function(user) {
 	// similar to removeUserFromRoom.coffee, but we don't use the currently logged
 	// in user
 	if( _.isUndefined(user.profile) || _.isUndefined(user.profile.location) ) {
-		console.log('User missing location in profile')
+		console.log('User missing location in profile');
 		return
 	}
 	console.log('remove user from location: ' + user.profile.location);
 	room = ChatRoom.findOne({name: user.profile.location});
 	if( _.isUndefined(room) ) {
-		console.log('Unable to remove ' + user.username + ' from old location ' + user.profile.location + ' because it was not found.')
+		console.log('Unable to remove ' + user.username + ' from old location ' + user.profile.location + ' because it was not found.');
 		return;
 	}
 	if (room.t !== 'c') {
@@ -145,11 +145,11 @@ var removeUserFromLocationChannel = function(user) {
 			_id: Meteor.userId()
 			username: Meteor.user().username
 	*/
-}
+};
 
 var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 	var now = new Date();
-	var room = ChatRoom.findOne({_id: roomId})
+	var room = ChatRoom.findOne({_id: roomId});
 	if( ! room ) {
 		console.log( 'Room with id: ' + roomId + ' not found');
 		return
@@ -196,7 +196,7 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 			console.log('Added ' + user.username + ' to room ' + room.name);
 		}
 	});
-}
+};
 
 var createChannel = function(name, members) {
 	// the same as createChannel method, except it doesn't check for logged in user
@@ -204,7 +204,7 @@ var createChannel = function(name, members) {
 		throw new Meteor.Error( 'name-invalid', 'Channel name is invalid' );
 	}
 
-	var now = new Date()
+	var now = new Date();
 
 	// avoid duplicate names
 	if (ChatRoom.findOne({name:name})) {
@@ -221,15 +221,15 @@ var createChannel = function(name, members) {
 		msgs: 0,
 		accessPermissions: Jedis.channelPermissions(),
 		securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())
-	}
+	};
 
 	//RocketChat.callbacks.run('beforeCreateChannel', owner, room);
 
 	// create new room
-	var rid = ChatRoom.insert( room )
+	var rid = ChatRoom.insert( room );
 
 	members.forEach(function(username) {
-		member = Meteor.users.findOne({username: username})
+		member = Meteor.users.findOne({username: username});
 		if (member) {
 
 			sub = {
@@ -246,7 +246,7 @@ var createChannel = function(name, members) {
 				ls  : now,
 				open : true,
 				alert : false
-			}
+			};
 
 			ChatSubscription.insert (sub);
 		}
@@ -259,5 +259,5 @@ var createChannel = function(name, members) {
 	 */
 
 	return rid;
-}
+};
 
