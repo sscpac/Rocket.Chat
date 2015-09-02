@@ -37,13 +37,13 @@ Meteor.methods
 		,
 			$set:
 				usernames: [me.username, to.username]
-				'u._id': me.username
 				accessPermissions: accessPermissions
 				securityLabels: Jedis.legacyLabel(accessPermissions)
 			$setOnInsert:
 				t: 'd'
 				msgs: 0
 				ts: now
+				'u._id': me.username
 
 		# Make user I have a subcription to this room
 		ChatSubscription.upsert
