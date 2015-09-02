@@ -18,6 +18,9 @@
 					<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">
 					<a href="#edit" class="edit-room-title"><i class="icon-pencil"></i></a>
 					{{/if}}
+					{{#if canDeleteRoom}}
+						<a href="#delete" class="delete-room"><i class="icon-trash"></i></a>
+					{{/if}}
 				</h2>
 			</header>
 			{{> securityBanner permissions=permissions canEdit=canEditPermissions}}
