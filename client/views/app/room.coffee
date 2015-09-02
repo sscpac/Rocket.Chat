@@ -84,7 +84,7 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-			userData = getUserData(username)
+			userData = getUserData(username, roomData)
 			if Meteor.user()?.admin is true
 				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
 
@@ -811,25 +811,6 @@ getUser = (username) ->
 	allUsers = RoomManager.allUsers.get()
 	allUsers[username]
 
-getUserData = (username) ->
-	message = ''
-	status = Session.get 'user_' + username + '_status'
-	if status in ['online', 'away', 'busy']
-		statusMessages = Session.get('user_' + username + '_statusMessages')
-		if (statusMessages?)
-			message = ': ' + statusMessages[status]
-	else
-		status = 'offline'
-	userData = {
-		name: getUser(username)?.name || username
-		# not used, but if wanted, need to set in RoomManager
-		#emails: Session.get('user_' + username + '_emails') || []
-		#phone: Session.get('user_' + username + '_phone')
-		username: String(username)
-		customMessage: message
-		status: status
-	}
-	return userData
 
 getUserData = (username,room) ->
 	message = ''
@@ -846,7 +827,7 @@ getUserData = (username,room) ->
 		#emails: Session.get('user_' + username + '_emails') || []
 		#phone: Session.get('user_' + username + '_phone')
 		username: String(username)
-		isOwner: username[0] is room?.u?._id
+		isOwner: String(username) is room?.u?._id
 		customMessage: message
 		status: status
 	}
