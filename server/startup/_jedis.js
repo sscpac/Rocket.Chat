@@ -7,20 +7,20 @@ Meteor.startup( function() {
 	var users = [];
 	var addToGeneralInterval;
 
-	Meteor.users.find().observe({ 
+	Meteor.users.find().observe({
 		added: addUserToLocationChannel,
 		changed: updateUserLocationChannel,
 		removed: removeUserFromLocationChannel
 		}
-	)
+	);
 
 	console.log("Loading Default System Settings");
 	try {
-		// JSON.parse is very syntax sensitive.  e.g. trailing comma with no following value 
-		// will cause an error. 
+		// JSON.parse is very syntax sensitive.  e.g. trailing comma with no following value
+		// will cause an error.
 		defaultSettings = JSON.parse(Assets.getText('defaultSettings.json')) || {};
 		Jedis.settings = new JedisSettings();
-		Jedis.settings.load(defaultSettings, overwrite);	
+		Jedis.settings.load(defaultSettings, overwrite);
 	} catch(err) {
 		console.log('Error loading default settings: ' + err.message);
 	}
@@ -32,13 +32,13 @@ Meteor.startup( function() {
 	Jedis.accountManager = new AccountManager(directoryService);
 	Jedis.accountManager.loadUsers();
 
-	// need to add users to the 'GENERAL' channel (created in initialData), but 
-	// it may not have been created yet.  So we need to periodically test if it 
-	// exists then add them when it does.  
+	// need to add users to the 'GENERAL' channel (created in initialData), but
+	// it may not have been created yet.  So we need to periodically test if it
+	// exists then add them when it does.
 	// !! the delay value has to be long enough to account for adding all the users
-	// otherwise it may try to re-insert the user into general  
+	// otherwise it may try to re-insert the user into general
 	addToGeneralInterval = Meteor.setInterval( function() {
-		var room = ChatRoom.findOne({_id:'GENERAL'})
+		var room = ChatRoom.findOne({_id:'GENERAL'});
 		if( room ) {
 			// returns non-jedis users that will be added to GENERAL room if they aren't already added
 			users = Meteor.users.find().fetch();
@@ -48,10 +48,10 @@ Meteor.startup( function() {
 			addUsersToRoom(users, 'GENERAL', false);
 			Meteor.clearInterval(addToGeneralInterval);
 		}
-	}, 10000)
+	}, 10000);
 
 	// Register our custom login manager that authenticates via LDAP with Meteor's accounts package
-	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);	
+	Accounts.registerLoginHandler(Jedis.accountManager.authId, Jedis.accountManager.loginHandler);
 	// TODO checkt that forbidClientAccountCreation is true
 	//Accounts.config( {forbidClientAccountCreation:true});
 });
@@ -59,7 +59,7 @@ Meteor.startup( function() {
 var addUsersToLocation = function() {
 	var owner = Meteor.users.findOne({_id:'testadmin'});
 	var rawUsers = Meteor.users.rawCollection();
-	var pipeline = [{'$group': {_id:'$profile.location', usernames: {$push : "$username"}}}]
+	var pipeline = [{'$group': {_id:'$profile.location', usernames: {$push : "$username"}}}];
 	Meteor.wrapAsync( rawUsers.aggregate, rawUsers)(pipeline, function(err, usersByLocation) {
 		if( err ) {
 			console.log( err )
@@ -77,25 +77,25 @@ var addUsersToLocation = function() {
 		}
 
 	})
-}
+};
 
 var addUserToLocationChannel = function(user) {
 	var channel;
 	var chId;
 	if( _.isUndefined(user.profile) || _.isUndefined(user.profile.location) ) {
-		console.log('User missing location in profile')
+		console.log('User missing location in profile');
 		return
 	}
-	location = user.profile.location
-	slugLocation = _.slugify(location)
-	channel = ChatRoom.findOne({name:slugLocation, t:'c'})
+	location = user.profile.location;
+	slugLocation = _.slugify(location);
+	channel = ChatRoom.findOne({name:slugLocation, t:'c'});
 	if( _.isUndefined(channel) ) {
 		chId = createChannel(slugLocation,location, [user.username]);
 	} else {
 		chId = channel._id;
 	}
 	addUsersToRoom( [user], chId, false)
-}
+};
 
 var updateUserLocationChannel = function(newUser, oldUser) {
 	var oldLocation = '';
@@ -113,19 +113,19 @@ var updateUserLocationChannel = function(newUser, oldUser) {
 
 	removeUserFromLocationChannel(oldUser);
 	addUserToLocationChannel(newUser);
-}
+};
 
 var removeUserFromLocationChannel = function(user) {
 	// similar to removeUserFromRoom.coffee, but we don't use the currently logged
 	// in user
 	if( _.isUndefined(user.profile) || _.isUndefined(user.profile.location) ) {
-		console.log('User missing location in profile')
+		console.log('User missing location in profile');
 		return
 	}
 	console.log('remove user from location: ' + user.profile.location);
 	room = ChatRoom.findOne({name: user.profile.location});
 	if( _.isUndefined(room) ) {
-		console.log('Unable to remove ' + user.username + ' from old location ' + user.profile.location + ' because it was not found.')
+		console.log('Unable to remove ' + user.username + ' from old location ' + user.profile.location + ' because it was not found.');
 		return;
 	}
 	if (room.t !== 'c') {
@@ -136,7 +136,7 @@ var removeUserFromLocationChannel = function(user) {
 
 	ChatSubscription.remove({ 'u._id': user.username, rid: room._id });
 
-	/* 
+	/*
 	ChatMessage.insert
 		rid: room._id
 		ts: (new Date)
@@ -146,25 +146,25 @@ var removeUserFromLocationChannel = function(user) {
 			_id: Meteor.userId()
 			username: Meteor.user().username
 	*/
-}
+};
 
 var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 	var now = new Date();
-	var room = ChatRoom.findOne({_id: roomId})
+	var room = ChatRoom.findOne({_id: roomId});
 	if( ! room ) {
 		console.log( 'Room with id: ' + roomId + ' not found');
 		return
 	}
-	// add usernames to specified room and create subscription.  
+	// add usernames to specified room and create subscription.
 	users.forEach( function( user ) {
 
 		if( ! ChatSubscription.findOne({rid: roomId, 'u._id' : user._id }) ) {
 			// Non-existant ChatSubscription implies user missing from ChatRoom
-			ChatRoom.update( {_id: roomId }, 
+			ChatRoom.update( {_id: roomId },
 				{
 					// can't use addToSet because sort doesn't work.
-					$push : 
-					{ usernames : 
+					$push :
+					{ usernames :
 						{
 						$each : [user.username],
 						$sort : 1
@@ -198,7 +198,7 @@ var addUsersToRoom = function( users, roomId, createJoinedMessage) {
 			console.log('Added ' + user.username + ' to room ' + room.name);
 		}
 	});
-}
+};
 
 var createChannel = function(name, displayName, members) {
 	// the same as createChannel method, except it doesn't check for logged in user
@@ -206,7 +206,7 @@ var createChannel = function(name, displayName, members) {
 		throw new Meteor.Error( 'name-invalid', 'Channel name is invalid' );
 	}
 
-	var now = new Date()
+	var now = new Date();
 
 	// avoid duplicate names
 	if (ChatRoom.findOne({name:name})) {
@@ -223,16 +223,16 @@ var createChannel = function(name, displayName, members) {
 		displayName: displayName,
 		msgs: 0,
 		accessPermissions: Jedis.channelPermissions(),
-		securityLabel : Jedis.legacyLabel(Jedis.channelPermissions())	
-	}
+		securityLabel : Jedis.legacyLabel(Jedis.channelPermissions())
+	};
 
 	//RocketChat.callbacks.run('beforeCreateChannel', owner, room);
 
 	// create new room
-	var rid = ChatRoom.insert( room )
+	var rid = ChatRoom.insert( room );
 
 	members.forEach(function(username) {
-		member = Meteor.users.findOne({username: username})
+		member = Meteor.users.findOne({username: username});
 		if (member) {
 
 			sub = {
@@ -250,18 +250,18 @@ var createChannel = function(name, displayName, members) {
 				ls  : now,
 				open : true,
 				alert : false
-			}
+			};
 
 			ChatSubscription.insert (sub);
 		}
 	});
 
 	/*
-	Meteor.defer(function() { 
+	Meteor.defer(function() {
 		RocketChat.callbacks.run( 'afterCreateChannel', owner, room);
 	});
 	 */
 
 	return rid;
-}
+};
 

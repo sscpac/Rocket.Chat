@@ -37,6 +37,7 @@ Meteor.methods
 		,
 			$set:
 				usernames: [me.username, to.username]
+				'u._id': me.username
 				accessPermissions: accessPermissions
 				securityLabel: Jedis.legacyLabel(accessPermissions)
 			$setOnInsert:

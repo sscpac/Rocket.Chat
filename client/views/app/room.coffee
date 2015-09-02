@@ -204,7 +204,7 @@ Template.room.helpers
 				name: user?.name
 				username: username
 				status: user?.status
-
+				isOwner: username is room.u?._id
 		users = _.sortBy users, 'lastName'
 
 		ret =
@@ -219,10 +219,9 @@ Template.room.helpers
 		username = Session.get('showUserInfo')
 		userData = {}
 		if username
-			userData = getUserData(username)
+			userData = getUserData(username,Session.get('roomData' + this._id))
 			if Meteor.user()?.admin is true
 				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
-
 		return userData
 
 	seeAll: ->
@@ -290,11 +289,11 @@ Template.room.helpers
 	canEditPermissions: ->
 		canEdit = false
 		roomData = Session.get('roomData' + this._id)
-		if roomData 
+		if roomData
 			canEdit = roomData.t in ['d','p']
 
 		return canEdit
-		
+
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
@@ -827,6 +826,27 @@ getUserData = (username) ->
 		#emails: Session.get('user_' + username + '_emails') || []
 		#phone: Session.get('user_' + username + '_phone')
 		username: String(username)
+		customMessage: message
+		status: status
+	}
+	return userData
+
+getUserData = (username,room) ->
+	message = ''
+	status = Session.get 'user_' + username + '_status'
+	if status in ['online', 'away', 'busy']
+		statusMessages = Session.get('user_' + username + '_statusMessages')
+		if (statusMessages?)
+			message = ': ' + statusMessages[status]
+	else
+		status = 'offline'
+	userData = {
+		name: getUser(username)?.name || username
+		# not used, but if wanted, need to set in RoomManager
+		#emails: Session.get('user_' + username + '_emails') || []
+		#phone: Session.get('user_' + username + '_phone')
+		username: String(username)
+		isOwner: username[0] is room?.u?._id
 		customMessage: message
 		status: status
 	}
