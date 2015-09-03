@@ -200,6 +200,7 @@
   "Room" : "Room",
   "Room_deleted" : "Room deleted",
   "Room_deleted_by" : "Room deleted by: <em>__user_by__</em>",
+  "Room_label_changed" : "Security label changed to: <em class='security-banner'>__label__</em> by: <em>__user_by__</em>",
   "Room_name_changed" : "Room name changed to: <em>__room_name__</em> by <em>__user_by__</em>",
   "Room_name_changed_successfully" : "Room name changed successfully",
   "Room_not_found": "Room not found",
