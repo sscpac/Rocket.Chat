@@ -90,5 +90,16 @@ Meteor.methods
 		securityLabel = Jedis.legacyLabel( accessPermissionIds)
 		ChatRoom.update( {_id: room._id}, {$set: {accessPermissions : accessPermissionIds, securityLabel : securityLabel}} )
 		console.log '[methods] relabelRoom -> '.green, 'Relabeled room: ', roomId, ' new permissions: ', accessPermissionIds
+		banner = Meteor.call('getSecurityBanner', accessPermissionIds)
+
+		# send relabel room system message
+		ChatMessage.insert
+			rid: roomId
+			ts: (new Date)
+			t: 'rl'
+			msg: banner.text
+			u:
+				_id: Meteor.userId()
+				username: Meteor.user().username
 
 		return ChatRoom.findOne({_id: room._id})
