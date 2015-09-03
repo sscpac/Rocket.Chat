@@ -56,6 +56,23 @@ Template.privateGroupsFlex.helpers
 		unless Template.instance().warnUserIds.get().length is 0
 			return 'Due to security label access conflicts, some of the chosen room members will be excluded or kicked if you proceed.'
 
+	isNameDisabled: ->
+		isDisabled = false
+		# only room creator can edit name
+		room = Template.instance().room
+		if room
+			# room is undefined if we haven't loaded it yet or we're creating new room
+			isDisabled = room?.u._id isnt Meteor.userId()
+		return isDisabled
+
+	isMembersDisabled: ->
+		isDisabled = false
+		# only room creator can edit members
+		room = Template.instance().room
+		if room
+			# room is undefined if we haven't loaded it yet or we're creating new room
+			isDisabled = room?.u._id isnt Meteor.userId()
+		return isDisabled
 
 Template.privateGroupsFlex.events
 	'autocompleteselect #pvt-group-members': (event, instance, doc) ->

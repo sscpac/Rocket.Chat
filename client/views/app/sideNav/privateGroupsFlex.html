@@ -13,16 +13,20 @@
 			{{/if}}
 			<div class="input-line">
 				<label for="pvt-group-name">{{_ "Name"}}</label>
-				<input type="text" id="pvt-group-name" class="required" dir="auto" value="{{groupName}}">
+				<input type="text" id="pvt-group-name" class="required" dir="auto" value="{{groupName}}" disabled="{{isNameDisabled}}">
 			</div>
 			<div class="input-line">
 				<label for="pvt-group-members">{{_ "Members" }}</label>
-				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
-				<ul class="selected-users">
-					{{#each selectedUsers}}
-						<li class="selected-user" data-username="{{username}}">{{name}} <i class="icon-cancel remove-room-member"></i></li>
-					{{/each}}
-				</ul>
+				{{#if securityLabelsInitialized}}
+					{{#unless isMembersDisabled}}
+						{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=tRoomMembers autocomplete="off"}}
+					{{/unless}}
+					<ul class="selected-users">
+						{{#each selectedUsers}}
+							<li class="selected-user" data-username="{{username}}">{{name}} {{#unless isMembersDisabled}}<i class="icon-cancel remove-room-member"></i>{{/unless}}</li>
+						{{/each}}
+					</ul>
+				{{/if}}
 			</div>
 			{{#if securityLabelsInitialized}}
 				<div class="input-line">
