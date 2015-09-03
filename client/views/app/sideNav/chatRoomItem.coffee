@@ -80,11 +80,13 @@ Template.chatRoomItem.onCreated ->
 
 	# whenever there's a change in the room (eg, relabel), update banner data
 	instance.autorun ->
-		instance.room.set ChatRoom.findOne({_id: instance.data.rid})
-		Meteor.call 'getSecurityBanner', instance.room.get().accessPermissions, (error, result) ->
-			unless error
-				instance.bannerText.set result.text
-				instance.bannerTextAbbreviated.set result.textAbbreviated
+		room = ChatRoom.findOne({_id: instance.data.rid})
+		if room?.accessPermissions?
+			instance.room.set room
+			Meteor.call 'getSecurityBanner', instance.room.get().accessPermissions, (error, result) ->
+				unless error
+					instance.bannerText.set result.text
+					instance.bannerTextAbbreviated.set result.textAbbreviated
 	
 
 Template.chatRoomItem.events
