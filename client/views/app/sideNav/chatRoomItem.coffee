@@ -39,11 +39,53 @@ Template.chatRoomItem.helpers
 			return true
 
 	canRelabel: ->
-		return this.t is 'd' or this.t is 'p' 
+		return this.t is 'd' or this.t is 'p'
+
+
+	bannerText: ->
+		return Template.instance().bannerText.get()
+
+	bannerTextAbbreviated: ->
+		banner = Template.instance().bannerTextAbbreviated.get()
+		# ensure the banner data doesn't overrun the side panel
+		if this.name.length + banner.length > 30
+			len = 30 - this.name.length
+			return banner.substring(0, len) + '...'
+		else
+			return banner
+
+	multipleSameUser: ->
+		result = false
+		me = Meteor.user().username
+		otherUser = _.without(Template.instance().room.get().usernames, me)[0]
+		if otherUser?
+			count = ChatRoom.find({t: 'd', usernames: [me, otherUser]}).count()
+			if count > 1
+				result = true
+		return result
+
 
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls
 		KonchatNotification.newRoom(this.data.rid)
+
+
+Template.chatRoomItem.onCreated ->
+	instance = this
+
+	# store banner data in reactive vars so they update dynamically in template with method response
+	instance.bannerText = new ReactiveVar ''
+	instance.bannerTextAbbreviated = new ReactiveVar ''
+	instance.room = new ReactiveVar {}
+
+	# whenever there's a change in the room (eg, relabel), update banner data
+	instance.autorun ->
+		instance.room.set ChatRoom.findOne({_id: instance.data.rid})
+		Meteor.call 'getSecurityBanner', instance.room.get().accessPermissions, (error, result) ->
+			unless error
+				instance.bannerText.set result.text
+				instance.bannerTextAbbreviated.set result.textAbbreviated
+	
 
 Template.chatRoomItem.events
 	'click .label-room': (e) ->
