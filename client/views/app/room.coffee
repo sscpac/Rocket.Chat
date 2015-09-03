@@ -677,7 +677,7 @@ getUserData = (username,room) ->
 		#emails: Session.get('user_' + username + '_emails') || []
 		#phone: Session.get('user_' + username + '_phone')
 		username: String(username)
-		isOwner: username[0] is room?.u?._id
+		isOwner: String(username) is room?.u?._id
 		customMessage: message
 		status: status
 	}
