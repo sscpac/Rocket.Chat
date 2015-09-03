@@ -153,6 +153,10 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
+	canDeleteRoom: ->
+		roomData = Session.get('roomData' + this._id)
+		return Meteor.userId() is roomData?.u?._id 
+
 	canDirectMessage: ->
 		return Meteor.user()?.username isnt this?.username
 
@@ -428,6 +432,48 @@ Template.room.events
 		Meteor.setTimeout ->
 			$('#room-title-field').focus().select()
 		, 10
+
+	'click .delete-room': (event) ->
+		event.preventDefault()
+		console.log 'click delete room: '
+		roomData = Session.get('roomData' + this._id)
+		switch roomData.t
+			when 'c'
+				warning = 'This will delete the channel'
+			when 'p'
+				warning = 'This will delete the private group'
+			when 'd'
+				warning = 'This will end your conversation'
+
+		swal {
+			title: t('Are_you_sure')
+			text: warning 
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
+		}, ->
+			Meteor.call 'eraseRoom', roomData._id, (error, result) ->
+				if error
+					swal { 
+						title: 'Unable to delete'
+						text: error.reason
+						type: 'error'
+						showConfirmButton: true
+					}
+				else
+					swal {
+						title: 'Deleted'
+						text: 'Room has been deleted'
+						type: 'success'
+						timer: 2000
+						showConfirmButton: false 
+					}
+					RoomManager.close(roomData.t + roomData.name)
+					FlowRouter.go 'home'
 
 	'keydown #user-add-search': (event) ->
 		if event.keyCode is 27 # esc

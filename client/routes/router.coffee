@@ -108,3 +108,10 @@ FlowRouter.route '/room-not-found/:type/:name',
 	action: (params) ->
 		Session.set 'roomNotFound', {type: params.type, name: params.name}
 		BlazeLayout.render 'main', {center: 'roomNotFound'}
+
+FlowRouter.route '/room-deleted/:type/:name',
+	name: 'room-deleted'
+
+	action: (params) ->
+		Session.set 'roomDeleted', {type: params.type, name: params.name}
+		BlazeLayout.render 'main', {center: 'roomDeleted'}
