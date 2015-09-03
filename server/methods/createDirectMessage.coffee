@@ -27,55 +27,46 @@ Meteor.methods
 			deniedUserList = _.pluck(result.deniedUsers, 'user').join(', ')
 			throw new Meteor.Error('invalid-access-permissions', deniedUserList + " cannot participate in a direct message with the specified access permissions")
 
-		rid = [me._id, to._id].sort().join('')
 
 		now = new Date()
 
 		# Make sure we have a room
-		ChatRoom.upsert
-			_id: rid
-		,
-			$set:
-				usernames: [me.username, to.username]
-				accessPermissions: accessPermissions
-				securityLabels: Jedis.legacyLabel(accessPermissions)
-			$setOnInsert:
-				t: 'd'
-				msgs: 0
-				ts: now
+		rid = ChatRoom.insert
+			usernames: [me.username, to.username]
+			ts: now
+			t: 'd'
+			msgs: 0
+			accessPermissions: accessPermissions
+			securityLabels: Jedis.legacyLabel accessPermissions
+
 
 		# Make user I have a subcription to this room
-		ChatSubscription.upsert
+		ChatSubscription.insert
 			rid: rid
-			$and: [{'u._id': me._id}]
-		,
-			$set:
-				ts: now
-				ls: now
-			$setOnInsert:
-				name: to.name
-				t: 'd'
-				open: true
-				alert: false
-				unread: 0
-				u:
-					_id: me._id
-					username: me.username
+			ts: now
+			ls: now
+			name: to.name
+			t: 'd'
+			open: true
+			alert: false
+			unread: 0
+			u:
+				_id: me._id
+				username: me.username
+
 
 		# Make user the target user has a subcription to this room
-		ChatSubscription.upsert
+
+		ChatSubscription.insert
 			rid: rid
-			$and: [{'u._id': to._id}]
-		,
-			$setOnInsert:
-				name: me.name
-				t: 'd'
-				open: false
-				alert: false
-				unread: 0
-				u:
-					_id: to._id
-					username: to.username
+			name: me.name
+			t: 'd'
+			open: false
+			alert: false
+			unread: 0
+			u:
+				_id: to._id
+				username: to.username
 
 		return {
 			rid: rid
