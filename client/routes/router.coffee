@@ -11,6 +11,7 @@ FlowRouter.subscriptions = ->
 			@register 'userData', Meteor.subscribe('userData')
 			@register 'activeUsers', Meteor.subscribe('activeUsers')
 			@register 'accessPermissions', Meteor.subscribe('accessPermissions')
+			@register 'room', Meteor.subscribe('room')
 			if Meteor.user()?.admin
 				@register 'admin-settings', Meteor.subscribe('admin-settings')
 
