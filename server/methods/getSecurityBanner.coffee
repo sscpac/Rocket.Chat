@@ -58,7 +58,15 @@ Meteor.methods
 
 		# stitch everything together
 		banner.classificationId = classification._id
+
 		banner.text = _.compact [classification.label.toUpperCase(), sciSapLabels, reltoLabels]
 			.join ' // '
+
+		# create abbreviated version of the banner text for alt usage
+		textAbbreviated = _.compact [classification._id, sciSapLabels, reltoLabels]
+			.join ' / '
+		textAbbreviated = textAbbreviated.replace 'REL TO ', ''
+		textAbbreviated = textAbbreviated.replace 'NOFORN', 'USA'
+		banner.textAbbreviated = textAbbreviated
 
 		return banner
