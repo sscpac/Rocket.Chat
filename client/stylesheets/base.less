@@ -1267,7 +1267,9 @@ a.github-fork {
 		}
 	}
 	.content {
-		direction: rtl;
+		// rtl messed up the UI when the user tabbed between fields in create
+		// direct message and private group. 
+		//direction: rtl;
 		position: absolute;
 		top: @header-min-height;
 		.calc(height,
