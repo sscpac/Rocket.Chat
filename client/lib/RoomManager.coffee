@@ -100,6 +100,11 @@ Meteor.startup ->
 										type = if FlowRouter.current().route.name is 'channel' then 'c' else 'p'
 										RoomManager.close type + FlowRouter.getParam('name')
 										FlowRouter.go FlowRouter.current().route.name, name: msg.slugName
+								if msg.t is 'dr'
+									if Session.get('openedRoom') is msg.rid
+										type = if FlowRouter.current().route.name is 'channel' then 'c' else 'p'
+										RoomManager.close type + FlowRouter.getParam('name')
+										FlowRouter.go 'room-deleted', {type:type, name: msg.msg}
 
 						deleteMsgStream.on openedRooms[typeName].rid, (msg) ->
 							ChatMessage.remove _id: msg._id

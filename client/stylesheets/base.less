@@ -1733,6 +1733,12 @@ a.github-fork {
 		display: inline-block;
 		font-size: 16px;
 	}
+	.icon-trash {
+		vertical-align: text-top;
+		margin-top: -7px;
+		display: inline-block;
+		font-size: 16px;
+	}
 }
 
 .cms-page {
@@ -2040,6 +2046,28 @@ a.github-fork {
 		padding-bottom: 30px;
 	}
 }
+.room-deleted {
+	display: flex;
+	display: -webkit-flex;
+	flex-direction: column;
+	-webkit-flex-direction: column;
+	align-items: center;
+	-webkit-align-items: center;
+	justify-content: center;
+	-webkit-justify-content: center;
+	font-size: 30px;
+	color: orange;
+
+	div {
+		line-height: 40px;
+		text-align: center;
+	}
+
+	i {
+		font-size: 100px;
+		padding-bottom: 30px;
+	}
+}
 
 .upload-progress {
 	position: absolute;
@@ -2100,6 +2128,14 @@ a.github-fork {
 	-ms-user-select: text;
 	user-select: text;
 	.edit-room-title {
+		color: @secondary-font-color;
+		margin-left: 4px;
+		font-size: 16px;
+		&:hover {
+			color: @primary-font-color;
+		}
+	}
+	.delete-room {
 		color: @secondary-font-color;
 		margin-left: 4px;
 		font-size: 16px;
@@ -2494,6 +2530,12 @@ a.github-fork {
 				text-transform: lowercase;
 				em {
 					font-weight: 600;
+					&.security-banner {
+						text-transform: uppercase;
+						color: @info-font-color;
+						font-style: italic;
+						background-color:white
+					}
 				}
 			}
 		}

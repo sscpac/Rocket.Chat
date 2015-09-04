@@ -43,6 +43,7 @@ Meteor.methods
 				t: 'd'
 				msgs: 0
 				ts: now
+				'u._id': me.username
 
 		# Make user I have a subcription to this room
 		ChatSubscription.upsert

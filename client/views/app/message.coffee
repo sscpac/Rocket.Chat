@@ -25,6 +25,8 @@ Template.message.helpers
 			when 'uj' then t('User_joined_channel', { user: name })
 			when 'wm' then t('Welcome', { user: name })
 			when 'rm' then t('Message_removed', { user: name })
+			when 'dr' then t('Room_deleted_by', {user_by:this.u.username})
+			when 'rl' then t('Room_label_changed', {label:this.msg, user_by:this.u.username})
 			when 'rtc' then RocketChat.callbacks.run 'renderRtcMessage', this
 			else
 				this.html = this.msg
@@ -35,12 +37,12 @@ Template.message.helpers
 				return this.html
 
 	system: ->
-		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		return 'system' if this.t in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm', 'dr', 'rl']
 	sender: ->
 		return getUser(this.u.username)?.name || this.u.username
 
 	edited: ->
-		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm']
+		return @ets and @t not in ['s', 'p', 'f', 'r', 'au', 'ru', 'ul', 'nu', 'wm', 'uj', 'rm', 'dr', 'rl']
 	canEdit: ->
 		return RocketChat.settings.get 'Message_AllowEditing'
 	canDelete: ->

@@ -51,7 +51,9 @@ Meteor.methods
 
 
 		# for private groups, if any users don't have the permissions, exclude/kick them
-		if room.t is 'p'
+		# only the creator can update room name and members
+		isCreator = room.u._id is Meteor.userId()
+		if room.t is 'p' and isCreator
 
 			# update the room name, if changed
 			if displayName isnt room.displayName

@@ -84,7 +84,7 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
-			userData = getUserData(username)
+			userData = getUserData(username, roomData)
 			if Meteor.user()?.admin is true
 				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
 
@@ -153,6 +153,10 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
+	canDeleteRoom: ->
+		roomData = Session.get('roomData' + this._id)
+		return Meteor.userId() is roomData?.u?._id 
+
 	canDirectMessage: ->
 		return Meteor.user()?.username isnt this?.username
 
@@ -204,7 +208,7 @@ Template.room.helpers
 				name: user?.name
 				username: username
 				status: user?.status
-
+				isOwner: username is room.u?._id
 		users = _.sortBy users, 'lastName'
 
 		ret =
@@ -219,10 +223,9 @@ Template.room.helpers
 		username = Session.get('showUserInfo')
 		userData = {}
 		if username
-			userData = getUserData(username)
+			userData = getUserData(username,Session.get('roomData' + this._id))
 			if Meteor.user()?.admin is true
 				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
-
 		return userData
 
 	seeAll: ->
@@ -290,11 +293,11 @@ Template.room.helpers
 	canEditPermissions: ->
 		canEdit = false
 		roomData = Session.get('roomData' + this._id)
-		if roomData 
+		if roomData
 			canEdit = roomData.t in ['d','p']
 
 		return canEdit
-		
+
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
@@ -429,6 +432,47 @@ Template.room.events
 		Meteor.setTimeout ->
 			$('#room-title-field').focus().select()
 		, 10
+
+	'click .delete-room': (event) ->
+		event.preventDefault()
+		roomData = Session.get('roomData' + this._id)
+		switch roomData.t
+			when 'c'
+				warning = 'This will delete the channel'
+			when 'p'
+				warning = 'This will delete the private group'
+			when 'd'
+				warning = 'This will end your conversation'
+
+		swal {
+			title: t('Are_you_sure')
+			text: warning 
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
+		}, ->
+			Meteor.call 'eraseRoom', roomData._id, (error, result) ->
+				if error
+					swal { 
+						title: 'Unable to delete'
+						text: error.reason
+						type: 'error'
+						showConfirmButton: true
+					}
+				else
+					swal {
+						title: 'Deleted'
+						text: 'Room has been deleted'
+						type: 'success'
+						timer: 2000
+						showConfirmButton: false 
+					}
+					RoomManager.close(roomData.t + roomData.name)
+					FlowRouter.go 'home'
 
 	'keydown #user-add-search': (event) ->
 		if event.keyCode is 27 # esc
@@ -812,7 +856,8 @@ getUser = (username) ->
 	allUsers = RoomManager.allUsers.get()
 	allUsers[username]
 
-getUserData = (username) ->
+
+getUserData = (username,room) ->
 	message = ''
 	status = Session.get 'user_' + username + '_status'
 	if status in ['online', 'away', 'busy']
@@ -827,6 +872,7 @@ getUserData = (username) ->
 		#emails: Session.get('user_' + username + '_emails') || []
 		#phone: Session.get('user_' + username + '_phone')
 		username: String(username)
+		isOwner: String(username) is room?.u?._id
 		customMessage: message
 		status: status
 	}

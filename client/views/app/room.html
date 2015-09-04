@@ -18,6 +18,9 @@
 					<input type="text" id="room-title-field" class="{{showEditingTitle}}" value="{{roomNameEdit}}" dir="auto">
 					<a href="#edit" class="edit-room-title"><i class="icon-pencil"></i></a>
 					{{/if}}
+					{{#if canDeleteRoom}}
+						<a href="#delete" class="delete-room"><i class="icon-trash"></i></a>
+					{{/if}}
 				</h2>
 			</header>
 			{{> securityBanner permissions=permissions canEdit=canEditPermissions}}
@@ -161,7 +164,7 @@
 										<li class='user-image user-card-room status-{{status}}'>
 											<a data-username="{{username}}" tabindex="0" title="{{username}}" class="status-{{status}}">
 												{{> avatar username=username}}
-												<p class="status-{{status}}">{{firstName}} {{lastName}}</p>
+												<p class="status-{{status}}">{{firstName}} {{lastName}} {{#if isOwner}}<span class="glyphicon-check" title="Owner/Creator of Group"></span>{{/if}}</p>
 											</a>
 										</li>
 									{{/each}}
@@ -176,7 +179,7 @@
 									</div>
 									<div class="info">
 										<h3>{{name}}</h3>
-                                    	<span class="userStatus status-{{status}}">{{status}}</span><span class="customMessage">{{customMessage}}</span>
+                                    						<span class="userStatus status-{{status}}">{{status}}</span><span class="customMessage">{{customMessage}}</span>
 										{{#if isAdmin}}
 											<p>{{name}}</p>
 											{{#if utc}}<p><i class="icon-location"></i> {{utc}}</p>{{/if}}
@@ -231,7 +234,7 @@
 									</div>
 									<div class="info">
 										<h3>{{name}}</h3>
-                                                                            	<p><span class="userStatus status-{{status}}">{{status}}</span> <span class="customMessage">{{customMessage}}</span></p>
+                                                                    		<p>{{#if isOwner}}<span class="glyphicon-check" title="Direct message owner"></span>{{/if}} <span class="userStatus status-{{status}}">{{status}}</span> <span class="customMessage">{{customMessage}}</span></p>
 										{{#if isAdmin}}
 											<p>{{name}}</p>
 											{{#if utc}}<p><i class="icon-location"></i> {{utc}}</p>{{/if}}
