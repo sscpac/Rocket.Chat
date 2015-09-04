@@ -107,6 +107,7 @@ Template.directMessagesFlex.onCreated ->
 		instance.error.set([])
 		instance.selectedUser.set null
 		instance.find('#who').value = ''
+		Session.set 'selectedLabelIds', []
 
 	# labels that the current user has access to
 	instance.allowedLabels = []

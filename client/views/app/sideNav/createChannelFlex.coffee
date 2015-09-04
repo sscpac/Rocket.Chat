@@ -108,6 +108,7 @@ Template.createChannelFlex.onCreated ->
 	instance.selectedUserNames = {}
 	instance.error = new ReactiveVar []
 	instance.roomName = new ReactiveVar ''
+	Session.set 'selectedLabelIds', []
 
 	instance.clearForm = ->
 		instance.error.set([])
