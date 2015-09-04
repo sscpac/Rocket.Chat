@@ -164,6 +164,10 @@ AccountManager = function(accountProvider) {
 		console.log('removed users: ' + usersToRemove);
 	}
 
+	var setAdmin = function(userId) {
+		Meteor.users.update({_id:userId}, {$set : {admin :true}});
+	}
+
 	return {
 		/**
 		 * Authenticates using underlying account provider instance
@@ -181,7 +185,8 @@ AccountManager = function(accountProvider) {
 		 * Unique identifier 
 		 * @type {[type]}
 		 */
-		authId : id
+		authId : id,
+		setAdmin : setAdmin
 	}
 
 };

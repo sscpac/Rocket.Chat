@@ -7,10 +7,9 @@
 numberComparator = (first, second) ->
 	return first - second
 
-# TODO need to set this from settings.
 @Jedis.channelPermissions  = ->
 	# network classification level
-	networkClassification = (Jedis.settings.get 'public' ).permission.classification.default
+	networkClassification = RocketChat.settings.get('Network_Classification') 
 	# all reltos
 	allRelTo = Jedis.accessManager.getPermissionIdsByType(['Release Caveat'])
 	return [].concat( networkClassification, allRelTo)
@@ -43,7 +42,7 @@ numberComparator = (first, second) ->
 
 		# check that system country code exists (RELTO type permission)
 		if isValid
-			isValid = _.contains( permissionIds, Meteor.settings.public.system.countryCode )
+			isValid = _.contains( permissionIds, RocketChat.settings.get('System_CountryCode') )
 
 	return isValid
 

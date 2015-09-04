@@ -1,14 +1,8 @@
 {
-	"public" : {
-		"system" : {
-			"name": "JEDIS Default Name",
-			"countryCode" : "300" 
-		},
-		"permission" : {
-			"classification" : {
-				"default" : "TS"
-			}
-		}
+	"mac": {
+		"systemCountryCode" : "300",
+		"networkClassification" :"TS",
+		"adminUsername" : "testadmin"
 	},
 
 	"ldap" : {
