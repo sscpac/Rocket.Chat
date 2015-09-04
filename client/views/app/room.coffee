@@ -435,7 +435,6 @@ Template.room.events
 
 	'click .delete-room': (event) ->
 		event.preventDefault()
-		console.log 'click delete room: '
 		roomData = Session.get('roomData' + this._id)
 		switch roomData.t
 			when 'c'
