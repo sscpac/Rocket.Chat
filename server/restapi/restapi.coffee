@@ -96,25 +96,6 @@ NOTE:   remove room is NOT recommended; use Meteor.reset() to clear db and re-se
     ]
   }
 ###
-Api.addRoute 'bulk/register', authRequired: true,
-	post:
-		roleRequired: ['testagent', 'adminautomation']
-		action: ->
-			try
-				Api.testapiValidateUsers  @bodyParams.users
-				this.response.setTimeout (500 * @bodyParams.users.length)
-				ids = []
-				endCount = @bodyParams.users.length - 1
-				for incoming, i in @bodyParams.users
-					ids[i] = Meteor.call 'registerUser', incoming
-					Meteor.runAsUser ids[i].uid, () =>
-						Meteor.call 'setUsername', incoming.name
-						Meteor.call 'joinDefaultChannels'
-
-				status: 'success', ids: ids
-			catch e
-				statusCode: 400    # bad request or other errors
-				body: status: 'fail', message: e.name + ' :: ' + e.message
 
 
 
