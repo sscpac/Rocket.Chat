@@ -177,7 +177,7 @@ Template.privateGroupsFlex.onCreated ->
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
-
+		Session.set 'selectedLabelIds', []
 
 	# adds/remove access permission ids from list of selected labels
 	instance.onSelectionChanged = (params) ->
