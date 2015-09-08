@@ -29,14 +29,18 @@ Meteor.methods
 
 
 		# Check if a direct message already exists with the same user and same permissions
-		rid = ChatRoom.findOne
-			usernames: [me.username, to.username]
+		room = ChatRoom.findOne
+			t: 'd'
+			usernames:
+				$all: [me.username, to.username]
 			accessPermissions: accessPermissions
 
 		# If already exists, just open that room (return its room id)
-		# Otherwise, create a new room, and subscribe both users to it
-		unless rid
+		if room
+			rid = room._id
 
+		# Otherwise, create a new room, and subscribe both users to it
+		else
 			now = new Date()
 
 			# Create the new room
