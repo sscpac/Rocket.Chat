@@ -59,7 +59,11 @@ Template.chatRoomItem.helpers
 		me = Meteor.user().username
 		otherUser = _.without(Template.instance().room.get().usernames, me)[0]
 		if otherUser?
-			count = ChatRoom.find({t: 'd', usernames: [me, otherUser]}).count()
+			count = ChatRoom.find
+				t: 'd'
+				usernames:
+					$all: [me, otherUser]
+			.count()
 			if count > 1
 				result = true
 		return result
