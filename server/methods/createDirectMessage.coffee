@@ -28,45 +28,54 @@ Meteor.methods
 			throw new Meteor.Error('invalid-access-permissions', deniedUserList + " cannot participate in a direct message with the specified access permissions")
 
 
-		now = new Date()
-
-		# Make sure we have a room
-		rid = ChatRoom.insert
+		# Check if a direct message already exists with the same user and same permissions
+		rid = ChatRoom.findOne
 			usernames: [me.username, to.username]
-			ts: now
-			t: 'd'
-			msgs: 0
 			accessPermissions: accessPermissions
-			securityLabels: Jedis.legacyLabel accessPermissions
+
+		# If already exists, just open that room (return its room id)
+		# Otherwise, create a new room, and subscribe both users to it
+		unless rid
+
+			now = new Date()
+
+			# Create the new room
+			rid = ChatRoom.insert
+				usernames: [me.username, to.username]
+				ts: now
+				t: 'd'
+				msgs: 0
+				accessPermissions: accessPermissions
+				securityLabels: Jedis.legacyLabel accessPermissions
 
 
-		# Make user I have a subcription to this room
-		ChatSubscription.insert
-			rid: rid
-			ts: now
-			ls: now
-			name: to.name
-			t: 'd'
-			open: true
-			alert: false
-			unread: 0
-			u:
-				_id: me._id
-				username: me.username
+			# Make user I have a subcription to this room
+			ChatSubscription.insert
+				rid: rid
+				ts: now
+				ls: now
+				name: to.name
+				t: 'd'
+				open: true
+				alert: false
+				unread: 0
+				u:
+					_id: me._id
+					username: me.username
 
 
-		# Make user the target user has a subcription to this room
+			# Make user the target user has a subcription to this room
 
-		ChatSubscription.insert
-			rid: rid
-			name: me.name
-			t: 'd'
-			open: false
-			alert: false
-			unread: 0
-			u:
-				_id: to._id
-				username: to.username
+			ChatSubscription.insert
+				rid: rid
+				name: me.name
+				t: 'd'
+				open: false
+				alert: false
+				unread: 0
+				u:
+					_id: to._id
+					username: to.username
 
 		return {
 			rid: rid
