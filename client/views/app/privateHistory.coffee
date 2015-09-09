@@ -19,6 +19,9 @@ Template.privateHistory.helpers
 	lastMessage: ->
 		return moment(this.lm).format('LLL') if this.lm
 
+	roomOf: (rid) ->
+		return ChatRoom.findOne rid
+
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->
 		# 'enter' key

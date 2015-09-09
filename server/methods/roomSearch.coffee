@@ -6,19 +6,18 @@ Meteor.methods
 
 		console.log '[methods] roomSearch -> '.green, ' current user:', currentUser, ' searchText:', searchText, ' searchContentsFlag:', searchContentsFlag
 
-		contentMatchingRoomIds = []			
+		contentMatchingRoomIds = []
 
 		# if the searchContentsFlag is set, look for the search text in the messages
 		# of all rooms of which the user is a member
 		if searchContentsFlag
 
 			# find all rooms of which user is a member
-			roomIds = _.pluck(ChatRoom.find({usernames: currentUser}, {fields: {_id: 1}}).fetch(), '_id')
+			roomIds = _.pluck(ChatSubscription.find({'u.username': currentUser}, {fields: {rid: 1}}).fetch(), 'rid')
 
 			# search the above rooms for the specified text (ignore case)
 			for roomId in roomIds
 				matchCount = ChatMessage.find({rid: roomId, msg: {$regex: searchText, $options: 'i'}}, {fields: {msg: 1}}).count()
-
 				# if any matches found, add that room id to the list
 				if matchCount > 0
 					contentMatchingRoomIds.push roomId
@@ -26,12 +25,12 @@ Meteor.methods
 
 		# return all rooms of which the user is a member, AND either the room is one of those
 		# matched above or the room's name matches the search text
-		result = ChatRoom.find({
+		result = ChatSubscription.find({
 			$and: [
-				{usernames: currentUser},
+				{'u.username': currentUser},
 				{
 					$or: [
-						{_id: {$in: contentMatchingRoomIds}},
+						{rid: {$in: contentMatchingRoomIds}},
 						{name: {$regex: searchText, $options: 'i'}}
 					]
 				}
