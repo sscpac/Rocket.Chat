@@ -26,12 +26,15 @@ Template.room.helpers
 	windowId: ->
 		return "chat-window-#{this._id}"
 
+	uploading: ->
+		return Session.get 'uploading'
+
 	usersTyping: ->
 		usernames = MsgTyping.get @_id
 		if usernames.length is 0
 			return
 		names = usernames.map (username) ->
-			return getUser(username)?.name || username 
+			return getUser(username)?.name || username
 
 		if names.length is 1
 			name = names[0]
@@ -61,9 +64,9 @@ Template.room.helpers
 		return '' unless roomData
 
 		if roomData.t is 'd'
-			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1 } })?.name
+			return ChatSubscription.findOne({ rid: this._id }, { fields: { name: 1, displayName:1 } })?.displayName
 		else
-			return roomData.name
+			return roomData.displayName
 
 	roomIcon: ->
 		roomData = Session.get('roomData' + this._id)
@@ -81,14 +84,10 @@ Template.room.helpers
 
 		if roomData.t is 'd'
 			username = _.without roomData.usernames, Meteor.user().username
+			userData = getUserData(username, roomData)
+			if Meteor.user()?.admin is true
+				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
 
-			userData = {
-				name: getUser(username)?.name|| username
-				# not used, but if wanted, need to set in RoomManager 
-				#emails: Session.get('user_' + username + '_emails') || []
-				#phone: Session.get('user_' + username + '_phone')
-				username: String(username)
-			}
 			return userData
 
 	userStatus: ->
@@ -154,12 +153,15 @@ Template.room.helpers
 		return '' unless roomData
 		return roomData.u?._id is Meteor.userId() and roomData.t in ['c', 'p']
 
-	canPrivateMsg: ->
-		console.log 'room.helpers canPrivateMsg' if window.rocketDebug
-		return Meteor.userId() isnt this.username
+	canDeleteRoom: ->
+		roomData = Session.get('roomData' + this._id)
+		return Meteor.userId() is roomData?.u?._id 
+
+	canDirectMessage: ->
+		return Meteor.user()?.username isnt this?.username
 
 	roomNameEdit: ->
-		return Session.get('roomData' + this._id)?.name
+		return Session.get('roomData' + this._id)?.displayName
 
 	editingTitle: ->
 		return 'hidden' if Session.get('editRoomTitle')
@@ -187,10 +189,10 @@ Template.room.helpers
 	userActiveByUsername: (username) ->
 		status = Session.get 'user_' + username + '_status'
 		if status in ['online', 'away', 'busy']
-			message = ''
+			message = 'userActiveByUsername'
 			statusMessages = Session.get('user_' + username + '_statusMessages')
 			if (statusMessages?)
-				message = statusMessages[status]
+				message = ': ' + statusMessages[status]
 			return {username: username, status: status, customMessage: message}
 		return {username: username, status: 'offline', customMessage: ''}
 
@@ -206,11 +208,13 @@ Template.room.helpers
 				name: user?.name
 				username: username
 				status: user?.status
-
+				isOwner: username is room.u?._id
 		users = _.sortBy users, 'lastName'
 
 		ret =
 			_id: this._id
+			total: room?.usernames?.length or 0
+			totalOnline: users.length
 			users: users
 
 		return ret
@@ -218,26 +222,10 @@ Template.room.helpers
 	flexUserInfo: ->
 		username = Session.get('showUserInfo')
 		userData = {}
-		if username 
-			message = ''
-			status = Session.get 'user_' + username + '_status'
-			if status in ['online', 'away', 'busy']
-				statusMessages = Session.get('user_' + username + '_statusMessages')
-				if (statusMessages?)
-					message = statusMessages[status]
-
-			userData = {
-				name: getUser(username)?.name || username
-				# name: Session.get('user_' + uid + '_name')
-				# emails: Session.get('user_' + uid + '_emails')
-				username: String(username)
-				customMessage: message
-				status: status
-			}
-		# phone = Session.get('user_' + uid + '_phone')
-		# if phone? and phone[0]?.phoneNumber
-		# 	userData.phone = phone[0]?.phoneNumber
-
+		if username
+			userData = getUserData(username,Session.get('roomData' + this._id))
+			if Meteor.user()?.admin is true
+				userData = _.extend userData, Meteor.users.findOne { username: String(username) }
 		return userData
 
 	seeAll: ->
@@ -296,22 +284,67 @@ Template.room.helpers
 		# when the data changes.
 
 		roomData = Session.get('roomData' + this._id)
-		Template.instance().accessPermissions.set roomData?.accessPermissions
+		if roomData
+			Template.instance().accessPermissions.set roomData?.accessPermissions
+		else
+			Template.instance().accessPermissions.set []
+
 		return Template.instance().accessPermissions
 	canEditPermissions: ->
 		canEdit = false
 		roomData = Session.get('roomData' + this._id)
-		if roomData 
+		if roomData
 			canEdit = roomData.t in ['d','p']
 
 		return canEdit
 
-
 	maxMessageLength: ->
 		return RocketChat.settings.get('Message_MaxAllowedSize')
 
+	isAdmin: ->
+		return Meteor.user()?.admin is true
+
+	utc: ->
+		if @utcOffset?
+			return "UTC #{@utcOffset}"
+
+	phoneNumber: ->
+		return '' unless @phoneNumber
+		if @phoneNumber.length > 10
+			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,5)}-#{@phoneNumber.substr(7)}"
+		else
+			return "(#{@phoneNumber.substr(0,2)}) #{@phoneNumber.substr(2,4)}-#{@phoneNumber.substr(6)}"
+
+	lastLogin: ->
+		if @lastLogin
+			return moment(@lastLogin).format('LLL')
+
+	canJoin: ->
+		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
+
+	canRecordAudio: ->
+		return navigator.getUserMedia? or navigator.webkitGetUserMedia?
+
 
 Template.room.events
+	"touchstart .message": (e, t) ->
+		message = this._arguments[1]
+		doLongTouch = ->
+			mobileMessageMenu.show(message, t)
+
+		t.touchtime = Meteor.setTimeout doLongTouch, 2000
+
+	"touchend .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchmove .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"touchcancel .message": (e, t) ->
+		Meteor.clearTimeout t.touchtime
+
+	"click .upload-progress-item > a": ->
+		Session.set "uploading-cancel-#{this.id}", true
 
 	"click .flex-tab .more": (event) ->
 		if (Session.get('flexOpened'))
@@ -368,20 +401,15 @@ Template.room.events
 			return
 
 		items = e.originalEvent.clipboardData.items
+		files = []
 		for item in items
 			if item.kind is 'file' and item.type.indexOf('image/') isnt -1
 				e.preventDefault()
+				files.push
+					file: item.getAsFile()
+					name: 'Clipboard'
 
-				blob = item.getAsFile()
-
-				newFile = new (FS.File)(blob)
-				newFile.name('Clipboard')
-				newFile.rid = Session.get('openedRoom')
-				newFile.recId = Random.id()
-				newFile.userId = Meteor.userId()
-				Files.insert newFile, (error, fileObj) ->
-					unless error
-						toastr.success 'Upload from clipboard succeeded!'
+		fileUpload files
 
 	'keydown .input-message': (event) ->
 		Template.instance().chatMessages.keydown(@_id, event, Template.instance())
@@ -389,6 +417,10 @@ Template.room.events
 	'click .message-form .icon-paper-plane': (event) ->
 		input = $(event.currentTarget).siblings("textarea")
 		Template.instance().chatMessages.send(this._id, input.get(0))
+		event.preventDefault()
+		event.stopPropagation()
+		input.focus()
+		input.get(0).updateAutogrow()
 
 	'click .add-user': (event) ->
 		toggleAddUser()
@@ -400,6 +432,47 @@ Template.room.events
 		Meteor.setTimeout ->
 			$('#room-title-field').focus().select()
 		, 10
+
+	'click .delete-room': (event) ->
+		event.preventDefault()
+		roomData = Session.get('roomData' + this._id)
+		switch roomData.t
+			when 'c'
+				warning = 'This will delete the channel'
+			when 'p'
+				warning = 'This will delete the private group'
+			when 'd'
+				warning = 'This will end your conversation'
+
+		swal {
+			title: t('Are_you_sure')
+			text: warning 
+			type: 'warning'
+			showCancelButton: true
+			confirmButtonColor: '#DD6B55'
+			confirmButtonText: t('Yes_delete_it')
+			cancelButtonText: t('Cancel')
+			closeOnConfirm: false
+			html: false
+		}, ->
+			Meteor.call 'eraseRoom', roomData._id, (error, result) ->
+				if error
+					swal { 
+						title: 'Unable to delete'
+						text: error.reason
+						type: 'error'
+						showConfirmButton: true
+					}
+				else
+					swal {
+						title: 'Deleted'
+						text: 'Room has been deleted'
+						type: 'success'
+						timer: 2000
+						showConfirmButton: false 
+					}
+					RoomManager.close(roomData.t + roomData.name)
+					FlowRouter.go 'home'
 
 	'keydown #user-add-search': (event) ->
 		if event.keyCode is 27 # esc
@@ -441,7 +514,7 @@ Template.room.events
 		rid = [me, to].sort().join('')
 		if ChatSubscription.findOne({rid:rid})
 			# conversation already exists
-			FlowRouter.go('room', {_id: rid})
+			FlowRouter.go('direct', {username:Session.get('showUserInfo')})
 		else
 			# close side nav if it's open
 			if SideNav.flexStatus
@@ -465,7 +538,6 @@ Template.room.events
 					return Errors.throw error.reason
 
 				if result?.rid?
-					# FlowRouter.go('room', { _id: result.rid })
 					$('#user-add-search').val('')
 		else if roomData.t in ['c', 'p']
 			Meteor.call 'addUserToRoom', { rid: roomData._id, username: doc.username }, (error, result) ->
@@ -477,20 +549,24 @@ Template.room.events
 
 	'autocompleteselect #room-search': (event, template, doc) ->
 		if doc.type is 'u'
-			Meteor.call 'createDirectMessage', doc.uid, (error, result) ->
+			Meteor.call 'createDirectMessage', doc.username, (error, result) ->
 				if error
 					return Errors.throw error.reason
 
 				if result?.rid?
-					FlowRouter.go('room', { _id: result.rid })
+					FlowRouter.go('direct', { username: doc.username })
 					$('#room-search').val('')
-		else
-			FlowRouter.go('room', { _id: doc.rid })
+		else if doc.type is 'r'
+			if doc.t is 'c'
+				FlowRouter.go('channel', { name: doc.name })
+			else if doc.t is 'p'
+				FlowRouter.go('group', { name: doc.name })
+
 			$('#room-search').val('')
 
 	# 'scroll .wrapper': (e, instance) ->
 		# console.log 'room scroll .wrapper' if window.rocketDebug
-		# if e.currentTarget.offsetHeight + e.currentTarget.scrollTop < e.currentTarget.scrollHeight
+		# if e.currentTarget.offsetHeight + e.currentTarget.scrollTop o e.currentTarget.scrollHeight
 		# 	instance.scrollOnBottom = false
 		# else
 		# 	instance.scrollOnBottom = true
@@ -514,13 +590,14 @@ Template.room.events
 	"click .mention-link": (e) ->
 		channel = $(e.currentTarget).data('channel')
 		if channel?
-			channelObj = ChatSubscription.findOne name: channel
-			if channelObj?
-				FlowRouter.go 'room', {_id: channelObj.rid}
+			FlowRouter.go 'channel', {name: channel}
 			return
 
 		Session.set('flexOpened', true)
 		Session.set('showUserInfo', $(e.currentTarget).data('username'))
+
+	'click .image-to-download': (event) ->
+		ChatMessage.update {_id: this._arguments[1]._id, 'urls.url': $(event.currentTarget).data('url')}, {$set: {'urls.$.downloadImages': true}}
 
 	'click .delete-message': (event) ->
 		message = @_arguments[1]
@@ -538,7 +615,13 @@ Template.room.events
 			closeOnConfirm: false
 			html: false
 		}, ->
-			swal t('Deleted'), t('Your_entry_has_been_deleted'), 'success'
+			swal
+				title: t('Deleted')
+				text: t('Your_entry_has_been_deleted')
+				type: 'success'
+				timer: 1000
+				showConfirmButton: false
+
 			instance.chatMessages.deleteMsg(message)
 
 	'click .start-video': (event) ->
@@ -570,17 +653,69 @@ Template.room.events
 	'dragleave .dropzone-overlay': (e) ->
 		e.currentTarget.parentNode.classList.remove 'over'
 
-	'dropped .dropzone-overlay': (e) ->
-		e.currentTarget.parentNode.classList.remove 'over'
+	'dropped .dropzone-overlay': (event) ->
+		event.currentTarget.parentNode.classList.remove 'over'
 
-		FS?.Utility?.eachFile e, (file) ->
-			newFile = new (FS.File)(file)
-			newFile.rid = Session.get('openedRoom')
-			newFile.recId = Random.id()
-			newFile.userId = Meteor.userId()
-			Files.insert newFile, (error, fileObj) ->
-				unless error
-					toastr.success 'Upload succeeded!'
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
+				file: file
+				name: file.name
+
+		fileUpload filesToUpload
+
+	'change .message-form input[type=file]': (event, template) ->
+		e = event.originalEvent or event
+		files = e.target.files
+		if not files or files.length is 0
+			files = e.dataTransfer?.files or []
+
+		filesToUpload = []
+		for file in files
+			filesToUpload.push
+				file: file
+				name: file.name
+
+		fileUpload filesToUpload
+
+	'click .message-form .mic': (e, t) ->
+		AudioRecorder.start ->
+			t.$('.stop-mic').removeClass('hidden')
+			t.$('.mic').addClass('hidden')
+
+	'click .message-form .stop-mic': (e, t) ->
+		AudioRecorder.stop (blob) ->
+			fileUpload [{
+				file: blob
+				type: 'audio'
+				name: 'Audio record'
+			}]
+
+		t.$('.stop-mic').addClass('hidden')
+		t.$('.mic').removeClass('hidden')
+
+	'click .deactivate': ->
+		username = Session.get('showUserInfo')
+		user = Meteor.users.findOne { username: String(username) }
+		Meteor.call 'setUserActiveStatus', user?._id, false, (error, result) ->
+			if result
+				toastr.success t('User_has_been_deactivated')
+			if error
+				toastr.error error.reason
+
+	'click .activate': ->
+		username = Session.get('showUserInfo')
+		user = Meteor.users.findOne { username: String(username) }
+		Meteor.call 'setUserActiveStatus', user?._id, true, (error, result) ->
+			if result
+				toastr.success t('User_has_been_activated')
+			if error
+				toastr.error error.reason
 
 	'click .security-banner': (event) ->
 		event.stopPropagation()
@@ -593,7 +728,7 @@ Template.room.events
 			SideNav.setFlex "directMessagesFlex", data
 		else if roomData.t is 'p'
 			SideNav.setFlex "privateGroupsFlex", data
-		else 
+		else
 			console.log "The room's security label cannot be modified" if window.rocketDebug
 			return
 
@@ -608,6 +743,18 @@ Template.room.onCreated ->
 	this.showUsersOffline = new ReactiveVar true
 	this.atBottom = true
 	this.accessPermissions = new ReactiveVar []
+
+	# If current user is admin, subscribe to full user data
+	if Meteor.user()?.admin is true
+		Tracker.autorun ->
+			if Session.get('showUserInfo') and not Meteor.users.findOne Session.get 'showUserInfo'
+				Meteor.subscribe 'fullUsers', Session.get('showUserInfo'), 1
+
+	# If current user is admin, subscribe to full user data
+	if Meteor.user()?.admin is true
+		Tracker.autorun ->
+			if Session.get('showUserInfo') and not Meteor.users.findOne Session.get 'showUserInfo'
+				Meteor.subscribe 'fullUsers', Session.get('showUserInfo'), 1
 
 Template.room.onRendered ->
 	FlexTab.check()
@@ -662,17 +809,35 @@ Template.room.onRendered ->
 	RoomHistoryManager.getMoreIfIsEmpty this.data._id
 
 renameRoom = (rid, name) ->
+	name = name?.toLowerCase().trim()
 	console.log 'room renameRoom' if window.rocketDebug
-	if Session.get('roomData' + rid).name == name
+	room = Session.get('roomData' + rid)
+	if room.displayName is name
 		Session.set('editRoomTitle', false)
 		return false
 
 	Meteor.call 'saveRoomName', rid, name, (error, result) ->
 		if result
 			Session.set('editRoomTitle', false)
+			# If room was renamed then close current room and send user to the new one
+			RoomManager.close room.t + room.name
+			switch room.t
+				when 'c'
+					FlowRouter.go 'channel', name: result.slugName
+				when 'p'
+					FlowRouter.go 'group', name: result.slugName
 
 			toastr.success t('Room_name_changed_successfully')
 		if error
+			if error.error is 'name-invalid'
+				toastr.error t('Invalid_room_name', name)
+				return
+			if error.error is 'duplicate-name'
+				if room.t is 'c'
+					toastr.error t('Duplicate_channel_name', name)
+				else
+					toastr.error t('Duplicate_private_group_name', name)
+				return
 			toastr.error error.reason
 
 toggleAddUser = ->
@@ -690,3 +855,25 @@ getUser = (username) ->
 	# convert user's username to name
 	allUsers = RoomManager.allUsers.get()
 	allUsers[username]
+
+
+getUserData = (username,room) ->
+	message = ''
+	status = Session.get 'user_' + username + '_status'
+	if status in ['online', 'away', 'busy']
+		statusMessages = Session.get('user_' + username + '_statusMessages')
+		if (statusMessages?)
+			message = ': ' + statusMessages[status]
+	else
+		status = 'offline'
+	userData = {
+		name: getUser(username)?.name || username
+		# not used, but if wanted, need to set in RoomManager
+		#emails: Session.get('user_' + username + '_emails') || []
+		#phone: Session.get('user_' + username + '_phone')
+		username: String(username)
+		isOwner: String(username) is room?.u?._id
+		customMessage: message
+		status: status
+	}
+	return userData

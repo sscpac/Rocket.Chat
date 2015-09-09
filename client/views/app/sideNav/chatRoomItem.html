@@ -1,19 +1,19 @@
 <template name="chatRoomItem">
 	<li class="link-room-{{rid}} {{active}} {{#if unread}}has-unread{{/if}} {{#if alert}}has-alert{{/if}}">
-		<a class="open-room" href="{{ pathFor 'room' _id=rid}}" title="{{name}} ({{bannerText}})">
+		<a class="open-room" href="{{route}}" title="{{displayName}} ({{bannerText}})">
 			{{#if unread}}
 				<span class="unread">{{unread}}</span>
 			{{/if}}
 			<i class="{{roomIcon}} {{userStatus}}"></i>
-			
+
 			{{#if isDirectRoom}}
 				{{#if multipleSameUser}}
-					<span class='name'>{{name}}  <i>({{bannerTextAbbreviated}})</i></span>
+					<span class='name'>{{displayName}}  <i>({{bannerTextAbbreviated}})</i></span>
 				{{else}}
-					<span class='name'>{{name}}</span>
+					<span class='name'>{{displayName}}</span>
 				{{/if}}
 			{{else}}
-				<span class='name'>{{name}}</span>
+				<span class='name'>{{displayName}}</span>
 			{{/if}}
 
 			<span class='opt'>

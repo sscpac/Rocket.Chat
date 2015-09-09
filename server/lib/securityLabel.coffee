@@ -7,10 +7,9 @@
 numberComparator = (first, second) ->
 	return first - second
 
-# TODO need to set this from settings.
 @Jedis.channelPermissions  = ->
 	# network classification level
-	networkClassification = (Jedis.settings.get 'public' ).permission.classification.default
+	networkClassification = RocketChat.settings.get('Network_Classification') 
 	# all reltos
 	allRelTo = Jedis.accessManager.getPermissionIdsByType(['Release Caveat'])
 	return [].concat( networkClassification, allRelTo)
@@ -43,17 +42,15 @@ numberComparator = (first, second) ->
 
 		# check that system country code exists (RELTO type permission)
 		if isValid
-			isValid = _.contains( permissionIds, Meteor.settings.public.system.countryCode )
+			isValid = _.contains( permissionIds, RocketChat.settings.get('System_CountryCode') )
 
 	return isValid
 
 beforeSaveMessage = (message) ->
 	roomId = message.rid
 	room = @ChatRoom.findOne({_id: roomId});
-	# only apply to direct message and private group rooms
-	if room?.t in ['d','p']
-		message.accessPermissions = room.accessPermissions
-		message.securityLabel = room.securityLabel
+	message.accessPermissions = room.accessPermissions
+	message.securityLabel = room.securityLabel
 			
 	return message
 
@@ -62,7 +59,7 @@ beforeCreateChannel = (user, room) ->
 		channelPermissions = Jedis.channelPermissions()
 		# default access permission
 		room.accessPermissions = channelPermissions
-		room.securityLabels = Jedis.legacyLabel[channelPermissions]
+		room.securityLabel = Jedis.legacyLabel(channelPermissions)
 
 # Add access permission and legacy security label field to message based on Room
 # only applies to Direct message and Private group messages

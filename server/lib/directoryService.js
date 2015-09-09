@@ -85,8 +85,6 @@ Future = Npm.require('fibers/future');
         //     username: 'bcleaver',
         //     name : 'Theodore Cleaver',
         //     emails: [{address:'bcleaver@jedis.mil'}]
-        //     status: 'offline',
-        //     statusConnection: 'offline'
         //  }
         //   
         userLDAPMap : function( source ) {
@@ -106,9 +104,7 @@ Future = Npm.require('fibers/future');
                     first_name : source.givenName,
                     last_name : source.sn,
                     access : _.isArray(source.access) ? source.access : [source.access],
-                },
-                status : 'offline',
-                statusConnection : 'offline'
+                }
             }
         },
         accessPermissionLDAPMap : function(source) {

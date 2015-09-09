@@ -12,11 +12,14 @@ Template.chatRoomItem.helpers
 		return this.t is 'd'
 
 	userStatus: ->
-		return 'status-' + Session.get('user_' + this.name + '_status') if this.t is 'd'
+		return 'status-' + (Session.get('user_' + this.name + '_status') or 'offline') if this.t is 'd'
 		return ''
 
 	name: ->
 		return this.name
+
+	displayName: ->
+		return this.displayName
 
 	roomIcon: ->
 		switch this.t
@@ -25,7 +28,7 @@ Template.chatRoomItem.helpers
 			when 'p' then return 'icon-lock'
 
 	active: ->
-		if FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.rid
+		if Session.get('openedRoom') is this.rid
 			return 'active'
 
 	canLeave: ->
@@ -69,6 +72,15 @@ Template.chatRoomItem.helpers
 		return result
 
 
+	route: ->
+		return switch this.t
+			when 'd'
+				FlowRouter.path('direct', {username: this.name, rid: this.rid})
+			when 'p'
+				FlowRouter.path('group', {name: this.name})
+			when 'c'
+				FlowRouter.path('channel', {name: this.name})
+
 Template.chatRoomItem.rendered = ->
 	if not (FlowRouter.getParam('_id')? and FlowRouter.getParam('_id') is this.data.rid) and not this.data.ls
 		KonchatNotification.newRoom(this.data.rid)
@@ -97,7 +109,7 @@ Template.chatRoomItem.events
 	'click .label-room': (e) ->
 		e.stopPropagation()
 		e.preventDefault()
-		data = {relabelRoom: this.rid}
+		data = {relabelRoom: this.rid, typeName: this.t + this.name}
 		if this.t is 'd'
 			SideNav.setFlex "directMessagesFlex", data
 		else if this.t is 'p'
@@ -111,7 +123,7 @@ Template.chatRoomItem.events
 		e.stopPropagation()
 		e.preventDefault()
 
-		if (FlowRouter.getRouteName() is 'room' and FlowRouter.getParam('_id') is this.rid)
+		if FlowRouter.getRouteName() in ['channel', 'group', 'direct'] and Session.get('openedRoom') is this.rid
 			FlowRouter.go 'home'
 
 		Meteor.call 'hideRoom', this.rid
@@ -120,7 +132,7 @@ Template.chatRoomItem.events
 		e.stopPropagation()
 		e.preventDefault()
 
-		if (FlowRouter.getRouteName() is 'room' and FlowRouter.getParam('_id') is this.rid)
+		if FlowRouter.getRouteName() in ['channel', 'group', 'direct'] and Session.get('openedRoom') is this.rid
 			FlowRouter.go 'home'
 
 		RoomManager.close this.rid

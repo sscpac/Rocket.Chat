@@ -51,6 +51,8 @@ Meteor.methods
 				msgs: 0
 				accessPermissions: accessPermissions
 				securityLabels: Jedis.legacyLabel accessPermissions
+				u:
+					_id: me.username
 
 
 			# Make user I have a subcription to this room
@@ -58,7 +60,8 @@ Meteor.methods
 				rid: rid
 				ts: now
 				ls: now
-				name: to.name
+				name: to.username
+				displayName: to.name
 				t: 'd'
 				open: true
 				alert: false
@@ -67,12 +70,11 @@ Meteor.methods
 					_id: me._id
 					username: me.username
 
-
 			# Make user the target user has a subcription to this room
-
 			ChatSubscription.insert
 				rid: rid
-				name: me.name
+				name: me.username
+				displayName: me.name
 				t: 'd'
 				open: false
 				alert: false
