@@ -83,7 +83,7 @@ Template.directMessagesFlex.events
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'direct', { username: username}
+					FlowRouter.go 'direct', { username: username, rid: rid}
 			else
 				Meteor.call 'createDirectMessage', username, accessPermissions, (err, result) ->
 					if err
@@ -91,7 +91,7 @@ Template.directMessagesFlex.events
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'direct', { username: username }
+					FlowRouter.go 'direct', { username: username, rid: result.rid }
 		else
 			Template.instance().error.set(err)
 

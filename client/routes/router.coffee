@@ -12,6 +12,7 @@ FlowRouter.subscriptions = ->
 		@register 'userData', Meteor.subscribe('userData')
 		@register 'activeUsers', Meteor.subscribe('activeUsers')
 		@register 'fullUsers', Meteor.subscribe('fullUsers')
+		@register 'room', Meteor.subscribe('room')
 
 FlowRouter.route '/',
 	name: 'index'
