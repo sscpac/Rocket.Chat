@@ -59,30 +59,6 @@
 							</div>
 						</div>
 
-						{{#if suggestions.ready}}
-							{{> avatarSuggestion suggestions.avatars.gravatar}}
-							{{> avatarSuggestion suggestions.avatars.facebook}}
-							{{> avatarSuggestion suggestions.avatars.google}}
-							{{> avatarSuggestion suggestions.avatars.github}}
-							{{> avatarSuggestion suggestions.avatars.linkedin}}
-
-							{{#unless suggestions.avatars.facebook}}
-								{{> avatarSuggestionLogin 'facebook'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.google}}
-								{{> avatarSuggestionLogin 'google'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.github}}
-								{{> avatarSuggestionLogin 'github'}}
-							{{/unless}}
-							{{#unless suggestions.avatars.linkedin}}
-								{{> avatarSuggestionLogin 'linkedin'}}
-							{{/unless}}
-
-							
-						{{else}}
-							{{_ "Loading_suggestion"}}
-						{{/if}}
 					</div>
 				</div>
 

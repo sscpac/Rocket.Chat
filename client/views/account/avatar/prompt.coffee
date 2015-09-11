@@ -1,16 +1,6 @@
 Template.avatarPrompt.onCreated ->
 	self = this
-	self.suggestions = new ReactiveVar
 	self.upload = new ReactiveVar
-
-	self.getSuggestions = ->
-		self.suggestions.set undefined
-		Meteor.call 'getAvatarSuggestion', (error, avatars) ->
-			self.suggestions.set
-				ready: true
-				avatars: avatars
-
-	self.getSuggestions()
 
 Template.avatarPrompt.onRendered ->
 	Tracker.afterFlush ->
@@ -18,8 +8,6 @@ Template.avatarPrompt.onRendered ->
 		SideNav.openFlex()
 
 Template.avatarPrompt.helpers
-	suggestions: ->
-		return Template.instance().suggestions.get()
 
 	upload: ->
 		return Template.instance().upload.get()
@@ -41,22 +29,6 @@ Template.avatarPrompt.events
 				updateAvatarOfUsername Meteor.user().username
 				toastr.success t('Avatar_changed_successfully')
 
-	'click .login-with-service': (event, template) ->
-		loginWithService = "loginWith#{_.capitalize(this)}"
-
-		serviceConfig = {}
-
-		Meteor[loginWithService] serviceConfig, (error) ->
-			if error?.error is 'github-no-public-email'
-				alert t("github_no_public_email")
-				return
-
-			console.log error
-			if error?
-				toastr.error error.message
-				return
-
-			template.getSuggestions()
 
 	'change .avatar-file-input': (event, template) ->
 		e = event.originalEvent or event
