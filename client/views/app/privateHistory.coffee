@@ -7,6 +7,9 @@ Template.privateHistory.helpers
 			length: items.length
 		}
 
+	roomOf: (rid) ->
+		return ChatRoom.findOne rid
+
 	type: ->
 		switch this.t
 			when 'd' then 'icon-at'
@@ -19,8 +22,14 @@ Template.privateHistory.helpers
 	lastMessage: ->
 		return moment(this.lm).format('LLL') if this.lm
 
-	roomOf: (rid) ->
-		return ChatRoom.findOne rid
+	path: ->
+		switch this.t
+			when 'c'
+				return FlowRouter.path 'channel', { name: this.name }
+			when 'p'
+				return FlowRouter.path 'group', { name: this.name }
+			when 'd'
+				return FlowRouter.path 'direct', { username: this.name }
 
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->

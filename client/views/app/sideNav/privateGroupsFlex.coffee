@@ -56,10 +56,27 @@ Template.privateGroupsFlex.helpers
 		unless Template.instance().warnUserIds.get().length is 0
 			return 'Due to security label access conflicts, some of the chosen room members will be excluded or kicked if you proceed.'
 
+	isNameDisabled: ->
+		isDisabled = false
+		# only room creator can edit name
+		room = Template.instance().room
+		if room
+			# room is undefined if we haven't loaded it yet or we're creating new room
+			isDisabled = room?.u._id isnt Meteor.userId()
+		return isDisabled
+
+	isMembersDisabled: ->
+		isDisabled = false
+		# only room creator can edit members
+		room = Template.instance().room
+		if room
+			# room is undefined if we haven't loaded it yet or we're creating new room
+			isDisabled = room?.u._id isnt Meteor.userId()
+		return isDisabled
 
 Template.privateGroupsFlex.events
 	'autocompleteselect #pvt-group-members': (event, instance, doc) ->
-		instance.selectedUsers.set instance.selectedUsers.get().concat doc.username
+		instance.selectedUsers.set instance.selectedUsers.get().concat( doc.username)
 		# TODO display full name.  Originally this displayed full name, but we changed this 
 		# when we reused this template to edit a room.  The room only has usernames, not the 
 		# full name and we have to add a Method call to retrieve the full name from a username
@@ -73,7 +90,6 @@ Template.privateGroupsFlex.events
 		users = Template.instance().selectedUsers.get()
 		users = _.reject Template.instance().selectedUsers.get(), (_id) ->
 			return _id is self.valueOf()
-
 		Template.instance().selectedUsers.set(users)
 
 		$('#pvt-group-members').focus()
@@ -99,20 +115,25 @@ Template.privateGroupsFlex.events
 
 	'click .save-pvt-group': (e, instance) ->
 		err = SideNav.validate()
-		instance.groupName.set instance.find('#pvt-group-name').value
+		displayName = instance.find('#pvt-group-name').value
+		instance.groupName.set displayName
+		#name = instance.find('#pvt-group-name').value.toLowerCase().trim()
+		#instance.groupName.set name
 		if not err
 			accessPermissions = instance.selectedLabelIds
 			rid = instance.data.relabelRoom
 			if rid
-				Meteor.call 'updateRoom', rid, instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
+				Meteor.call 'updateRoom', rid, displayName, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
 						return toastr.error err.reason
+					room = instance.room
+					slugName = result.slugName
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'room', { _id: result.rid }
+					FlowRouter.go 'group', { name:slugName}
 			else
-				Meteor.call 'createPrivateGroup', instance.find('#pvt-group-name').value, instance.selectedUsers.get(), accessPermissions, (err, result) ->
+				Meteor.call 'createPrivateGroup', displayName, instance.selectedUsers.get(), accessPermissions, (err, result) ->
 					if err
 						if err.error is 'name-invalid'
 							instance.error.set({ invalid: true })
@@ -121,10 +142,12 @@ Template.privateGroupsFlex.events
 							instance.error.set({ duplicate: true })
 							return
 						return toastr.error err.reason
+					slugName = result.slugName
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'room', { _id: result.rid }
+					FlowRouter.go 'group', { name: slugName }
+
 		else
 			Template.instance().error.set({fields: err})
 
@@ -154,7 +177,7 @@ Template.privateGroupsFlex.onCreated ->
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
-
+		Session.set 'selectedLabelIds', []
 
 	# adds/remove access permission ids from list of selected labels
 	instance.onSelectionChanged = (params) ->
@@ -263,10 +286,11 @@ Template.privateGroupsFlex.onCreated ->
 	instance.autorun (c) ->
 
 		roomId = instance.data.relabelRoom
+		typeName = instance.data.typeName
 		# check if we are relabeling the room
 		if roomId
 			# get a subscription to the room (in case we don't have one already)
-			Meteor.subscribe('room', roomId)
+			Meteor.subscribe('room', typeName)
 			# function will automatically re-run on changes to this session variable, thus
 			# it will essentially "wait" for the data to get set
 			if Session.get('roomData' + roomId)
@@ -279,7 +303,7 @@ Template.privateGroupsFlex.onCreated ->
 				Session.set 'selectedLabelIds', instance.selectedLabelIds
 				instance.disabledLabelIds = _.pluck( options.disabled, '_id')
 				instance.allowedLabels = options.allowed
-				instance.groupName.set(instance.room.name)
+				instance.groupName.set(instance.room.displayName)
 				otherMembers = _.without(instance.room.usernames, Meteor.user().username)
 				otherMembers?.forEach (username) ->
 					user = Meteor.users.findOne( {_id: username} )

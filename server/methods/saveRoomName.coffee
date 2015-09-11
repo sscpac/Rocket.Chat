@@ -8,23 +8,33 @@ Meteor.methods
 		if room.u._id isnt Meteor.userId() or room.t not in ['c', 'p']
 			throw new Meteor.Error 403, 'Not allowed'
 
-		name = _.slugify name
+		slugName = _.slugify name
+		#if not /^[0-9a-z-_]+$/.test name
+		#	throw new Meteor.Error 'name-invalid'
 
-		if name is room.name
+		#name = _.slugify name
+
+		if slugName is room.name
 			return
 
-		if ChatRoom.findOne {name : name}
-			throw new Meteor.Error 'duplicate-name', 'There is an existing room with the same name'
+		if ChatRoom.findOne {name : slugName}
+			throw new Meteor.Error 'duplicate-name'
+
+		# avoid duplicate names
+		#if ChatRoom.findOne({name:name})
+		#	throw new Meteor.Error 'duplicate-name'
 
 		ChatRoom.update rid,
 			$set:
-				name: name
+				name: slugName
+				displayName: name
 
 		ChatSubscription.update
 			rid: rid
 		,
 			$set:
-				name: name
+				name: slugName
+				displayName: name
 				alert: true
 		,
 			multi: true
@@ -33,9 +43,10 @@ Meteor.methods
 			rid: rid
 			ts: (new Date)
 			t: 'r'
+			slugName: slugName
 			msg: name
 			u:
 				_id: Meteor.userId()
 				username: Meteor.user().username
 
-		return true
+		return { slugName: slugName, name: name}

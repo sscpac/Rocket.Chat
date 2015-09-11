@@ -38,11 +38,12 @@ Meteor.methods
 			$set:
 				usernames: [me.username, to.username]
 				accessPermissions: accessPermissions
-				securityLabels: Jedis.legacyLabel(accessPermissions)
+				securityLabel: Jedis.legacyLabel(accessPermissions)
 			$setOnInsert:
 				t: 'd'
 				msgs: 0
 				ts: now
+				'u._id': me.username
 
 		# Make user I have a subcription to this room
 		ChatSubscription.upsert
@@ -53,7 +54,8 @@ Meteor.methods
 				ts: now
 				ls: now
 			$setOnInsert:
-				name: to.name
+				name: to.username
+				displayName: to.name
 				t: 'd'
 				open: true
 				alert: false
@@ -68,7 +70,8 @@ Meteor.methods
 			$and: [{'u._id': to._id}]
 		,
 			$setOnInsert:
-				name: me.name
+				name: me.username
+				displayName: me.name
 				t: 'd'
 				open: false
 				alert: false

@@ -9,7 +9,7 @@ Meteor.publish 'userData', ->
 		Make sure to not add any more fields that are sensitive like access inside
 		the profile or the entire profile object which would contain the access.
 	###
-	Meteor.users.find {},
+	Meteor.users.find  this.userId,
 		fields:
 			name: 1
 			'profile.first_name': 1
@@ -23,4 +23,6 @@ Meteor.publish 'userData', ->
 			avatarOrigin: 1
 			admin: 1
 			'profile.statusMessages': 1
+			'profile.access':1
 			utcOffset: 1
+			language: 1

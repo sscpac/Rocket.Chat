@@ -1,16 +1,17 @@
 Meteor.startup ->
 	Meteor.defer ->
-
 		if not ChatRoom.findOne('name': 'general')?
 			ChatRoom.insert
 				_id: 'GENERAL'
+				default: true
 				usernames: []
 				ts: new Date()
 				t: 'c'
 				name: 'general'
+				displayName: 'General'
 				msgs: 0
 				accessPermissions: Jedis.channelPermissions()
-				securityLabels : Jedis.legacyLabel(Jedis.channelPermissions())
+				securityLabel : Jedis.legacyLabel(Jedis.channelPermissions())
 
 		if process.env.ADMIN_EMAIL? and process.env.ADMIN_PASS? 
 			re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
@@ -37,3 +38,4 @@ Meteor.startup ->
 					console.log 'Admin user exists; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
 			else
 				console.log 'E-mail provided is invalid; ignoring environment variables ADMIN_EMAIL and ADMIN_PASS'.red
+
