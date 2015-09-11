@@ -1,9 +1,10 @@
 Template.privateHistory.helpers
+
 	history: ->
-		items = ChatSubscription.find { name: { $regex: Session.get('historyFilter'), $options: 'i' }, t: { $in: ['d', 'c', 'p'] } }, {'sort': { 'ts': -1 } }
+		items = Template.instance().searchResult.get()
 		return {
 			items: items
-			length: items.count()
+			length: items.length
 		}
 
 	roomOf: (rid) ->
@@ -28,16 +29,42 @@ Template.privateHistory.helpers
 			when 'p'
 				return FlowRouter.path 'group', { name: this.name }
 			when 'd'
-				return FlowRouter.path 'direct', { username: this.name }
+				return FlowRouter.path 'direct', { username: this.name, rid: this.rid }
 
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->
+		# 'enter' key
 		if event.which is 13
 			event.stopPropagation()
 			event.preventDefault()
 
-	'keyup #history-filter': (event) ->
+	# 'debounce' input so that we don't flood the server with RPC calls
+	'keyup #history-filter': _.debounce (event, instance) ->
 		event.stopPropagation()
 		event.preventDefault()
+		instance.searchFilter.set event.currentTarget.value
+	, 200
 
-		Session.set('historyFilter', event.currentTarget.value)
+
+	'click #history-content-flag': (event, instance) ->
+		instance.searchContentsFlag.set $(event.currentTarget).is(':checked')
+		$('#history-filter').focus()
+
+
+Template.privateHistory.onCreated ->
+	instance = this
+
+	# make search input and output reactive vars so that searches can occur dynamically
+	# and so that the helper function can update the page dynamically
+	instance.searchFilter = new ReactiveVar ''
+	instance.searchContentsFlag = new ReactiveVar false
+	instance.searchResult = new ReactiveVar []
+
+	# whenever there is an update to the search filter text (or the content search option),
+	# call the 'roomSearch' server-side method
+	instance.autorun ->
+		filter = instance.searchFilter.get()
+		contentFlag = instance.searchContentsFlag.get()
+		Meteor.call 'roomSearch', filter, contentFlag, (error, result) ->
+			unless error
+				instance.searchResult.set result
