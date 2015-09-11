@@ -29,7 +29,7 @@ Template.privateHistory.helpers
 			when 'p'
 				return FlowRouter.path 'group', { name: this.name }
 			when 'd'
-				return FlowRouter.path 'direct', { username: this.name }
+				return FlowRouter.path 'direct', { username: this.name, rid: this.rid }
 
 Template.privateHistory.events
 	'keydown #history-filter': (event) ->
