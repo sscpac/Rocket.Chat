@@ -8,7 +8,7 @@ openRoom = (type, name, rid) ->
 
 			# rid only supplied for direct messages
 			if rid
-				id = type + name + rid
+				id = type + name + ':' + rid
 			else
 				id = type + name
 			if RoomManager.open(id).ready() isnt true
@@ -23,10 +23,7 @@ openRoom = (type, name, rid) ->
 			if type is 'd'
 				query =
 					_id: rid
-				#delete query.name
-				#query.usernames =
-				#	$all: [name, Meteor.user().username]
-
+					
 			room = ChatRoom.findOne(query)
 			if not room?
 				Session.set 'roomNotFound', {type: type, name: name}

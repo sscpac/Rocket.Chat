@@ -84,10 +84,10 @@ Meteor.startup ->
 					if type in ['c', 'p']
 						query.name = name
 					else if type is 'd'
+						[name, rid] = name.split(':')
 						query.usernames = $all: [Meteor.user().username, name]
 
 					room = ChatRoom.findOne query, { reactive: false }
-
 					if room?
 						openedRooms[typeName].rid = room._id
 
