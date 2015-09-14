@@ -50,7 +50,7 @@ Meteor.methods
 				t: 'd'
 				msgs: 0
 				accessPermissions: accessPermissions
-				securityLabels: Jedis.legacyLabel accessPermissions
+				securityLabel: Jedis.legacyLabel accessPermissions
 				u:
 					_id: me.username
 
