@@ -11,6 +11,9 @@
 					<input type="text" id="history-filter" placeholder="{{_ "Search"}}" dir="auto">
 					<i class="icon-search"></i>
 				</div>
+				<div>
+					<input type="checkbox" id="history-content-flag"> Include conversation contents
+				</div>
 			</form>
 			<div class="results">
 				{{{_ "Showing_results" history.length}}}
@@ -18,6 +21,7 @@
 			<div class="list">
 				{{#each history.items}}
 					<a href="{{path}}">
+
 						<div class="info">
 							<h3><i class="{{type}}"></i><span class="enter-room">{{name}}</span></h3>
 							<ul>

@@ -37,7 +37,7 @@ Template.directMessagesFlex.helpers
 	selectedUser: ->
 		return Template.instance().selectedUser.get()
 	# this returns the selected user's name field, NOT the username.  Use username
-	# to be consistent with privategroupsflex page. 
+	# to be consistent with privategroupsflex page.
 	selectedUserName: ->
 		username = Template.instance().selectedUser.get() || ''
 		user = Meteor.users.findOne({_id : username})
@@ -111,7 +111,7 @@ Template.directMessagesFlex.events
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'direct', { username: username}
+					FlowRouter.go 'direct', { username: username, rid: rid}
 			else
 				Meteor.call 'createDirectMessage', username, accessPermissions, (err, result) ->
 					if err
@@ -119,7 +119,7 @@ Template.directMessagesFlex.events
 					SideNav.closeFlex()
 					SideNav.setFlex null
 					instance.clearForm()
-					FlowRouter.go 'direct', { username: username }
+					FlowRouter.go 'direct', { username: username, rid: result.rid }
 		else
 			Template.instance().error.set(err)
 
@@ -136,6 +136,7 @@ Template.directMessagesFlex.onCreated ->
 		instance.error.set([])
 		instance.selectedUser.set ''
 		instance.find('#who').value = ''
+		Session.set 'selectedLabelIds', []
 
 	# labels that the current user has access to
 	instance.allowedLabels = []
@@ -185,7 +186,7 @@ Template.directMessagesFlex.onCreated ->
 			otherUser = instance.selectedUser.get()
 			if otherUser
 				users.push otherUser
-		
+
 		myPermIds = Meteor.user().profile.access
 		Meteor.call 'canAccessResource', users, myPermIds, (error, result) ->
 			if error
@@ -200,7 +201,7 @@ Template.directMessagesFlex.onCreated ->
 					# separate out the currently selected permissions by type - relto/non-relto
 					selectedReltoIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['classification', 'SAP', 'SCI']}}).fetch(), '_id')
 					selectedOtherIds = _.pluck(AccessPermissions.find({_id: {$in: instance.selectedLabelIds}, type: {$nin: ['Release Caveat']}}).fetch(), '_id')
-					
+
 
 					# determine which of the 'failed' ids are currently selected
 					# (or missing, in the case of relto)
@@ -287,6 +288,7 @@ Template.directMessagesFlex.onCreated ->
 			instance.allowedLabels = options.allowed
 			if instance.data?.user
 				instance.selectedUser.set instance.data.user
+				instance.updateWarnIds()
 			instance.securityLabelsInitialized.set true
 
 
@@ -303,13 +305,13 @@ roomLabelOptions = (roomPermissionIds, userPermissionIds) ->
 	userPerms = AccessPermissions.find({_id:{$in: userPermissionIds}}).fetch()
 	userCountry = _.find(userPerms, (perm) -> perm.type is 'Release Caveat')
 
-	# all relto (non-user specific)	
+	# all relto (non-user specific)
 	allReleaseCaveats = AccessPermissions.find({type:'Release Caveat'}).fetch()
 
 	# room permissions
 	roomPerms = AccessPermissions.find({_id:{$in: roomPermissionIds}}).fetch()
 	roomClassification = _.find(roomPerms, (perm) -> perm.type is 'classification')
-	roomClassificationIndex = _.indexOf(classificationOrder,roomClassification._id ) 
+	roomClassificationIndex = _.indexOf(classificationOrder,roomClassification._id )
 	allowedClassifications = _.rest(classificationOrder, roomClassificationIndex)
 
 	# user can choose from same/higher them room classification,sci,sap assigned to them and ALL release caveats
@@ -319,9 +321,9 @@ roomLabelOptions = (roomPermissionIds, userPermissionIds) ->
 		.uniq(false, (perm) -> perm._id)
 		.value()
 
-	# existing room selection should be selected and disabled so that the user can't 
-	# downgrade the security level.  User country must be selected so that they can't 
-	# exclude themselves, System country must be selected 
+	# existing room selection should be selected and disabled so that the user can't
+	# downgrade the security level.  User country must be selected so that they can't
+	# exclude themselves, System country must be selected
 	required = _.chain(roomPerms)
 		.concat(userCountry)
 		.uniq(false, (perm) -> perm._id)
@@ -330,7 +332,7 @@ roomLabelOptions = (roomPermissionIds, userPermissionIds) ->
 	# preselect the room's selected permissions.  Make sure user country is selected
 	selected = required
 
- 	# allow the classification to be selected otherwise the user can't reselect it 
+ 	# allow the classification to be selected otherwise the user can't reselect it
  	# in the drop down
 	disabled = _.chain(required)
 		.reject( (perm) -> perm._id is roomClassification._id )

@@ -1,11 +1,17 @@
-openRoom = (type, name) ->
+openRoom = (type, name, rid) ->
 	Session.set 'openedRoom', null
 
 	BlazeLayout.render 'main', {center: 'loading'}
 
 	Meteor.defer ->
 		Tracker.autorun (c) ->
-			if RoomManager.open(type + name).ready() isnt true
+
+			# rid only supplied for direct messages
+			if rid
+				id = type + name + ':' + rid
+			else
+				id = type + name
+			if RoomManager.open(id).ready() isnt true
 				return
 
 			c.stop()
@@ -15,10 +21,9 @@ openRoom = (type, name) ->
 				name: name
 
 			if type is 'd'
-				delete query.name
-				query.usernames =
-					$all: [name, Meteor.user().username]
-
+				query =
+					_id: rid
+					
 			room = ChatRoom.findOne(query)
 			if not room?
 				Session.set 'roomNotFound', {type: type, name: name}
@@ -29,7 +34,7 @@ openRoom = (type, name) ->
 			if mainNode?
 				for child in mainNode.children
 					mainNode.removeChild child if child?
-				roomDom = RoomManager.getDomOfRoom(type + name, room._id)
+				roomDom = RoomManager.getDomOfRoom(id, room._id)
 				mainNode.appendChild roomDom
 				if roomDom.classList.contains('room-container')
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop
@@ -74,10 +79,10 @@ FlowRouter.route '/group/:name',
 	triggersExit: [roomExit]
 
 
-FlowRouter.route '/direct/:username',
+FlowRouter.route '/direct/:username/:rid',
 	name: 'direct'
 
 	action: (params, queryParams) ->
-		openRoom 'd', params.username
+		openRoom 'd', params.username, params.rid
 
 	triggersExit: [roomExit]
