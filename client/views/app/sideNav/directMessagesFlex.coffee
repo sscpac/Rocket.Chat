@@ -50,6 +50,7 @@ Template.directMessagesFlex.events
 	'autocompleteselect #who': (event, instance, doc) ->
 		instance.selectedUser.set doc.username
 		event.currentTarget.focus()
+		instance.validUser = true
 		instance.updateWarnIds()
 
 	'click .cancel-direct-message': (e, instance) ->
@@ -69,6 +70,33 @@ Template.directMessagesFlex.events
 
 	'keydown input[type="text"]': (e, instance) ->
 		Template.instance().error.set([])
+
+	'input #who': (e, instance) ->
+		data = instance.find('#who').value
+
+		# find a user in the database with the given name (name == first name + last name)
+		# also search username in case the text entered by the user inadvertently matches a real username
+		user = Meteor.users.findOne
+			$or: [
+				username: data
+			,
+				name:
+					# match the whole string, ignoring case
+					$regex: '^' + data + '$'
+					$options: 'i'
+			]
+
+		if user
+			# set the variable to the actual username of the found user - since that is what is used to create the new room
+			instance.selectedUser.set user.username
+			instance.validUser = true
+		else
+			# just set the variable to whatever is in the input box
+			# indicate that a valid user has not been selected so that the label warnings clear
+			instance.selectedUser.set data
+			instance.validUser = false
+			
+		instance.updateWarnIds()
 
 	'click .save-direct-message': (e, instance) ->
 		err = SideNav.validate()
@@ -99,13 +127,14 @@ Template.directMessagesFlex.events
 
 Template.directMessagesFlex.onCreated ->
 	instance = this
-	instance.selectedUser = new ReactiveVar
+	instance.selectedUser = new ReactiveVar ''
+	instance.validUser = false
 	instance.error = new ReactiveVar []
 	#instance.accessOptions = new ReactiveVar
 
 	instance.clearForm = ->
 		instance.error.set([])
-		instance.selectedUser.set null
+		instance.selectedUser.set ''
 		instance.find('#who').value = ''
 
 	# labels that the current user has access to
@@ -149,9 +178,13 @@ Template.directMessagesFlex.onCreated ->
 		# call the 'canAccessResource' method using current members and all of the current
 		# user's access permissions as parameters
 		users = [Meteor.userId()]
-		otherUser = instance.selectedUser.get()
-		if otherUser?
-			users.push otherUser
+
+		# only include the other username in the access check if it represents an actual user
+		# eg, don't send an invalid username into the 'canAccessResource' method
+		if instance.validUser
+			otherUser = instance.selectedUser.get()
+			if otherUser
+				users.push otherUser
 		
 		myPermIds = Meteor.user().profile.access
 		Meteor.call 'canAccessResource', users, myPermIds, (error, result) ->
