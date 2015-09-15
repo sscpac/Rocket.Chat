@@ -6,7 +6,6 @@
 accounts-password
 coffeescript
 email
-fastclick
 http
 jquery
 less
@@ -29,7 +28,6 @@ rocketchat:markdown
 rocketchat:me
 rocketchat:mentions
 rocketchat:oembed
-rocketchat:webrtc
 #rocketchat:external
 #rocketchat:hubot
 #rocketchat:irc
@@ -44,7 +42,6 @@ konecty:user-presence
 chrismbeckett:toastr
 dispatch:run-as-user
 francocatena:status
-jparker:gravatar
 kadira:blaze-layout
 kadira:flow-router
 kevohagan:sweetalert

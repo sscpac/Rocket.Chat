@@ -248,10 +248,10 @@ Template.room.helpers
 		return Session.get('selfVideoUrl')
 
 	videoActive: ->
-		return (Session.get('remoteVideoUrl') || Session.get('selfVideoUrl'))
+		return false
 
 	remoteMonitoring: ->
-		return (webrtc?.stackid? && (webrtc.stackid == 'webrtc-ib'))
+		return false
 
 	flexOpenedRTC1: ->
 		return 'layout1' if Session.equals('flexOpenedRTC1', true)
@@ -624,29 +624,6 @@ Template.room.events
 
 			instance.chatMessages.deleteMsg(message)
 
-	'click .start-video': (event) ->
-		_id = Template.instance().data._id
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 1
-		webrtc.start(true)
-
-	'click .stop-video': (event) ->
-		webrtc.stop()
-
-	'click .monitor-video': (event) ->
-		_id = Template.instance().data._id
-		webrtc.to = _id.replace(Meteor.userId(), '')
-		webrtc.room = _id
-		webrtc.mode = 2
-		webrtc.start(true)
-
-
-	'click .setup-video': (event) ->
-		webrtc.mode = 2
-		webrtc.activateLocalStream()
-
-
 	'dragenter .dropzone': (e) ->
 		e.currentTarget.classList.add 'over'
 
@@ -797,14 +774,6 @@ Template.room.onRendered ->
 
 	# salva a data da renderização para exibir alertas de novas mensagens
 	$.data(this.firstNode, 'renderedAt', new Date)
-
-	webrtc.onRemoteUrl = (url) ->
-		Session.set('flexOpened', true)
-		Session.set('remoteVideoUrl', url)
-
-	webrtc.onSelfUrl = (url) ->
-		Session.set('flexOpened', true)
-		Session.set('selfVideoUrl', url)
 
 	RoomHistoryManager.getMoreIfIsEmpty this.data._id
 
