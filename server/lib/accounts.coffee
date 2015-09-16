@@ -21,37 +21,6 @@ Accounts.onCreateUser (options, user) ->
 
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
-
-	serviceName = null
-
-	if user.services?.facebook?
-		serviceName = 'facebook'
-	else if user.services?.google?
-		serviceName = 'google'
-	else if user.services?.github?
-		serviceName = 'github'
-	else if user.services?.gitlab?
-		serviceName = 'gitlab'
-	else if user.services?['meteor-developer']?
-		serviceName = 'meteor-developer'
-	else if user.services?.twitter?
-		serviceName = 'twitter'
-
-	if serviceName in ['facebook', 'google', 'meteor-developer', 'github', 'gitlab', 'twitter']
-		if not user?.name? or user.name is ''
-			if options.profile?.name?
-				user.name = options.profile?.name
-			else if user.services[serviceName].name?
-				user.name = user.services[serviceName].name
-			else
-				user.name = user.services[serviceName].username
-
-		if user.services[serviceName].email
-			user.emails = [
-				address: user.services[serviceName].email
-				verified: true
-			]
-
 	return user
 
 
