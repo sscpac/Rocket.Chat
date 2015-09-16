@@ -22,10 +22,6 @@ Accounts.onCreateUser (options, user) ->
 	user.status = 'offline'
 	user.active = not RocketChat.settings.get 'Accounts_ManuallyApproveNewUsers'
 
-	# when inserting first user, set admin: true
-	unless Meteor.users.findOne()
-		user.admin = true
-
 	serviceName = null
 
 	if user.services?.facebook?
