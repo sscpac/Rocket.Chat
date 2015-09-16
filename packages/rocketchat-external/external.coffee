@@ -16,8 +16,7 @@ WebApp.connectHandlers.use '/external/', (req, res, next) ->
 					"ROOT_URL": "http://localhost:3000/",
 					"ROOT_URL_PATH_PREFIX": "",
 					"autoupdateVersion": "#{Autoupdate.autoupdateVersion}",
-					"autoupdateVersionRefreshable": "#{Autoupdate.autoupdateVersionRefreshable}",
-					"autoupdateVersionCordova": "#{Autoupdate.autoupdateVersionCordova}"
+					"autoupdateVersionRefreshable": "#{Autoupdate.autoupdateVersionRefreshable}"
 				};
 			</script>
 			<script type="text/javascript" src="/packages/rocketchat_external/public/external.js?_dc=#{Autoupdate.autoupdateVersion}"></script>
