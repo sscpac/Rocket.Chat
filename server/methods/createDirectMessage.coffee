@@ -14,7 +14,7 @@ Meteor.methods
 			username: username
 
 		if not to
-			throw new Meteor.Error('invalid-user', "[methods] createDirectMessage -> Invalid target user")
+			throw new Meteor.Error('invalid-user', "'" + username + "' is not a valid user")
 
 		if not accessPermissions
 			throw new Meteor.Error('invalid-argument', "Missing security label")
