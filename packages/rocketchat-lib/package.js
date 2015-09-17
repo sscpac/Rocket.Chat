@@ -50,8 +50,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'settings/server/methods.coffee',
 		'settings/server/publication.coffee',
-		'settings/server/startup.coffee',
-		'settings/server/updateServices.coffee'
+		'settings/server/startup.coffee'
 	], ['server']);
 
 	api.addFiles('server/cdn.coffee', ['server']);

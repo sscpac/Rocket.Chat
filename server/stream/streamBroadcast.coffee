@@ -53,7 +53,4 @@ Meteor.startup ->
 		'typing': typingStream
 		'deleteMsgStream': deleteMsgStream
 
-	if webrtc
-		config['webrtc.stream'] = webrtc.stream
-
 	startStreamBroadcast config

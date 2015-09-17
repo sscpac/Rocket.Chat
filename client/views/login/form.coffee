@@ -2,40 +2,10 @@ Template.loginForm.helpers
 	userName: ->
 		return Meteor.user()?.username
 
-	showName: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
-
-	showPassword: ->
-		return 'hidden' unless Template.instance().state.get() in ['login', 'register']
-
-	showConfirmPassword: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
-
-	showEmailOrUsername: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showEmail: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
-
-	showRegisterLink: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showForgotPasswordLink: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showBackToLoginLink: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification', 'wait-activation']
-
 	btnLoginSave: ->
 		switch Template.instance().state.get()
-			when 'register'
-				return t('Submit')
 			when 'login'
 				return t('Login')
-			when 'email-verification'
-				return t('Send_confirmation_email')
-			when 'forgot-password'
-				return t('Reset_password')
 
 	waitActivation: ->
 		return Template.instance().state.get() is 'wait-activation'
@@ -49,58 +19,16 @@ Template.loginForm.events
 
 		formData = instance.validate()
 		if formData
-			if instance.state.get() is 'email-verification'
-				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
-					RocketChat.Button.reset(button)
-					toastr.success t('We_have_sent_registration_email')
-					instance.state.set 'login'
-				return
+			Meteor.loginWithJEDIS formData.emailOrUsername, formData.pass, (error) ->
+				RocketChat.Button.reset(button)
+				if error?
+					if error.error is 'no-valid-email'
+						instance.state.set 'email-verification'
+					else
+						toastr.error error.reason
+					return
+				FlowRouter.go 'index'
 
-			if instance.state.get() is 'forgot-password'
-				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
-					RocketChat.Button.reset(button)
-					toastr.success t('We_have_sent_password_email')
-					instance.state.set 'login'
-				return
-
-			if instance.state.get() is 'register'
-				Meteor.call 'registerUser', formData, (error, result) ->
-					RocketChat.Button.reset(button)
-
-					if error?
-						if error.error is 'Email already exists.'
-							toastr.error t 'Email_already_exists'
-						else
-							toastr.error error.reason
-						return
-
-					Meteor.loginWithPassword formData.email, formData.pass, (error) ->
-						if error?.error is 'no-valid-email'
-							toastr.success t('We_have_sent_registration_email')
-							instance.state.set 'login'
-						else if error?.error is 'inactive-user'
-							instance.state.set 'wait-activation'
-						# else
-							# FlowRouter.go 'index'
-			else
-				Meteor.loginWithJEDIS formData.emailOrUsername, formData.pass, (error) ->
-					RocketChat.Button.reset(button)
-					if error?
-						if error.error is 'no-valid-email'
-							instance.state.set 'email-verification'
-						else
-							toastr.error error.reason
-						return
-					FlowRouter.go 'index'
-
-	'click .register': ->
-		Template.instance().state.set 'register'
-
-	'click .back-to-login': ->
-		Template.instance().state.set 'login'
-
-	'click .forgot-password': ->
-		Template.instance().state.set 'forgot-password'
 
 Template.loginForm.onCreated ->
 	instance = @
@@ -121,11 +49,6 @@ Template.loginForm.onCreated ->
 			unless formObj['pass']
 				validationObj['pass'] = t('Invalid_pass')
 
-		if instance.state.get() is 'register'
-			unless formObj['name']
-				validationObj['name'] = t('Invalid_name')
-			if formObj['confirm-pass'] isnt formObj['pass']
-				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
 		$("#login-card input").removeClass "error"
 		unless _.isEmpty validationObj
@@ -143,10 +66,6 @@ Template.loginForm.onCreated ->
 Template.loginForm.onRendered ->
 	Tracker.autorun =>
 		switch this.state.get()
-			when 'login', 'forgot-password', 'email-verification'
+			when 'login'
 				Meteor.defer ->
 					$('input[name=email]').select().focus()
-
-			when 'register'
-				Meteor.defer ->
-					$('input[name=name]').select().focus()

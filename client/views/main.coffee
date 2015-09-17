@@ -8,6 +8,7 @@ Template.body.onRendered ->
 		if e.keyCode is 27
 			spotlight.hide()
 
+	###
 	Tracker.autorun (c) ->
 		w = window
 		d = document
@@ -77,6 +78,7 @@ Template.body.onRendered ->
 
 	if Meteor.isCordova
 		$(document.body).addClass 'is-cordova'
+	###
 
 
 Template.main.helpers
