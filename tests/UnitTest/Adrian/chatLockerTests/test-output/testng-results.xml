@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" ignored="0" total="8" passed="8">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="19157" started-at="2016-12-09T08:49:59Z" finished-at="2016-12-09T08:50:18Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="19157" started-at="2016-12-09T08:49:59Z" finished-at="2016-12-09T08:50:18Z">
+      <class name="myPackages.loginTest">
+        <test-method status="PASS" signature="setupTheDriverObject()[pri:0, instance:myPackages.loginTest@548e7350]" name="setupTheDriverObject" is-config="true" duration-ms="1648" started-at="2016-12-09T00:49:59Z" finished-at="2016-12-09T00:50:01Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setupTheDriverObject -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="3210" started-at="2016-12-09T00:50:01Z" finished-at="2016-12-09T00:50:04Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="ValidEmailWithValidPasswordShouldPass()[pri:0, instance:myPackages.loginTest@548e7350]" name="ValidEmailWithValidPasswordShouldPass" duration-ms="1016" started-at="2016-12-09T00:50:04Z" finished-at="2016-12-09T00:50:05Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- ValidEmailWithValidPasswordShouldPass -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="1055" started-at="2016-12-09T00:50:05Z" finished-at="2016-12-09T00:50:06Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="ValidUsernameWithInvalidPasswordShouldFail()[pri:0, instance:myPackages.loginTest@548e7350]" name="ValidUsernameWithInvalidPasswordShouldFail" duration-ms="841" started-at="2016-12-09T00:50:06Z" finished-at="2016-12-09T00:50:07Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- ValidUsernameWithInvalidPasswordShouldFail -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="935" started-at="2016-12-09T00:50:07Z" finished-at="2016-12-09T00:50:08Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="ValidUsernameWithValidPasswordShouldPass()[pri:0, instance:myPackages.loginTest@548e7350]" name="ValidUsernameWithValidPasswordShouldPass" duration-ms="846" started-at="2016-12-09T00:50:08Z" finished-at="2016-12-09T00:50:09Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- ValidUsernameWithValidPasswordShouldPass -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="1007" started-at="2016-12-09T00:50:09Z" finished-at="2016-12-09T00:50:10Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="invalidEmailWithInvalidPasswordShouldFail()[pri:0, instance:myPackages.loginTest@548e7350]" name="invalidEmailWithInvalidPasswordShouldFail" duration-ms="826" started-at="2016-12-09T00:50:10Z" finished-at="2016-12-09T00:50:10Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- invalidEmailWithInvalidPasswordShouldFail -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="929" started-at="2016-12-09T00:50:10Z" finished-at="2016-12-09T00:50:11Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="invalidEmailWithValidPasswordShouldFail()[pri:0, instance:myPackages.loginTest@548e7350]" name="invalidEmailWithValidPasswordShouldFail" duration-ms="874" started-at="2016-12-09T00:50:11Z" finished-at="2016-12-09T00:50:12Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- invalidEmailWithValidPasswordShouldFail -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="985" started-at="2016-12-09T00:50:12Z" finished-at="2016-12-09T00:50:13Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="invalidUsernameAndInvalidPasswordShouldFail()[pri:0, instance:myPackages.loginTest@548e7350]" name="invalidUsernameAndInvalidPasswordShouldFail" duration-ms="844" started-at="2016-12-09T00:50:13Z" finished-at="2016-12-09T00:50:14Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- invalidUsernameAndInvalidPasswordShouldFail -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="904" started-at="2016-12-09T00:50:14Z" finished-at="2016-12-09T00:50:15Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="invalidUsernameWithValidPassLoginShouldFail()[pri:0, instance:myPackages.loginTest@548e7350]" name="invalidUsernameWithValidPassLoginShouldFail" duration-ms="826" started-at="2016-12-09T00:50:15Z" finished-at="2016-12-09T00:50:16Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- invalidUsernameWithValidPassLoginShouldFail -->
+        <test-method status="PASS" signature="getThePageWeWantToTest()[pri:0, instance:myPackages.loginTest@548e7350]" name="getThePageWeWantToTest" is-config="true" duration-ms="1020" started-at="2016-12-09T00:50:16Z" finished-at="2016-12-09T00:50:17Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getThePageWeWantToTest -->
+        <test-method status="PASS" signature="validEmailWithInvalidPasswordShouldFail()[pri:0, instance:myPackages.loginTest@548e7350]" name="validEmailWithInvalidPasswordShouldFail" duration-ms="1099" started-at="2016-12-09T00:50:17Z" finished-at="2016-12-09T00:50:18Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- validEmailWithInvalidPasswordShouldFail -->
+        <test-method status="PASS" signature="closeDriver()[pri:0, instance:myPackages.loginTest@548e7350]" name="closeDriver" is-config="true" duration-ms="190" started-at="2016-12-09T00:50:18Z" finished-at="2016-12-09T00:50:18Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- closeDriver -->
+      </class> <!-- myPackages.loginTest -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
