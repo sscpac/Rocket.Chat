@@ -1,18 +1,9 @@
 package myPackages;
 
-//import org.testng.annotations.AfterClass;
-//import org.testng.annotations.Test;
-//import org.testng.annotations.BeforeMethod;
-//import org.testng.annotations.BeforeClass;
-import org.testng.AssertJUnit;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
  
@@ -53,7 +44,8 @@ public class loginTest {
      
     @BeforeClass //this means the method below will be called Once before this whole Class
     public static void setupTheDriverObject(){
-        driver = new SafariDriver();
+    	driver = myPackages.AllTests.driver;
+        //driver = new SafariDriver();
     }
      
     @Before
@@ -67,9 +59,10 @@ public class loginTest {
          
     }
      
-    @AfterClass //this will be called After ALL tests complete
+    //this has been moved to AllTests.java
+    //@AfterClass //this will be called After ALL tests complete
     public static void closeDriver(){
-        driver.quit(); //closes driver and browser window
+        //driver.quit(); //closes driver and browser window
     }
  
     @Test //1 //this is a Unit Test Identifier
@@ -79,42 +72,42 @@ public class loginTest {
         //this will wait for the notification banner to appear
         WebElement banner = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(BannerLocator));
         //when it does appear we will compare what we expect for it to display when a login fails
-        AssertJUnit.assertEquals(banner.getText(), ERROR_MESSAGE);
+        Assert.assertEquals(banner.getText(), ERROR_MESSAGE);
     }
      
     @Test //2
     public void ValidUsernameWithInvalidPasswordShouldFail() {
         inputLoginFieldsWith(VALID_USERNAME, INVALID_PASSWORD);
         WebElement banner = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(BannerLocator));
-        AssertJUnit.assertEquals(banner.getText(), ERROR_MESSAGE);
+        Assert.assertEquals(banner.getText(), ERROR_MESSAGE);
     }
      
     @Test //3
     public void invalidUsernameAndInvalidPasswordShouldFail() {
         inputLoginFieldsWith(INVALID_USERNAME, INVALID_PASSWORD);
         WebElement banner = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(BannerLocator));
-        AssertJUnit.assertEquals(banner.getText(), ERROR_MESSAGE);
+        Assert.assertEquals(banner.getText(), ERROR_MESSAGE);
     }
      
     @Test //4
     public void invalidEmailWithValidPasswordShouldFail() {
         inputLoginFieldsWith(INVALID_EMAIL, VALID_PASSWORD);
         WebElement banner = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(BannerLocator));
-        AssertJUnit.assertEquals(banner.getText(), ERROR_MESSAGE);
+        Assert.assertEquals(banner.getText(), ERROR_MESSAGE);
     }
      
     @Test //5
     public void validEmailWithInvalidPasswordShouldFail() {
         inputLoginFieldsWith(VALID_EMAIL, INVALID_PASSWORD);
         WebElement banner = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(BannerLocator));
-        AssertJUnit.assertEquals(banner.getText(), ERROR_MESSAGE);
+        Assert.assertEquals(banner.getText(), ERROR_MESSAGE);
     }
      
     @Test //6
     public void invalidEmailWithInvalidPasswordShouldFail() {
         inputLoginFieldsWith(INVALID_EMAIL, INVALID_PASSWORD);
         WebElement banner = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(BannerLocator));
-        AssertJUnit.assertEquals(banner.getText(), ERROR_MESSAGE);
+        Assert.assertEquals(banner.getText(), ERROR_MESSAGE);
     }
      
     @Test //7
@@ -124,14 +117,14 @@ public class loginTest {
         //when we do login I will wait at least 10 seconds for the tile component in the next page to load which is <h2>Home</h2>
         WebElement HomeHeader = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(HomeHeaderLocator));
         //When it has loaded lets compare and ensure it is Home
-        AssertJUnit.assertEquals(HomeHeader.getText(), HOME_TITLE);
+        Assert.assertEquals(HomeHeader.getText(), HOME_TITLE);
     }
      
     @Test //8
     public void ValidEmailWithValidPasswordShouldPass() {
         inputLoginFieldsWith(VALID_EMAIL, VALID_PASSWORD);
         WebElement HomeHeader = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(HomeHeaderLocator));
-        AssertJUnit.assertEquals(HomeHeader.getText(), HOME_TITLE);
+        Assert.assertEquals(HomeHeader.getText(), HOME_TITLE);
     }  
      
 }

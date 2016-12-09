@@ -3,7 +3,6 @@ package myPackages;
 import java.util.UUID;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -11,7 +10,6 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -138,12 +136,19 @@ public class registerNewUserTest {
 	
 	@BeforeClass
 	public static void beforeClass(){
-		driver = new SafariDriver();
+		driver = myPackages.AllTests.driver;
 		driver.get(URL_CHATLOCKER_MAIN);
 		WebElement registerLink = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(registerNewAccLinkLocator));
 		registerLink.click();
 		generateTestAccountCredentials();
 	
+	}
+	
+	//this has been moved to AllTests.java
+	//@AfterClass
+	public static void afterClass(){
+		//driver.close();
+		//driver.quit();			
 	}
 	
 	@Before
@@ -227,13 +232,6 @@ public class registerNewUserTest {
 		Assert.assertThat(errorMessage, CoreMatchers.containsString(ERROR_DISPLAY_NAME_EXISTS));
 		logoutAndReturnToRegistration();
 	}	
-	
-	@AfterClass
-	public static void afterClass(){
-		driver.close();
-		driver.quit();
-	}
-	
 	
 
 }
