@@ -14,9 +14,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-//import org.testng.annotations.AfterClass;
-//import org.testng.annotations.BeforeClass;
-//import org.testng.annotations.Test;
 
 public class registerNewUserTest {
 	private static  WebDriver driver;
@@ -27,8 +24,16 @@ public class registerNewUserTest {
 	private static By passwordConfirmFieldLocator = By.id("confirm-pass");
 	private static By registerNewAccLinkLocator = By.className("register");
 	private static By registerBtnLocator = By.xpath("//*[@id=\"login-card\"]/div[2]/button/span");
+	private static By displayUsernameLocator = By.id("username");
+	private static By useThisUsernameBtnLocator = By.xpath("//*[@id=\"login-card\"]/div[2]/button");
+	private static By roomTitleLocator = By.className("room-title");
+	private static By openNavMenuLocator = By.className("arrow bottom");
+	private static By closeNavMenuLocator = By.className("arrow top");
+	//need to fix the logout (not clicking for some reason?)
+	private static By logoutButtonLocator = By.xpath("//*[@id=\"rocket-chat\"]/aside/header/div/nav/div/button[6]");
 	
 	private static String accountName;
+	private static String accountUsername;  //this will be the same as the account name
 	private static String accountEmail;		//without @gmail.com
 	private static String accountEmailFull; //with @gmail.com 
 	private static String accountPass; 		//for confirm pass failures well just use space
@@ -40,8 +45,10 @@ public class registerNewUserTest {
 	private String passwordConfirmError;
 	
 	private static void generateTestAccountCredentials(){
-		accountName = "Adrian//!&%";
-		accountEmail = UUID.randomUUID().toString().substring(0,15);	//we need to generate a unique email every test run
+		accountEmail = UUID.randomUUID().toString().substring(5,15);	//we need to generate a unique email every test run
+		accountName = accountEmail.substring(0,10);
+		accountUsername = accountName;
+		
 		accountEmailFull = accountEmail + "@gmail.com";
 		accountPass = "adrian";
 	}
@@ -103,11 +110,24 @@ public class registerNewUserTest {
 		driver.findElement(registerBtnLocator).click();
 	}
 	
+	private void confirmUsername(){
+		driver.findElement(useThisUsernameBtnLocator).click();
+	}
+	
 	private void captureErrorMessages(){
 		nameError = driver.findElements(errorFieldLocator).get(0).getText();
 		emailError = driver.findElements(errorFieldLocator).get(1).getText();
 		passwordError = driver.findElements(errorFieldLocator).get(2).getText();
 		passwordConfirmError = driver.findElements(errorFieldLocator).get(3).getText();
+	}
+	
+	private void logoutAndReturnToRegistration(){
+		driver.findElement(openNavMenuLocator).click();
+		driver.findElement(logoutButtonLocator).click();
+		//new WebDriverWait(driver, 2).until(ExpectedConditions.presenceOfElementLocated(openNavMenuLocator)).click();
+		//new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(closeNavMenuLocator)).click();
+		WebElement registerLink = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(registerNewAccLinkLocator));
+		registerLink.click();
 	}
 	
 	
@@ -158,16 +178,27 @@ public class registerNewUserTest {
 	
 	@Test
 	public void enterOnlyConfirmPassShouldFail(){
-		autoFillForOnly("firstPassword");
+		
+		autoFillForOnly("confirmPassword");
 		Assert.assertEquals(passwordError, "The password must not be empty");
 	}
-	
-	
 	
 	@Test
 	public void enterAllWithInvalidEmailFieldShouldFail(){
 		autoFillForm(accountName,accountEmail, accountPass, accountPass);
 		Assert.assertEquals(emailError, "The email entered is invalid");
+	}
+	
+	@Test
+	public void enterAllValidFieldsShouldPass(){
+		autoFillForm(accountName,accountEmailFull, accountPass, accountPass);
+		new WebDriverWait(driver, 3).until(ExpectedConditions.presenceOfElementLocated(displayUsernameLocator));
+		//Assert.assertEquals(usernameField.getText(), accountUsername);
+		confirmUsername();
+		String title = new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(roomTitleLocator)).getText();
+		//driver.findElement(roomTitleLocator).getText();
+		Assert.assertEquals(title, "Home");
+		logoutAndReturnToRegistration();
 	}
 	
 	
