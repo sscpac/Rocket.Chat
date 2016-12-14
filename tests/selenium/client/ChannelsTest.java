@@ -15,11 +15,66 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.Select;
 
 public class ChannelsTest {
-	static WebDriver wd = RocketChatTestPackage.ForgotPassTest.wd; 
+		static WebDriver wd = RocketChatTestPackage.ForgotPassTest.wd; 
+	private static By buttonCreate = By.className("button primary save-channel");
+	private static By buttonCancel = By.className("button cancel-channel");
+	private static By buttonCloseChnnl = By.className("arrow close");
+	private static By statusBar = By.cssSelector("div.data");
+	private static By buttonLogout = By.className("icon-logout");
+	private static By autoCompleteOption = By.cssSelector("div.-autocomplete-container");
+	//private static By errorMessages = By.cssSelector("div.input-error");
+	public static void close(){
+		if(detectElement(buttonCancel) == false){
+			wd.findElement(buttonCancel).click();
+			System.out.println("Cancel Pressed");
+//			wd.findElement(statusBar).click();
+//			System.out.println("Fin 2");
+//			wd.findElement(buttonLogout).click();
+//			System.out.println("Fin 3");
+		}
+		else{
+//			wd.findElement(statusBar).click();
+//			System.out.println("Fin 4");
+//			wd.findElement(buttonLogout).click();
+			System.out.println("Created Channel");
+		}
+//		wd.findElement(statusBar).click();
+//		System.out.println("Fin 4");
+//		wd.findElement(buttonLogout).click();
+//		System.out.println("Fin 5");
+	}
+	public static void sleep() throws Exception{
+		Thread.sleep(1000);
+	}
 	
-private static By autoCompleteOption = By.cssSelector("div.-autocomplete-container");
-private static By errorMessages = By.cssSelector("div.input-error .p");
+	private static boolean detectElement(By element) {
+		
+		//boolean ElementDetected = wd.findElements(element).size() > 0;
+		int ElementDetected = wd.findElements(element).size();
+		//if (ElementDetected) {
+		if (ElementDetected > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	private static void searchAddUsers() throws Exception{
+		WebElement curUsers = wd.findElement(By.id("channel-members"));
+		curUsers.sendKeys("test");
+		sleep();
+		//System.out.println("Typed in test");	
+		wd.findElement(autoCompleteOption).click();
+		curUsers.clear();
+		curUsers.sendKeys("test");
+		sleep();
+		wd.findElement(autoCompleteOption).click();
+		curUsers.clear();
+		System.out.println("Added selected users");
+	}
 	
+
+
 	@BeforeClass
 	public static void open() throws Exception{
 		wd = new SafariDriver();
@@ -27,7 +82,6 @@ private static By errorMessages = By.cssSelector("div.input-error .p");
 		System.out.println("Getting address");
 		wd.get("http://localhost:3000");
 		System.out.println("Find login and pass boxes and enter strings");
-		Thread.sleep(3000);	
 		WebElement loginEmail = wd.findElement(By.id("emailOrUsername"));
 		loginEmail.sendKeys("test@gmail.com");
 		WebElement loginPass = wd.findElement(By.id("pass"));
@@ -38,69 +92,91 @@ private static By errorMessages = By.cssSelector("div.input-error .p");
 	@Before
 	public void clickOnChannels() throws Exception{
 		System.out.println("Now clicking on Channels button");
-		Thread.sleep(1000);
+		sleep();
 		wd.findElement(By.className("icon-plus")).click();
-		Thread.sleep(1000);
+		sleep();
 	}
 	
 	//Find users and create channel
 	@Test
 	public void createWithAddedUsrs() throws Exception {
-		WebElement curUsers = wd.findElement(By.id("channel-members"));
-		curUsers.sendKeys("test");
-		System.out.println("Typed in test");	
-		Thread.sleep(1000);
-		wd.findElement(autoCompleteOption).click();
-		curUsers.clear();
-		curUsers.sendKeys("test");
-		Thread.sleep(1000);
-		wd.findElement(autoCompleteOption).click();
-		curUsers.clear();
-		System.out.println("Added selected users");
+		
+		
+		WebElement Name = wd.findElement(By.id("channel-name"));
+			Name.sendKeys("TestName");
+		searchAddUsers();
+		wd.findElement(buttonCreate).click();
+		Name.clear();
+		close();
 	}
 	
-//	//Test Private Group Entry
-//	@Test
-//		public void privateGroup(){
-//	
-//	}
-//	
-//	//Test Read Only Channel
-//	@Test
-//		public void readOnly(){
-//		wd.findElement(By.className("button primary save-channel")).click();
-//		
-//		
-//	}
+	//Test Private Group Entry
+	@Test
+		public void privateGroup() throws Exception{
+		
+		
+		WebElement Name = wd.findElement(By.id("channel-name"));
+		Name.sendKeys("TestName2");
+		searchAddUsers();
+		wd.findElement(buttonCreate).click();
+		Name.clear();
+		close();
+	}
+	
+	//Test Read Only Channel
+	@Test
+		public void readOnly() throws Exception{
+		
+		WebElement Name = wd.findElement(By.id("channel-name"));
+		Name.sendKeys("TestName3");
+		searchAddUsers();
+		wd.findElement(buttonCreate).click();
+		Name.clear();
+		close();
+	}
+	
+	//Test Read Only Channel and Private Group Entry
+	@Test
+		public void readOnlyAndPrivateGroup() throws Exception{
+		
+		WebElement Name = wd.findElement(By.id("channel-name"));
+		Name.sendKeys("TestName4");
+		searchAddUsers();
+		wd.findElement(buttonCreate).click();
+		Name.clear();
+		close();
+	}
 	
 	
 	//Test void entry
 	@Test
-		public void voidEntry(){
-		System.out.println("Clicking on Create\n");
-		wd.findElement(By.className("button primary save-channel")).click();
-		//check if error message is correct
-		WebElement nameError = wd.findElement(By.cssSelector("input-error"));
-		nameError.getText();
-		System.out.println("The error should say -The field Name is required.");
+		public void voidEntry() throws Exception{
 		
-		System.out.println("There is an error that says '" + nameError + "'!");
+		System.out.println("Clicking on Create\n");
+		//check if error message appears
+		wd.findElement(buttonCreate).click();
+		sleep();
+		wd.findElement(buttonCancel).click();
+		
 	}
+	
 	
 	//Wait before next test
 	@After
-		public void clearAll() throws Exception{
-		System.out.println("Waiting 3 seconds");
-		Thread.sleep(3000);
+		public void pauseBeforeNextTest() throws Exception{
+		sleep();
 	}
 	
 	//Close Channels box and close server
 	@AfterClass
-		public static void end() throws Exception{
-		Thread.sleep(2000);
-		wd.findElement(By.className("arrow close")).click();
-		Thread.sleep(3000);
-		System.out.println("All tests finished\n");
+	public static void end(){
+		close();
+		
+		wd.findElement(statusBar).click();
+		System.out.println("Status Bar Clicked");
+		wd.findElement(buttonLogout).click();
+		System.out.println("Logged Out");
+		System.out.println("All tests finished and logged out\n");
 		wd.quit();
 	}
 }
