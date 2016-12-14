@@ -47,12 +47,12 @@ private static By errorMessages = By.cssSelector("div.input-error .p");
 	@Test
 	public void createWithAddedUsrs() throws Exception {
 		WebElement curUsers = wd.findElement(By.id("channel-members"));
-		curUsers.sendKeys("ono");
-		System.out.println("Typed in ono");	
+		curUsers.sendKeys("test");
+		System.out.println("Typed in test");	
 		Thread.sleep(1000);
 		wd.findElement(autoCompleteOption).click();
 		curUsers.clear();
-		curUsers.sendKeys("ono");
+		curUsers.sendKeys("test");
 		Thread.sleep(1000);
 		wd.findElement(autoCompleteOption).click();
 		curUsers.clear();
@@ -80,7 +80,8 @@ private static By errorMessages = By.cssSelector("div.input-error .p");
 		System.out.println("Clicking on Create\n");
 		wd.findElement(By.className("button primary save-channel")).click();
 		//check if error message is correct
-		String nameError = wd.findElement(errorMessages).getText();
+		WebElement nameError = wd.findElement(By.cssSelector("input-error"));
+		nameError.getText();
 		System.out.println("The error should say -The field Name is required.");
 		
 		System.out.println("There is an error that says '" + nameError + "'!");
