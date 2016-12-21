@@ -3,6 +3,7 @@ package myPackages;
 import java.util.UUID;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -136,7 +138,7 @@ public class registerNewUserTest {
 	
 	@BeforeClass
 	public static void beforeClass(){
-		driver = myPackages.AllTests.driver;
+		driver = new SafariDriver();
 		driver.get(URL_CHATLOCKER_MAIN);
 		WebElement registerLink = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(registerNewAccLinkLocator));
 		registerLink.click();
@@ -145,10 +147,10 @@ public class registerNewUserTest {
 	}
 	
 	//this has been moved to AllTests.java
-	//@AfterClass
+	@AfterClass
 	public static void afterClass(){
-		//driver.close();
-		//driver.quit();			
+		driver.close();
+		driver.quit();			
 	}
 	
 	@Before

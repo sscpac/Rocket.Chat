@@ -4,6 +4,7 @@ import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
  
@@ -16,7 +17,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class loginTest {
     public static WebDriver driver;
     
-    ///////||||||||||||| BEGIN EDITABLE TEXT ||||||||||||||||||||||||||||||||||||
     public static String URL_CHATLOCKER_MAIN = "http://localhost:3000";
     public static String VALID_USERNAME = "someUserName";
     public static String VALID_PASSWORD = "secretPassword123";
@@ -26,7 +26,6 @@ public class loginTest {
     public static String INVALID_EMAIL = "jksfh@gmail.com";
     public static String ERROR_MESSAGE = "User not found or incorrect password";
     public static String HOME_TITLE = "Home";
-    ///////||||||||||||| END EDITABLE TEXT |||||||||||||||||||||||||||||||||||||
     
     //declare all your elements here using By it will make your code cleaner and simple
     private By usernameOrEmailFieldLocator = By.id("emailOrUsername");
@@ -44,7 +43,7 @@ public class loginTest {
      
     @BeforeClass //this means the method below will be called Once before this whole Class
     public static void setupTheDriverObject(){
-    	driver = myPackages.AllTests.driver;
+    	driver = new SafariDriver();
     }
      
     @Before
@@ -59,9 +58,9 @@ public class loginTest {
     }
      
     //this has been moved to AllTests.java
-    //@AfterClass //this will be called After ALL tests complete
+    @AfterClass //this will be called After ALL tests complete
     public static void closeDriver(){
-        //driver.quit(); //closes driver and browser window
+        driver.quit(); //closes driver and browser window
     }
  
     @Test //1 //this is a Unit Test Identifier

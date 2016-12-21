@@ -11,17 +11,18 @@ import org.openqa.selenium.safari.SafariDriver;
 @RunWith(Suite.class)
 @SuiteClasses({ 
 		
-		registerNewUserTest.class,
-		loginTest.class,
-		forgotPassTest.class
-		
+		LoginSuite.class
 	})
 
-public class AllTests {
+
+//need to make this into one suite for login
+
+public class AllSuites {
 	public static WebDriver driver;
+	public static String HOME_URL = "http://localhost:3000";
 	
 	@BeforeClass
-	public static void setupDriver(){
+	public static void driverSetup(){
 		driver = new SafariDriver();
 	}
 
@@ -30,7 +31,6 @@ public class AllTests {
 		driver.close();		//closes browser
 		driver.quit();		//quits browser and selenium drivers
 	}
-
-
+	
 }
 

@@ -3,12 +3,14 @@ package myPackages;
 import static org.junit.Assert.*;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -33,7 +35,7 @@ public class forgotPassTest {
 	
 	@BeforeClass
 	public static void setupDriver (){
-		driver = AllTests.driver;
+		driver = new SafariDriver();
 		//driver = new SafariDriver();
 	}
 	
@@ -41,6 +43,7 @@ public class forgotPassTest {
 	public void beforeEach(){
 		driver.get("http://localhost:3000");
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(forgotPassLink)).click();
+		
 	}
 	
 	@Test
@@ -65,8 +68,8 @@ public class forgotPassTest {
 		Assert.assertThat(message, CoreMatchers.containsString(SUCCESS_MESSAGE));
 	}
 	
-//	@AfterClass
-//	public static void closeDriver(){
-//		driver.quit();
-//	}
+	@AfterClass
+	public static void closeDriver(){
+		driver.quit();
+	}
 }
