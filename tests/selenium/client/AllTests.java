@@ -12,8 +12,11 @@ import org.openqa.selenium.safari.SafariDriver;
 @SuiteClasses({ 
 		
 		registerNewUserTest.class,
-		loginTest.class
+		loginTest.class,
+		forgotPassTest.class
+		
 	})
+
 public class AllTests {
 	public static WebDriver driver;
 	

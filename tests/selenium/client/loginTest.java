@@ -18,9 +18,9 @@ public class loginTest {
     
     ///////||||||||||||| BEGIN EDITABLE TEXT ||||||||||||||||||||||||||||||||||||
     public static String URL_CHATLOCKER_MAIN = "http://localhost:3000";
-    public static String VALID_USERNAME = "adrian";
-    public static String VALID_PASSWORD = "AdriansSecretPassword";
-    public static String VALID_EMAIL = "adrian@gmail.com";
+    public static String VALID_USERNAME = "someUserName";
+    public static String VALID_PASSWORD = "secretPassword123";
+    public static String VALID_EMAIL = "validEmail@gmail.com";
     public static String INVALID_USERNAME = "andnsan";
     public static String INVALID_PASSWORD = "jsgdjhasd";
     public static String INVALID_EMAIL = "jksfh@gmail.com";
@@ -45,7 +45,6 @@ public class loginTest {
     @BeforeClass //this means the method below will be called Once before this whole Class
     public static void setupTheDriverObject(){
     	driver = myPackages.AllTests.driver;
-        //driver = new SafariDriver();
     }
      
     @Before
