@@ -63,7 +63,7 @@ public class registerNewUserTest {
 	
 	private static void generateTestAccountCredentials(){
 		accountEmail = UUID.randomUUID().toString().substring(5,15);	//we need to generate a unique email every test run
-		accountUsername = accountEmail.substring(0,10);
+		accountUsername = "TestGenerated" + accountEmail.substring(0,10);
 		accountName = accountUsername;
 		accountEmailFull = accountEmail + "@gmail.com";
 	}
