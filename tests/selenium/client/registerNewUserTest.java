@@ -1,4 +1,4 @@
-package myPackages;
+package testRocketChatPackage;
 
 //Unit test checking user creation. The name accepts any characters, the username and email may not be used. Password has no requirements.
 
@@ -56,12 +56,21 @@ public class registerNewUserTest {
 	private String passwordError;
 	private String passwordConfirmError;
 	
+	/*
+	 * Before this test runs we will generate the account credentials using UUID to make sure that the test
+	 * will always pass using unique users (a little unnecessary but works well)
+	 */
+	
 	private static void generateTestAccountCredentials(){
 		accountEmail = UUID.randomUUID().toString().substring(5,15);	//we need to generate a unique email every test run
 		accountUsername = accountEmail.substring(0,10);
 		accountName = accountUsername;
 		accountEmailFull = accountEmail + "@gmail.com";
 	}
+	
+	/*
+	 * 
+	 */
 	
 	private void autoFillForm(){
 		clearForm();
@@ -137,6 +146,11 @@ public class registerNewUserTest {
 		registerLink.click();
 	}
 	
+	/*
+	 * Before anything we want to go to the website location (URL_CHATLOCKER_MAIN). Wait for the page to load then go to the 
+	 * account registration page by clicking on register. Then we will generate our unique user info that will be used for auto
+	 * filling later
+	 */
 	
 	@BeforeClass
 	public static void beforeClass(){
@@ -148,69 +162,89 @@ public class registerNewUserTest {
 	
 	}
 	
-	//this has been moved to AllTests.java
+
+	// Called at the end of the class. Closes the current tab in focus then quits the driver
+
+	
 	@AfterClass
 	public static void afterClass(){
 		driver.close();
 		driver.quit();			
 	}
 	
+	/* Before each test we want to make sure that we are on the registration page by waiting for the name
+	 * field (this will be the first text input field)
+	 */ 
 	@Before
 	public void beforeTestsCheckIfAtRegistrationPage(){
 		new WebDriverWait(driver, 3).until(ExpectedConditions.presenceOfElementLocated(nameFieldLocator));
 	}
 	
+	/*
+	 * test below will intentionally fail to make sure the proper error messages are handled with each
+	 * different failure cases 
+	 */
+	
 	@Test
 	public void enterAllEmptyFieldsShouldFail(){
-		autoFillForm();
-		Assert.assertEquals(nameError, ERROR_EMPTY_NAME);
+		//
+		autoFillForm();											// enter null for all fields
+		Assert.assertEquals(nameError, ERROR_EMPTY_NAME);		//first expect an error message (checking one fail is sufficient)
 	}
 	
 	@Test
 	public void enterOnlyValidNameShouldFail(){
-		autoFillForOnly("name");
-		Assert.assertEquals(emailError, ERROR_INVALID_EMAIL);
+		autoFillForOnly("name");								//fill in only a name and the rest as null
+		Assert.assertEquals(emailError, ERROR_INVALID_EMAIL);	//first error should be email
 	}
 	
 	@Test
 	public void enterOnlyAnIncompleteEmailShouldFail(){
-		autoFillForOnly("shortemail");
-		Assert.assertEquals(emailError, ERROR_INVALID_EMAIL);
+		autoFillForOnly("shortemail");							//fill in an incomplete email with the rest as null
+		Assert.assertEquals(emailError, ERROR_INVALID_EMAIL);	//first errror show say invalid email
 	}
 	
 	@Test
 	public void enterOnlyEmailShouldFail(){
-		autoFillForOnly("fullEmail");
-		Assert.assertEquals(nameError, ERROR_EMPTY_NAME);
+		autoFillForOnly("fullEmail");							//fill valid email but the other fields as null
+		Assert.assertEquals(nameError, ERROR_EMPTY_NAME);		//first error should show empty name
 	}
 	
 	@Test
 	public void enterOnlyPassShouldFail(){
-		autoFillForOnly("firstPassword");
-		Assert.assertEquals(passwordConfirmError, ERROR_PASSWORDS_NO_MATCH);
+		autoFillForOnly("firstPassword");										//enter only one password
+		Assert.assertEquals(passwordConfirmError, ERROR_PASSWORDS_NO_MATCH);	//should have passwords dont match error
 	}
 	
 	@Test
 	public void enterOnlyConfirmPassShouldFail(){
 		
-		autoFillForOnly("confirmPassword");
-		Assert.assertEquals(passwordError, ERROR_EMPTY_PASS);
+		autoFillForOnly("confirmPassword");						//should only fill the second password confirmation field
+		Assert.assertEquals(passwordError, ERROR_EMPTY_PASS);	//error should state first password field is empty
 	}
 	
 	@Test
 	public void enterAllWithInvalidEmailFieldShouldFail(){
-		autoFillForm(accountName,accountEmail, accountPass, accountPass);
-		Assert.assertEquals(emailError, ERROR_INVALID_EMAIL);
+		autoFillForm(accountName,accountEmail, accountPass, accountPass);	//all fields should be valid except for the email not being complete
+		Assert.assertEquals(emailError, ERROR_INVALID_EMAIL);				//email is invalid (incomplete)
 	}
 	
+	//This test below ensures that a valid registered user will pass to the next screen
+	// in this case, the user display name selection screen
+	
 	@Test
-	public void enterAllValidFieldsShouldGoToConfirmUsernamePageShouldPass(){
+	public void enterAllValidFieldsShouldGoToConfirmUsernamePageShouldPass(){	
 		generateTestAccountCredentials();
 		autoFillForm(accountName,accountEmailFull, accountPass, accountPass);
 		WebElement h2Title = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(confirmUsernameTitlePageLocator));
 		Assert.assertEquals(h2Title.getText(), TEXT_REGISTER_DISPLAY_NAME_HEADER);
 		logoutAndReturnToRegistration();
+		//once completed logout and return to the registration page so that this result does not affect the next test in sequence 
 	}
+	
+	//This test will register a unique user. The user will successfully create then go to the the 
+	// Username Selection Screen, select an unused DisplayName and go to the main page
+	// when successful it will logout and go back to the login page
 	
 	@Test
 	public void AfterSuccessAccCreationShouldGoToConfirmUsernameSelectValidDisplayNameShouldPass(){
@@ -222,6 +256,8 @@ public class registerNewUserTest {
 		Assert.assertEquals(title, TEXT_HOME_TITLE);
 		logoutAndReturnToRegistration();
 	}	
+	
+	//similar test scenario as the Test above except it will fail because the Display Name selected will already be in use
 	
 	@Test
 	public void AfterSuccessAccCreationShouldGoToConfirmUsernameSelectInvalidDisplayNameShouldFail(){

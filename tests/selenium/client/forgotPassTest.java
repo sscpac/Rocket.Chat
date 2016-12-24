@@ -1,4 +1,10 @@
-package myPackages;
+/*
+ * Tests the forgot pass module in the front page
+ * Password recovery currently is used with email so this tests only 3 cases (invalid email,
+ * null email, and valid email) 
+ */
+
+package testRocketChatPackage;
 
 import static org.junit.Assert.*;
 
@@ -27,24 +33,34 @@ public class forgotPassTest {
 	private static String emailError;
 	private By bannerLocator = By.id("toast-container");
 	
-	private void fillFormWith(String keys){
+	/*
+	 * Pass in an email into the text email elements, then click submit
+	 */
+	
+	private void fillFormWith(String email){
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(emailFieldLocator));
-		driver.findElement(emailFieldLocator).sendKeys(keys);
+		driver.findElement(emailFieldLocator).sendKeys(email);
 		driver.findElement(confirmButtonLocator).click();
 	}
 	
 	@BeforeClass
 	public static void setupDriver (){
 		driver = new SafariDriver();
-		//driver = new SafariDriver();
 	}
 	
 	@Before
 	public void beforeEach(){
 		driver.get("http://localhost:3000");
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(forgotPassLink)).click();
+		//add this wait to make sure that the webpage loads if there are any issues with loading time
+		new WebDriverWait(driver, 30).until(ExpectedConditions.presenceOfElementLocated(forgotPassLink)).click();
 		
 	}
+	
+	/*
+	 * All tests pass the email string. A test will pass as long as the anticipated email
+	 * error shows up. If the email message changes, make sure to change the error above as well
+	 * of this test will always fail
+	 */
 	
 	@Test
 	public void nullEmailShouldFail(){

@@ -12,6 +12,10 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+/*
+ * This test checks that the user can switch between different page views for the right components
+ * A test will fail if the expected view is not displayed
+ */
 
      
 public class flexTabTitleTest {
@@ -41,7 +45,7 @@ public class flexTabTitleTest {
         driver.get("http://localhost:3000");
         //this tells the driver to wait for the username/email field element to load otherwise it will fail the test within 10 secs
         (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(usernameOrEmailFieldLocator));
-        inputLoginFieldsWith("adrian", "adrian");
+        inputLoginFieldsWith("test", "test");
     }
     
     //Before

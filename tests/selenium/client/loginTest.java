@@ -1,4 +1,4 @@
-package myPackages;
+package testRocketChatPackage;
 
 import org.junit.*;
 import org.openqa.selenium.By;
