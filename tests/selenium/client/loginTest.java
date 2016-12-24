@@ -10,22 +10,26 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  
 //These Unit Tests check for the Login feature it assumes the user of the
 //following credentials is valid
-//  username: adrian
-//  password: AdriansSecretPassword
-//  email: adrian@gmail.com
+//  username: someUserName
+//  password: secretPassword123
+//  email: validEmail@gmail.com
+
      
 public class loginTest {
     public static WebDriver driver;
     
+    //Editable Strings
     public static String URL_CHATLOCKER_MAIN = "http://localhost:3000";
     public static String VALID_USERNAME = "someUserName";
     public static String VALID_PASSWORD = "secretPassword123";
     public static String VALID_EMAIL = "validEmail@gmail.com";
+    public static String ERROR_MESSAGE = "User not found or incorrect password";
+    public static String HOME_TITLE = "Home";
+    
     public static String INVALID_USERNAME = "andnsan";
     public static String INVALID_PASSWORD = "jsgdjhasd";
     public static String INVALID_EMAIL = "jksfh@gmail.com";
-    public static String ERROR_MESSAGE = "User not found or incorrect password";
-    public static String HOME_TITLE = "Home";
+
     
     //declare all your elements here using By it will make your code cleaner and simple
     private By usernameOrEmailFieldLocator = By.id("emailOrUsername");
@@ -49,7 +53,7 @@ public class loginTest {
     @Before
 	public void getThePageWeWantToTest(){
         //I just refresh page since it begins each test with a controlled starting point
-        //more in-depthunit testing within the app will have to manually login and navigate
+        //more in-depth unit testing within the app will have to manually login and navigate
         //to your components
         driver.get(URL_CHATLOCKER_MAIN);
         //this tells the driver to wait for the username/email field element to load otherwise it will fail the test within 10 secs
@@ -117,6 +121,7 @@ public class loginTest {
         //When it has loaded lets compare and ensure it is Home
         Assert.assertEquals(HomeHeader.getText(), HOME_TITLE);
     }
+    
      
     @Test //8
     public void ValidEmailWithValidPasswordShouldPass() {

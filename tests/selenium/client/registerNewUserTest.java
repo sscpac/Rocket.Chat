@@ -1,5 +1,7 @@
 package myPackages;
 
+//Unit test checking user creation. The name accepts any characters, the username and email may not be used. Password has no requirements.
+
 import java.util.UUID;
 
 import org.hamcrest.CoreMatchers;
