@@ -25,8 +25,8 @@ public class DirectMsgStuff {
 	public static WebDriver driver;
 
 	public static String Home = "http://localhost:3000/channel/general";
-	public static String loginUser = "adrian";	//"sonia.tran@sage.northcom.mil"
-	public static String loginPW = "adrian";	//"soniatran"
+	public static String loginUser = "test";	
+	public static String loginPW = "test";	
 	
 	public static String ValidFriend = "rocket.cat";
 	public static String InvalidFriend = "Santa";
