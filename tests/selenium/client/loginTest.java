@@ -40,7 +40,6 @@ public class loginTest {
     private static By HomeHeaderLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/section/header/h2/span");
     private static By MenuLocator = By.cssSelector("span.arrow.bottom");
     private static By logoutLocator = By.id("logout"); //#logout
-    private static By closeDMButtonLocator = By.className("arrow.top");
     
     
     /*
@@ -61,17 +60,18 @@ public class loginTest {
     
     public static void logout(WebDriver drive) throws Exception{
     	//if menu is not open then click on it
-		if(detectElement(MenuLocator)){
-			driver.findElement(MenuLocator).click();
+		if(detectElement(MenuLocator, drive)){
+			drive.findElement(MenuLocator).click();
 		}
 		//new WebDriverWait(drive, 500).until(ExpectedConditions.presenceOfElementLocated(logoutLocator));
 		Thread.sleep(2000);
     	drive.findElement(logoutLocator).click();
     }
     
-	private static boolean detectElement(By element) {
+	private static boolean detectElement(By element, WebDriver drive) {
 		
-		boolean ElementDetected = driver.findElements(element).size() > 0;
+		boolean ElementDetected = drive.findElements(element).size() > 0;
+		System.out.println("Counted: " + drive.findElements(element).size());
 		if (ElementDetected) {
 			return true;
 		}

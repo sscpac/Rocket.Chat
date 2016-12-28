@@ -141,14 +141,14 @@ public class DirectMessagesSuite {
 	@BeforeClass
 	public static void setupTest() throws Exception{
 		
-		System.setProperty(
-				"webdriver.chrome.driver",
-				"/home/osboxes/Documents/Selenium Library/chromedriver.exe"
-				);
-
-		driver = new ChromeDriver();
+//		System.setProperty(
+//				"webdriver.chrome.driver",
+//				"/home/osboxes/Documents/Selenium Library/chromedriver.exe"
+//				);
+//
+//		driver = new ChromeDriver();
 		
-//		driver = new SafariDriver();
+		driver = new SafariDriver();
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		
 		driver.get(Home);
@@ -214,14 +214,26 @@ public class DirectMessagesSuite {
 		
 	}
 	
-//	@After
-//	public void resetFromPreviousTest(){
-//		//do this incase of a fail to close the menu from a previous test
-//		if(detectElement(buttonCancel)){
-//			driver.findElement(buttonCancel).click();
-//		}
-//		System.out.println("Bye");
-//	}
+	@Test //5	//send message to another user, logout and confirm message was received, then send back a message
+	public void sendDMBetweenUsers() throws Exception{
+		//search for friend
+		searchForFriend("test2");	//get the first result
+		Thread.sleep(1000);
+		//send dm to test2 user
+		driver.findElement(textFriend).sendKeys("Hello there test how ar you?!");
+		driver.findElement(sendMessageButton).click();
+		Thread.sleep(1000);
+		
+		loginTest.logout(driver);
+		//then login and check for message then logout
+		loginTest.login("test2", "test2", driver);
+		searchForFriend("test");
+		driver.findElement(textFriend).sendKeys("Hello there test2, I am doing well!");
+		driver.findElement(sendMessageButton).click();
+		//@TODO need to assert for this test
+		loginTest.logout(driver);
+	}
+	
 	
 	@AfterClass
 	public static void endTesting(){
