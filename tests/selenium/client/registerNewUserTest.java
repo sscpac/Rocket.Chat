@@ -50,11 +50,44 @@ public class registerNewUserTest {
 	private static String accountPass = "adrian"; 				//for confirm pass failures well just use space
 	private static String existingDisplayName = "rocket.cat";	//this is the default display name of the account thati s automatically created by Rocket Chat
 	
-	private By errorFieldLocator = By.className("input-error");
-	private String nameError;
-	private String emailError;
-	private String passwordError;
-	private String passwordConfirmError;
+	private static By errorFieldLocator = By.className("input-error");
+	private static String nameError;
+	private static String emailError;
+	private static String passwordError;
+	private static String passwordConfirmError;
+	
+	/*
+	 * global method to generate random random username for testing
+	 */
+	
+	public static void register(WebDriver drive){
+		drive.get(URL_CHATLOCKER_MAIN);
+		WebElement registerLink = new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(registerNewAccLinkLocator));
+		registerLink.click();
+		generateTestAccountCredentials();
+		new WebDriverWait(drive, 3).until(ExpectedConditions.presenceOfElementLocated(nameFieldLocator));
+		generateTestAccountCredentials();	
+		autoFillForm(accountName,accountEmailFull, accountPass, accountPass, drive);
+		new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(confirmUsernameTitlePageLocator));
+		confirmUsername(drive);
+		new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(confirmDisplayNameErrorLocator));
+	}
+	
+	/*
+	 * global method to generate specific username and password for test passing
+	 */
+	
+	public static void register(String username, String password, WebDriver drive){
+		drive.get(URL_CHATLOCKER_MAIN);
+		WebElement registerLink = new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(registerNewAccLinkLocator));
+		registerLink.click();
+		new WebDriverWait(drive, 3).until(ExpectedConditions.presenceOfElementLocated(nameFieldLocator));
+		generateTestAccountCredentials();	
+		autoFillForm(username,username + "@gmail.com", password, password, drive);
+		new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(confirmUsernameTitlePageLocator));
+		confirmUsername(drive);
+		new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(confirmDisplayNameErrorLocator));
+	}
 	
 	/*
 	 * Before this test runs we will generate the account credentials using UUID to make sure that the test
@@ -63,81 +96,75 @@ public class registerNewUserTest {
 	
 	private static void generateTestAccountCredentials(){
 		accountEmail = UUID.randomUUID().toString().substring(5,15);	//we need to generate a unique email every test run
-		accountUsername = "TestGenerated" + accountEmail.substring(0,10);
+		accountUsername = "Test" + accountEmail.substring(0,10);
 		accountName = accountUsername;
 		accountEmailFull = accountEmail + "@gmail.com";
 	}
 	
-	/*
-	 * 
-	 */
 	
-	private void autoFillForm(){
-		clearForm();
-		register();
-		captureErrorMessages();
+	private void autoFillForm(WebDriver drive){
+		clearForm(drive);	//note this driver is external
+		drive.findElement(registerBtnLocator).click();
+		captureErrorMessages(drive);
 	}
 	
-	private void autoFillForm(String name, String email, String pass, String confirmPass){
-		clearForm();
-		driver.findElement(nameFieldLocator).sendKeys(name);
-		driver.findElement(emailFieldLocator).sendKeys(email);
-		driver.findElement(passwordFieldLocator).sendKeys(pass);
-		driver.findElement(passwordConfirmFieldLocator).sendKeys(confirmPass);
-		register();
-		captureErrorMessages();
+	private static void autoFillForm(String name, String email, String pass, String confirmPass, WebDriver drive){
+		clearForm(drive);	
+		drive.findElement(nameFieldLocator).sendKeys(name);
+		drive.findElement(emailFieldLocator).sendKeys(email);
+		drive.findElement(passwordFieldLocator).sendKeys(pass);
+		drive.findElement(passwordConfirmFieldLocator).sendKeys(confirmPass);
+		drive.findElement(registerBtnLocator).click();
+		captureErrorMessages(drive);
 	}
-	
+	//Note that the driver in this class is specific to this driver only
 	private void autoFillForOnly(String fieldType){
 		
 		switch(fieldType) {
 		   case "name" :
-			   	clearForm();
+			   	clearForm(driver);
 			   	driver.findElement(nameFieldLocator).sendKeys(accountName);
 		   
 		   case "shortemail" :
-			   	clearForm();
+			   	clearForm(driver);
 			   	driver.findElement(emailFieldLocator).sendKeys(accountEmail);
 
 		   case "fullEmail" :
-			   	clearForm();
+			   	clearForm(driver);
 			   	driver.findElement(emailFieldLocator).sendKeys(accountEmailFull);
 		      
 		   case "firstPassword" :
-			   	clearForm();
+			   	clearForm(driver);
 			   	driver.findElement(passwordFieldLocator).sendKeys(accountPass);
 			   	
 		   case "confirmPassword" :
-			   	clearForm();
+			   	clearForm(driver);
 			   	driver.findElement(passwordConfirmFieldLocator).sendKeys(accountPass);
 		   default : // Optional
-			   register();
-			   captureErrorMessages();
+			   driver.findElement(registerBtnLocator).click();
+			   captureErrorMessages(driver);
 		}
 		
 	}
 
 	
-	private void clearForm(){
-		driver.findElement(nameFieldLocator).clear();
-		driver.findElement(emailFieldLocator).clear();
-		driver.findElement(passwordFieldLocator).clear();
-		driver.findElement(passwordConfirmFieldLocator).clear();
+	private static void clearForm(WebDriver drive){
+		drive.findElement(nameFieldLocator).clear();
+		drive.findElement(emailFieldLocator).clear();
+		drive.findElement(passwordFieldLocator).clear();
+		drive.findElement(passwordConfirmFieldLocator).clear();
+	}
+
+	
+	private static void confirmUsername(WebDriver drive){
+		drive.findElement(useThisUsernameBtnLocator).click();
 	}
 	
-	private void register(){
-		driver.findElement(registerBtnLocator).click();
-	}
-	
-	private void confirmUsername(){
-		driver.findElement(useThisUsernameBtnLocator).click();
-	}
-	
-	private void captureErrorMessages(){
-		nameError = driver.findElements(errorFieldLocator).get(0).getText();
-		emailError = driver.findElements(errorFieldLocator).get(1).getText();
-		passwordError = driver.findElements(errorFieldLocator).get(2).getText();
-		passwordConfirmError = driver.findElements(errorFieldLocator).get(3).getText();
+	private static void captureErrorMessages(WebDriver drive){
+		nameError = drive.findElements(errorFieldLocator).get(0).getText();
+		emailError = drive.findElements(errorFieldLocator).get(1).getText();
+		passwordError = drive.findElements(errorFieldLocator).get(2).getText();
+		passwordConfirmError = drive.findElements(errorFieldLocator).get(3).getText();
 	}
 	
 	private void logoutAndReturnToRegistration(){
@@ -188,7 +215,7 @@ public class registerNewUserTest {
 	@Test
 	public void enterAllEmptyFieldsShouldFail(){
 		//
-		autoFillForm();											// enter null for all fields
+		autoFillForm(driver);									// enter null for all fields
 		Assert.assertEquals(nameError, ERROR_EMPTY_NAME);		//first expect an error message (checking one fail is sufficient)
 	}
 	
@@ -225,7 +252,7 @@ public class registerNewUserTest {
 	
 	@Test
 	public void enterAllWithInvalidEmailFieldShouldFail(){
-		autoFillForm(accountName,accountEmail, accountPass, accountPass);	//all fields should be valid except for the email not being complete
+		autoFillForm(accountName,accountEmail, accountPass, accountPass, driver);	//all fields should be valid except for the email not being complete
 		Assert.assertEquals(emailError, ERROR_INVALID_EMAIL);				//email is invalid (incomplete)
 	}
 	
@@ -235,7 +262,7 @@ public class registerNewUserTest {
 	@Test
 	public void enterAllValidFieldsShouldGoToConfirmUsernamePageShouldPass(){	
 		generateTestAccountCredentials();
-		autoFillForm(accountName,accountEmailFull, accountPass, accountPass);
+		autoFillForm(accountName,accountEmailFull, accountPass, accountPass, driver);
 		WebElement h2Title = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(confirmUsernameTitlePageLocator));
 		Assert.assertEquals(h2Title.getText(), TEXT_REGISTER_DISPLAY_NAME_HEADER);
 		logoutAndReturnToRegistration();
@@ -249,9 +276,9 @@ public class registerNewUserTest {
 	@Test
 	public void AfterSuccessAccCreationShouldGoToConfirmUsernameSelectValidDisplayNameShouldPass(){
 		generateTestAccountCredentials();
-		autoFillForm(accountName,accountEmailFull, accountPass, accountPass);
+		autoFillForm(accountName,accountEmailFull, accountPass, accountPass, driver);
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(confirmUsernameTitlePageLocator));
-		confirmUsername();
+		confirmUsername(driver);
 		String title = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(roomTitleLocator)).getText();
 		Assert.assertEquals(title, TEXT_HOME_TITLE);
 		logoutAndReturnToRegistration();
@@ -262,11 +289,11 @@ public class registerNewUserTest {
 	@Test
 	public void AfterSuccessAccCreationShouldGoToConfirmUsernameSelectInvalidDisplayNameShouldFail(){
 		generateTestAccountCredentials();	
-		autoFillForm(accountName,accountEmailFull, accountPass, accountPass);
+		autoFillForm(accountName,accountEmailFull, accountPass, accountPass, driver);
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(confirmUsernameTitlePageLocator));
 		driver.findElement(displayUsernameLocator).clear();
 		driver.findElement(displayUsernameLocator).sendKeys(existingDisplayName);	//should be invalid as an account of displayname adrian already exists
-		confirmUsername();
+		confirmUsername(driver);
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(confirmDisplayNameErrorLocator));
 		String errorMessage = driver.findElement(confirmDisplayNameErrorLocator).getText();
 		Assert.assertThat(errorMessage, CoreMatchers.containsString(ERROR_DISPLAY_NAME_EXISTS));

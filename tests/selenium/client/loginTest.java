@@ -8,11 +8,12 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
  
-//These Unit Tests check for the Login feature it assumes the user of the
-//following credentials is valid
-//  username: someUserName
-//  password: secretPassword123
-//  email: validEmail@gmail.com
+/*  These Unit Tests check for the Login feature it assumes the user of the
+	following credentials is valid
+  	username: someUserName
+  	password: secretPassword123
+  	email: validEmail@gmail.com
+*/
 
      
 public class loginTest {
@@ -32,13 +33,53 @@ public class loginTest {
 
     
     //declare all your elements here using By it will make your code cleaner and simple
-    private By usernameOrEmailFieldLocator = By.id("emailOrUsername");
-    private By passwordFieldLocator = By.id("pass");
-    private By loginButtonLocator = By.className("button primary login");
+    private static By usernameOrEmailFieldLocator = By.id("emailOrUsername");
+    private static By passwordFieldLocator = By.id("pass");
+    private static By loginButtonLocator = By.className("button primary login");
     private By BannerLocator = By.id("toast-container");
-    private By HomeHeaderLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/section/header/h2/span");
+    private static By HomeHeaderLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/section/header/h2/span");
+    private static By openMenuLocator = By.cssSelector("span.arrow.bottom");
+    private static By logoutLocator = By.xpath("//*[@id='logout']");
+    private static By closeDMButtonLocator = By.className("arrow.close");
+    
+    
+    /*
+     * Use to login with username and password (goes to default page ie. Home)
+     */
+    
+    public static void login(String username, String password, WebDriver drive){
+    	drive.get(URL_CHATLOCKER_MAIN);
+    	new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(usernameOrEmailFieldLocator));
+    	drive.findElement(usernameOrEmailFieldLocator).sendKeys(username);
+    	drive.findElement(passwordFieldLocator).sendKeys(password);
+    	drive.findElement(loginButtonLocator).click();
+    }
+    
+    /*
+     * 	Use to logout from anywehre (refreshes, goes to main menu> logout)
+     * 	@TODO click may not work
+     */
+    
+    public static void logout(WebDriver drive){
+		if(detectElement(closeDMButtonLocator)){
+			driver.findElement(closeDMButtonLocator).click();
+		}
+    	new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(openMenuLocator)).click();
+    	drive.findElement(logoutLocator).click();
+    }
+    
+	private static boolean detectElement(By element) {
+		
+		boolean ElementDetected = driver.findElements(element).size() > 0;
+		if (ElementDetected) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
      
-    private void inputLoginFieldsWith(String usernameOrEmail, String password){
+    private static void inputLoginFieldsWith(String usernameOrEmail, String password){
         driver.findElement(usernameOrEmailFieldLocator).sendKeys(usernameOrEmail);
         driver.findElement(passwordFieldLocator).sendKeys(password);
         driver.findElement(loginButtonLocator).click();
@@ -58,7 +99,7 @@ public class loginTest {
         driver.get(URL_CHATLOCKER_MAIN);
         //this tells the driver to wait for the username/email field element to load otherwise it will fail the test within 10 secs
         new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(usernameOrEmailFieldLocator));
-         
+        
     }
      
     //this has been moved to AllTests.java
