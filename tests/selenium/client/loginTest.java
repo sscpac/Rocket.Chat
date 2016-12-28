@@ -38,9 +38,9 @@ public class loginTest {
     private static By loginButtonLocator = By.className("button primary login");
     private By BannerLocator = By.id("toast-container");
     private static By HomeHeaderLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/section/header/h2/span");
-    private static By openMenuLocator = By.cssSelector("span.arrow.bottom");
-    private static By logoutLocator = By.xpath("//*[@id='logout']");
-    private static By closeDMButtonLocator = By.className("arrow.close");
+    private static By MenuLocator = By.cssSelector("span.arrow.bottom");
+    private static By logoutLocator = By.id("logout"); //#logout
+    private static By closeDMButtonLocator = By.className("arrow.top");
     
     
     /*
@@ -56,15 +56,16 @@ public class loginTest {
     }
     
     /*
-     * 	Use to logout from anywehre (refreshes, goes to main menu> logout)
-     * 	@TODO click may not work
+     * 	Use to logout from anywehre (goes to main menu> logout)
      */
     
-    public static void logout(WebDriver drive){
-		if(detectElement(closeDMButtonLocator)){
-			driver.findElement(closeDMButtonLocator).click();
+    public static void logout(WebDriver drive) throws Exception{
+    	//if menu is not open then click on it
+		if(detectElement(MenuLocator)){
+			driver.findElement(MenuLocator).click();
 		}
-    	new WebDriverWait(drive, 10).until(ExpectedConditions.presenceOfElementLocated(openMenuLocator)).click();
+		//new WebDriverWait(drive, 500).until(ExpectedConditions.presenceOfElementLocated(logoutLocator));
+		Thread.sleep(2000);
     	drive.findElement(logoutLocator).click();
     }
     
@@ -104,7 +105,8 @@ public class loginTest {
      
     //this has been moved to AllTests.java
     @AfterClass //this will be called After ALL tests complete
-    public static void closeDriver(){
+    public static void closeDriver() throws Exception{
+    	Thread.sleep(5000);
         driver.quit(); //closes driver and browser window
     }
  
@@ -154,21 +156,24 @@ public class loginTest {
     }
      
     @Test //7
-    public void ValidUsernameWithValidPasswordShouldPass() {
+    public void ValidUsernameWithValidPasswordShouldPass() throws Exception {
         //this case uses valid inputs to login
         inputLoginFieldsWith(VALID_USERNAME, VALID_PASSWORD);
         //when we do login I will wait at least 10 seconds for the tile component in the next page to load which is <h2>Home</h2>
         WebElement HomeHeader = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(HomeHeaderLocator));
         //When it has loaded lets compare and ensure it is Home
         Assert.assertEquals(HomeHeader.getText(), HOME_TITLE);
+        logout(driver);
     }
     
      
     @Test //8
-    public void ValidEmailWithValidPasswordShouldPass() {
+    public void ValidEmailWithValidPasswordShouldPass() throws Exception {
         inputLoginFieldsWith(VALID_EMAIL, VALID_PASSWORD);
         WebElement HomeHeader = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(HomeHeaderLocator));
         Assert.assertEquals(HomeHeader.getText(), HOME_TITLE);
+        System.out.println("this works");
+        logout(driver);
     }  
      
 }
