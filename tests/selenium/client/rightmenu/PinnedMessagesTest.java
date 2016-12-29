@@ -49,8 +49,8 @@ public final class PinnedMessagesTest {
     
         // private static String firefoxDriver = "webdriver.firefox.driver"; 
         // private static String safariDriver = "webdriver.safari.driver"; 
-        // private static String firefoxDirectory = "C:\\Users\\Kent\\Documents\\Workspace\\Libraries\\geckodriver.exe";
-        // private static String safariDirectory = "C:\\Users\\Kent\\Documents\\Workspace\\Libraries\\safaridriver.exe";
+        // private static String firefoxDirectory = "Insert directory here.";
+        // private static String safariDirectory = "Insert directory here.";
 
         private static WebDriver driver;
         private static String chromeDriver = "webdriver.chrome.driver";
@@ -58,7 +58,7 @@ public final class PinnedMessagesTest {
         // Change the string "Hello World!" to test with a different message.
         private static String sampleMessage = "Hello World!";
         // Change to the appropriate driver directory.
-        private static String chromeDirectory = "C:\\Users\\Kent\\Documents\\Workspace\\Libraries\\chromedriver.exe";
+        private static String chromeDirectory = "Insert directory here.";
         
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  *      Page Elements                                                                                                *
@@ -161,7 +161,7 @@ public final class PinnedMessagesTest {
             chrome();
             // firefox();
             // safari();
-            userLogin("kent","kent");
+            userLogin("Your username","Your password");
         }
         
         @Rule
