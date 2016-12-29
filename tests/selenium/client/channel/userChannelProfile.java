@@ -11,34 +11,79 @@ package testRocketChatPackage.channel;
 
 import static org.junit.Assert.*;
 
+import java.util.concurrent.TimeUnit;
+
+import org.hamcrest.CoreMatchers;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.safari.SafariDriver;
+
+import junit.framework.Assert;
 
 public class userChannelProfile {
 	
 	public static WebDriver driver;
-	public static String HOME_URL = "http://localhost:3000";
-	
-	private static By usernameOrEmailFieldLocator = By.id("emailOrUsername");
-	private static By passwordFieldLocator = By.id("pass");
-	private static By loginButtonLocator = By.cssSelector("button.button.primary.login");
+	private static By generalChannel = By.xpath("//a[contains(@title,'general')]");
+	private static By memberList = By.xpath("//button[contains(@aria-label,'Members List')]");
+	private static By user = By.xpath("//li[contains(@class,'user-image user-card-room status-online')]");
+	private static By viewAllButton = By.xpath("//button[contains(@class, 'button back')]");
+	private static By muteUserButton = By.xpath("//button[contains(@class, 'mute-user')]");
 	
 	@BeforeClass
 	public static void beforeClass(){
 		driver = new SafariDriver();
-		driver.get(HOME_URL);
-		 driver.findElement(usernameOrEmailFieldLocator).sendKeys("test");
-		    driver.findElement(passwordFieldLocator).sendKeys("test");
-		    driver.findElement(loginButtonLocator).click();
-		    //Thread.sleep(1000);
+		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		testRocketChatPackage.login.loginTest.login("test", "test", driver);
+		//go into a channel
+		
 	}
+	
+/*
+ *  Test Helpers	
+ */
+	public static boolean detectElement(By targetElement) {
+		
+		boolean elementExists = driver.findElements(targetElement).size() > 0;
+		if (elementExists) {
+			return true;
+		}
+		else {
+			return false;
+		}	
+	}
+	
 
 	@Test
-	public void test() {
-		
+	public void muteUser() {	//only if channel mod
+		driver.findElement(generalChannel).click();
+		driver.findElement(memberList).click();
+		driver.findElement(user).click();
+		driver.findElement(muteUserButton).click();
+	}
+	
+	@Test
+	public void openUserProfile() {
+		driver.findElement(generalChannel).click();
+		driver.findElement(memberList).click();
+		driver.findElement(user).click();
+	}
+	
+	@Test
+	public void closeUserProfile() {
+		driver.findElement(generalChannel).click();
+		driver.findElement(memberList).click();
+		driver.findElement(user).click();
+		driver.findElement(viewAllButton).click();
+	}
+	
+	
+	@AfterClass
+	public static void afterClass(){
+		driver.quit();
 	}
 
 }
