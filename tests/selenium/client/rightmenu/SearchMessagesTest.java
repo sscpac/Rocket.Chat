@@ -40,7 +40,7 @@ public final class SearchMessagesTest {
         public static void beforeTest() {
             // Change to the appropriate driver directory.
 //            System.setProperty(
-//                    "webdriver.chrome.driver","C:\\Users\\Kent\\Documents\\Workspace\\Libraries\\chromedriver.exe");
+//                    ""Insert directory here.");
             //driver = new ChromeDriver();
         	driver = new SafariDriver();
             driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
