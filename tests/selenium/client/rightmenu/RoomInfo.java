@@ -41,18 +41,10 @@ public class RoomInfo {
     private By passwordFieldLocator = By.id("pass");
     private By loginButtonLocator = By.className("button primary login");
     
-    /*OLD locators
-     *    // private By currentSettingsLocator = By.className("current-setting");
-     *     //private By PencilsLocator = By.className("icon-pencil");
-     *     //private By infoIconLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[2]/div[2]/button");
-     *     //private By nameLocator = By.className("current-setting");
-     *     //private By namePencilLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/div/div/section[2]/div/div/form/ul/li[1]/div/span[2]/i");
-     *     //private By nameCancelLocator =  By.xpath("//*[@id=\"rocket-chat\"]/div[3]/div/div/section[2]/div/div/form/ul/li[1]/div/button[1]");
-     */
+
     private By channelLocator = By.xpath("//*[@id=\"rocket-chat\"]/aside/div[2]/div/ul[1]/li/a/span[1]");
    	private By infoIconLocator = By.className("icon-info-circled");
     
-    //FOR ALL
     
     //FOR CHANGING CHANNEL NAME
 	private By namePencilLocator = By.xpath("//*[@data-edit=\"name\"]");
@@ -62,9 +54,7 @@ public class RoomInfo {
     private By nameFieldLocator = By.xpath("//*[@name=\"name\"]");
     
     //FOR CHANGING TOPIC
-    //id('rocket-chat')/x:div[3]/x:div/x:div/x:section[2]/x:div/x:div/x:form/x:ul/x:li[2]/x:div/x:span[2]/x:i
     private By topicPencilLocator = By.xpath("//*[@data-edit=\"topic\"]");
-    //private By topicPencilLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/div/div/section[2]/div/div/form/ul/li[2]/div/span[2]/i");
     private By topicLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/div/div/section[2]/div/div/form/ul/li[2]/div/span[1]");
     private By topicCancelLocator =  By.xpath("//*[@class=\"button cancel\"]");
     private By topicSaveLocator =  By.xpath("//*[@class=\"button primary save\"]");
