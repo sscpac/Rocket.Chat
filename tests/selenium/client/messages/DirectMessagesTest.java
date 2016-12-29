@@ -1,4 +1,6 @@
-package testRocketChatPackage;
+package testRocketChatPackage.messages;
+
+//package testRocketChatPackage.login;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +21,7 @@ import org.junit.Assert;
 
 
 
-public class DirectMessagesSuite {
+public class DirectMessagesTest {
 	
 	
 	public static WebDriver driver;
@@ -224,14 +226,15 @@ public class DirectMessagesSuite {
 		driver.findElement(sendMessageButton).click();
 		Thread.sleep(1000);
 		
-		loginTest.logout(driver);
+		testRocketChatPackage.login.loginTest.logout(driver);
+		//loginTest.logout(driver);
 		//then login and check for message then logout
-		loginTest.login("test2", "test2", driver);
+		testRocketChatPackage.login.loginTest.login("test2", "test2", driver);
 		searchForFriend("test");
 		driver.findElement(textFriend).sendKeys("Hello there test2, I am doing well!");
 		driver.findElement(sendMessageButton).click();
 		//@TODO need to assert for this test
-		loginTest.logout(driver);
+		testRocketChatPackage.login.loginTest.logout(driver);
 	}
 	
 	

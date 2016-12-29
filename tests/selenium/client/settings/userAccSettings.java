@@ -1,4 +1,4 @@
-package testRocketChatPackage;
+package testRocketChatPackage.settings;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,18 +26,19 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class myAccountTest {
+public class userAccSettings {
 
-  private static WebDriver driver = new SafariDriver();
+  private static WebDriver driver;
 
   public static String HOME_URL = "http://localhost:3000";
 
   private static By usernameOrEmailFieldLocator = By.id("emailOrUsername");
   private static By passwordFieldLocator = By.id("pass");
   private static By loginButtonLocator = By.cssSelector("button.button.primary.login");
-  private static By openMenuLocator = By.cssSelector("span.arrow.bottom");
-
-  private static By myAccountBtnLocator = By.cssSelector("button.account-link"); 
+  private static By openMenuLocator = By.cssSelector("div#rocket-chat > aside > span.arrow.bottom"); //span.arrow.bottom" //with sleeps
+  private static By myAccountBtnLocator = By.cssSelector("div#rocket-chat > aside > header > div > nav.options > div.wrapper > button#account"); //button.account-link
+  private static By preferencesLinkLocator = By.cssSelector("div.flex-nav > section > div.content > div.wrapper > ul > li > a:nth-of-type(1)");
+  
   private static By headerLocator = By.cssSelector("h4");
   private static By menuItemsLocator = By.cssSelector("a.account-link");
   private static By mainPageHeader = By.className("span.room-title");
@@ -46,10 +47,9 @@ public class myAccountTest {
 
   @BeforeClass
   	public static void beforeClass() throws Exception {
-	    driver.get(HOME_URL);
-	    driver.findElement(usernameOrEmailFieldLocator).sendKeys("test");
-	    driver.findElement(passwordFieldLocator).sendKeys("test");
-	    driver.findElement(loginButtonLocator).click();
+	  	driver = new SafariDriver();
+	  	//driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+	  	testRocketChatPackage.login.loginTest.login("test", "test", driver);
 	    Thread.sleep(1000);
 		driver.findElement(openMenuLocator).click();
 		Thread.sleep(1000);
@@ -61,8 +61,8 @@ public class myAccountTest {
    *  Main Menu> My Account
    */
   
-  @TODO
-  public void checkMyAccountMenuExist() throws Exception {
+  @Test
+  public void checkIfWeAreInSettingsMenu() throws Exception {
 	  Thread.sleep(1000);
 	  String menuTitle = driver.findElements(headerLocator).get(1).getText();
 	  Thread.sleep(1000);
@@ -75,13 +75,12 @@ public class myAccountTest {
    * Main Menu > Preferences
    */
   
-  @TODO
-  public void checkPreferencesMenuExist() throws Exception{
+  @Test
+  public void navigateToPreferencesMenu() throws Exception{
 	  Thread.sleep(1000);
-	  System.out.println(driver.findElements(menuItemsLocator).get(0).getText());
+	  //System.out.println(driver.findElements(menuItemsLocator).get(0).getText());
 	  Thread.sleep(1000);
-	  WebElement preferenceLink = driver.findElements(menuItemsLocator).get(0);
-	  preferenceLink.click();
+	  driver.findElement(preferencesLinkLocator).click();
 	  String pageTitle = driver.findElement(mainPageHeader).getText();
 	  Assert.assertEquals(pageTitle, "Preferences");
   }
@@ -92,7 +91,7 @@ public class myAccountTest {
    * Main Menu > Profile
    */
   
-  @TODO
+  @Test
   public void checkProfileMenuExist() throws Exception{
 	  Thread.sleep(1000);
 	  System.out.println(driver.findElements(menuItemsLocator).get(1).getText());
@@ -109,7 +108,7 @@ public class myAccountTest {
    * Main Menu > Avatar
    */
   
-  @TODO
+  @Test
   public void checkAvatarMenuExist() throws Exception{
 	  Thread.sleep(1000);
 	  System.out.println(driver.findElements(menuItemsLocator).get(2).getText());
@@ -128,21 +127,21 @@ public class myAccountTest {
    * will fail
    */
   
-  @After
-  public void goToMyAccountMenu() throws Exception {
-	  String title = driver.findElements(headerLocator).get(1).getText();
-	  //check if we are on My Account still, if not reload and go there
-	  if(title != "My Account"){
-		    driver.get(HOME_URL);
-		    driver.findElement(usernameOrEmailFieldLocator).sendKeys("test");
-		    driver.findElement(passwordFieldLocator).sendKeys("test");
-		    driver.findElement(loginButtonLocator).click();
-		    Thread.sleep(1000);
-			driver.findElement(openMenuLocator).click();
-			Thread.sleep(1000);
-			driver.findElement(myAccountBtnLocator).click();
-	  }
-  }
+//  @After
+//  public void goToMyAccountMenu() throws Exception {
+//	  String title = driver.findElements(headerLocator).get(1).getText();
+//	  //check if we are on My Account still, if not reload and go there
+//	  if(title != "My Account"){
+//		    driver.get(HOME_URL);
+//		    driver.findElement(usernameOrEmailFieldLocator).sendKeys("test");
+//		    driver.findElement(passwordFieldLocator).sendKeys("test");
+//		    driver.findElement(loginButtonLocator).click();
+//		    Thread.sleep(1000);
+//			driver.findElement(openMenuLocator).click();
+//			Thread.sleep(1000);
+//			driver.findElement(myAccountBtnLocator).click();
+//	  }
+//  }
 
 
   @AfterClass

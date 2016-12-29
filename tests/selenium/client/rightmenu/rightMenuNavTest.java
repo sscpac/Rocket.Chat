@@ -1,4 +1,4 @@
-package myPackages;
+package testRocketChatPackage.rightmenu;
  
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -18,7 +18,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 
      
-public class flexTabTitleTest {
+public class rightMenuNavTest {
     public static WebDriver driver;     
  
     private static By usernameOrEmailFieldLocator = By.id("emailOrUsername");

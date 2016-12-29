@@ -1,4 +1,4 @@
-package testRocketChatPackage;
+package testRocketChatPackage.channel;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +21,7 @@ import org.junit.Assert;
 
 
 
-public class ChannelSuite {
+public class ChannelTest {
 
 
 	public static WebDriver driver;

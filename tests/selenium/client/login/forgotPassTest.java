@@ -4,7 +4,7 @@
  * null email, and valid email) 
  */
 
-package testRocketChatPackage;
+package testRocketChatPackage.login;
 
 import static org.junit.Assert.*;
 

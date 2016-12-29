@@ -7,7 +7,7 @@
  * only works if the channel is the first and only channel created
  */
 
-package myPackage;
+package testRocketChatPackage.rightmenu;
 
 import org.junit.*;
 import org.openqa.selenium.By;

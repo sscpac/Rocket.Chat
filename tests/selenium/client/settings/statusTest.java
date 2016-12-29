@@ -1,12 +1,14 @@
-package testRocketChatPackage;
+package testRocketChatPackage.settings;
 
 import org.junit.After;
 
-//  Unit test testing the Main User Drop Down Menu
-//  This tests the following:
-//      - changing status to Online, Away, Busy, Invisible via Left menu 
-//      - Going to Settings
-//      - Logging out
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+*  Unit test testing the Main User Drop Down Menu
+*  This tests the following:
+*      - changing status to Online, Away, Busy, Invisible via Left menu 
+*      - Going to Settings
+*      - Logging out									
+*/
 
 import org.junit.AfterClass;
 import org.junit.Assert;
