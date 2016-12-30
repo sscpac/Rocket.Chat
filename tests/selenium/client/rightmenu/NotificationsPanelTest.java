@@ -21,13 +21,13 @@ public final class NotificationsPanelTest {
     
         // private static String firefoxDriver = "webdriver.firefox.driver"; 
         // private static String safariDriver = "webdriver.safari.driver"; 
-        // private static String firefoxDirectory = "Insert driver directory here.";
-        // private static String safariDirectory = "Insert driver directory here.";
+        // private static String firefoxDirectory = "C:\\Users\\Kent\\Documents\\Workspace\\Libraries\\geckodriver.exe";
+        // private static String safariDirectory = "C:\\Users\\Kent\\Documents\\Workspace\\Libraries\\safaridriver.exe";
         private static WebDriver driver;
         private static String chromeDriver = "webdriver.chrome.driver";
         private static String generalChannel = "http://localhost:3000/channel/general";
         // Change to the appropriate driver directory.
-        private static String chromeDirectory = "Insert driver directory here.";
+        private static String chromeDirectory = "C:\\Users\\Kent\\Documents\\Workspace\\Libraries\\chromedriver.exe";
         private static String testValue = "1";
         
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -162,18 +162,13 @@ public final class NotificationsPanelTest {
         };
         
         @BeforeClass            
-        public static void beforeTest() { chrome(); userLogin("test","test"); } // firefox(); safari();
+        public static void beforeTest() { chrome(); userLogin("kent","kent"); } // firefox(); safari();
         
         @AfterClass
-        public static void exitAfterTest() {
-            driver.close();
-            driver.quit();
-        }
+        public static void exitAfterTest() { driver.close(); driver.quit(); }
         
         @Test // #1
-        public void testA_OpenNotificationsTab() throws Exception {
-            notificationsTabButton();
-        }
+        public void testA_OpenNotificationsTab() throws Exception { notificationsTabButton(); }
         
         @Test // #2
         public void testB_EditDesktopNotifications() throws Exception { 
@@ -182,22 +177,14 @@ public final class NotificationsPanelTest {
         }
         
         @Test // #3
-        public void testC_EditPushMobileNotifications() throws Exception {
-            selectEachMobilePushOptions();
-        }
+        public void testC_EditPushMobileNotifications() throws Exception { selectEachMobilePushOptions(); }
         
         @Test // #4
-        public void testD_EditEmailNotifications() throws Exception { 
-            selectEachEmailOptions();
-        }
+        public void testD_EditEmailNotifications() throws Exception { selectEachEmailOptions(); }
         
         @Test // #5
-        public void testE_EditUnreadAlertSettings() throws Exception {
-            selectEachUnreadAlertOptions();
-        }
+        public void testE_EditUnreadAlertSettings() throws Exception { selectEachUnreadAlertOptions(); }
         
         @Test // #6
-        public void testF_CloseNotificationsTab() throws Exception {
-            notificationsTabButton();
-        }
+        public void testF_CloseNotificationsTab() throws Exception { notificationsTabButton(); }
 }
