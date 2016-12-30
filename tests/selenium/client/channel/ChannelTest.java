@@ -1,4 +1,4 @@
-package testRocketChatPackage.channel;
+package testRocketChatPackage;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +33,8 @@ public class ChannelTest {
 	public static String InvalidChannelName1 = ("North Pole");	// Invalid case when name has spaces
 	public static String InvalidChannelName2 = ("North,Pole");	// Invalid case when name has a symbol
 	public static String InvalidChannelName3 = (" ");			// Invalid case when name is not present
-	public static String ValidFriend = ("rocket.cat");
+	public static String ValidFriend1 = ("rocket.cat");
+	public static String ValidFriend2 = ("test");				// Users that will already be created 			
 	
 	static String uniqueChannelName = "general";
 	static String uniqueFriendName = "Default_Friend";
@@ -42,8 +43,11 @@ public class ChannelTest {
 	private static By password = By.id("pass");
 	private static By loginButton = By.cssSelector("button");
 	
-	//private static By addRoomElementActive = By.cssSelector("h3.add-room.active");
-	private static By addRoomElementActive = By.xpath("//*[@id=\"rocket-chat\"]/aside/div[2]/div/h3[1]");
+	private static By arrowButton = By.xpath("//*[@class=\"arrow bottom\"]");
+	private static By buttonLogout = By.className("icon-logout");
+	
+	private static By addRoomElementActive = By.cssSelector("h3.add-room.active");
+	//private static By addRoomElementActive = By.xpath("//*[@id=\"rocket-chat\"]/aside/div[2]/div/h3[1]");
 	
 	private static By channelCreate = By.id("channel-name");
 	//private static By channelCreate = By.cssSelector("input#channel-name.required");
@@ -53,8 +57,8 @@ public class ChannelTest {
 	private static By channelLocation = By.cssSelector("a.open-room"); 
 	private static By moreChannels = By.cssSelector("button.more.more-channels");
 	
-	//private static By allChannels = By.cssSelector("button.button.all");
-	private static By allChannels = By.xpath("//*[@id=\"rocket-chat\"]/aside/div[4]/section/footer/div/button");
+	private static By allChannels = By.cssSelector("button.button.all");
+	//private static By allChannels = By.xpath("//*[@id=\"rocket-chat\"]/aside/div[4]/section/footer/div/button");
 	
 	private static By optionPrivacy = By.id("channel-type");
 	private static By optionReadOnly = By.id("channel-ro");
@@ -62,6 +66,7 @@ public class ChannelTest {
 	
 	private static By channelSearch = By.cssSelector("input#channel-search.search");
 	private static By channelFound = By.cssSelector("a.channel-link");
+	private static By autoCompleteOption = By.cssSelector("div.-autocomplete-container");
 	
 	private static By textFriend = By.cssSelector("textarea.input-message.autogrow-short");
 	private static By sendMessageButton = By.cssSelector("i.icon-paper-plane");
@@ -116,6 +121,10 @@ public class ChannelTest {
 			generateUniqueName();
 			uniqueChannelName = channelName;
 		}
+		else if (friendName == "multiple") {
+			generateUniqueName();
+			searchAddUsers(ValidFriend1, ValidFriend2);
+		}
 		else {
 			uniqueChannelName = channelName;
 			uniqueFriendName = friendName;
@@ -136,17 +145,35 @@ public class ChannelTest {
 		if (readOnly == "yes") {
 			driver.findElement(optionReadOnly).click();
 		}
+			
+			driver.findElement(channelCreate).sendKeys(uniqueChannelName);
+			driver.findElement(channelUsers).sendKeys(uniqueFriendName);
+			driver.findElement(buttonCreate).click();
+	}
+	
+	private static void searchAddUsers(String friend1, String friend2) throws Exception{
 		
-		driver.findElement(channelCreate).sendKeys(uniqueChannelName);
-		driver.findElement(channelUsers).sendKeys(uniqueFriendName);
-		driver.findElement(buttonCreate).click();
+		WebElement Users = driver.findElement(channelUsers);
 		
+		Users.clear();
+		Users.sendKeys(friend1);
+		//Thread.sleep(1000);
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(autoCompleteOption));
+		driver.findElement(autoCompleteOption).click();
+		
+		Users.clear();
+		Users.sendKeys(friend2);
+		//Thread.sleep(1000);
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(autoCompleteOption));
+		driver.findElement(autoCompleteOption).click();
+		
+		System.out.println(friend1 + " and " + friend2 + " have been added.");
 	}
 	
 	private static void creatingValidChannels(String validChannelName, String friendName, String privateGroup, String readOnly) throws Exception {
 		
-		createChannelWithUser("unique", ValidFriend, privateGroup, readOnly);
-		System.out.println(uniqueChannelName + " has been created.");
+		createChannelWithUser("unique", ValidFriend1, privateGroup, readOnly);
+		System.out.println("Channel " + uniqueChannelName + " has been created.");
 	}
 	
 	private static void creatingInvalidChannels(String invalidChannelName, String friendName, String privateGroup, String readOnly) throws Exception {
@@ -255,6 +282,7 @@ public class ChannelTest {
 //		}
 	}
 	
+	
 /*
  * TEST Table of Contents:
  * 
@@ -271,20 +299,21 @@ public class ChannelTest {
  * 7. Invalid3 / Valid
  * 8. Invalid3 / Invalid
  * 9. Duplicated Channel (Invalid)	@TODO - Creates an ERROR that will make all the next tests fail
+ * 10. Creating Valid Channel with Multiple Users
  * 
  * ***NOTE: Invalid USER will STILL create the channel if the channel name is valid.***
  * 
  * 
  * Channel Search and Messaging
  * 
- * 10. Method 1
- * 11. Method 2
- * 12. Method 3
+ * 11. Method 1
+ * 12. Method 2
+ * 13. Method 3
  * 
  * Creating Different Channel Types
  * 
- * 13. Private Group
- * 14. Read Only
+ * 14. Private Group
+ * 15. Read Only
  * 
  */
 
@@ -321,7 +350,7 @@ public class ChannelTest {
 	@Test // 1
 	public void createValidChannelWithValidFriend() throws Exception {
 		
-		creatingValidChannels("unique", ValidFriend, "no", "no");
+		creatingValidChannels("unique", ValidFriend1, "no", "no");
 		LeaveOrDeleteChannel();
 
 	}
@@ -337,7 +366,7 @@ public class ChannelTest {
 	@Test // 3 
 	public void createInvalidChannel1WithValidFriend() throws Exception {
 		
-		creatingInvalidChannels(InvalidChannelName1, ValidFriend, "no", "no");
+		creatingInvalidChannels(InvalidChannelName1, ValidFriend1, "no", "no");
 		
 	}
 	
@@ -351,7 +380,7 @@ public class ChannelTest {
 	@Test // 5
 	public void createInvalidChannel2WithValidFriend() throws Exception {
 		
-		creatingInvalidChannels(InvalidChannelName2, ValidFriend, "no", "no");
+		creatingInvalidChannels(InvalidChannelName2, ValidFriend1, "no", "no");
 		
 	}
 	
@@ -365,7 +394,7 @@ public class ChannelTest {
 	@Test // 7
 	public void createInvalidChannel3WithValidFriend() throws Exception {
 		
-		creatingInvalidChannels(InvalidChannelName3, ValidFriend, "no", "no");
+		creatingInvalidChannels(InvalidChannelName3, ValidFriend1, "no", "no");
 		
 	}
 	
@@ -379,24 +408,31 @@ public class ChannelTest {
 	//@TODO @Test // 9
 	public void createDuplicateChannelFail() throws Exception {
 		
-		creatingValidChannels("unique", ValidFriend, "no", "no");
+		creatingValidChannels("unique", ValidFriend1, "no", "no");
 		
 		new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfElementLocated(addRoomElementActive));
 		WebElement dmElement = driver.findElement(addRoomElementActive);
 		Thread.sleep(1000);
 		dmElement.click();
 		
-		creatingInvalidChannels(uniqueChannelName, ValidFriend, "no", "no");
+		creatingInvalidChannels(uniqueChannelName, ValidFriend1, "no", "no");
 		System.out.println("The channel " + uniqueChannelName + " already exists.");
 		
 		LeaveOrDeleteChannel();
 		
 	}
-
+	
 	@Test // 10
+	public void createChannelWithMultipleUsers() throws Exception {
+		
+		creatingValidChannels("unique", "multiple", "no", "no");
+		
+	}
+
+	@Test // 11
 	public void channelSearchAndMessagingMethod1() throws Exception {
 		
-		creatingValidChannels("unique", ValidFriend, "no", "no");
+		creatingValidChannels("unique", ValidFriend1, "no", "no");
 		
 		//Search Method 1
 		clicksAchannelToMakeItActiveIfNot();
@@ -411,10 +447,10 @@ public class ChannelTest {
 		
 	}
 	
-	@Test // 11
+	@Test // 12
 	public void channelSearchAndMessagingMethod2() throws Exception {
 		
-		creatingValidChannels("unique", ValidFriend, "no", "no");
+		creatingValidChannels("unique", ValidFriend1, "no", "no");
 		
 		//Search Method 2
 		searchChannelsUsingAllChannels(uniqueChannelName);	//ERROR! Within the method, it will click the panel, but the panel does not visually pop up
@@ -429,10 +465,10 @@ public class ChannelTest {
 		
 	}
 	
-	@Test // 12
+	@Test // 13
 	public void channelSearchAndMessagingMethod3() throws Exception {
 		
-		creatingValidChannels("unique", ValidFriend, "no", "no");
+		creatingValidChannels("unique", ValidFriend1, "no", "no");
 		
 		//Search Method 3
 		clicksAchannelToMakeItActiveIfNot();
@@ -445,10 +481,10 @@ public class ChannelTest {
 		
 	}
 	
-	@Test // 13
+	@Test // 14
 	public void creatingPrivateChannel() throws Exception {
 		
-		creatingValidChannels("unique", ValidFriend, "yes", "no");
+		creatingValidChannels("unique", ValidFriend1, "yes", "no");
 		
 		WebElement infoIconButt = driver.findElements(rightPanelOptions).get(1);
 		infoIconButt.click();
@@ -467,10 +503,10 @@ public class ChannelTest {
 		
 	}
 	
-	@Test // 14
+	@Test // 15
 	public void creatingReadOnlyChannel() throws Exception {
 		
-		creatingValidChannels("unique", ValidFriend, "no", "yes");
+		creatingValidChannels("unique", ValidFriend1, "no", "yes");
 		
 		WebElement infoIconButt = driver.findElements(rightPanelOptions).get(1);
 		infoIconButt.click();
@@ -502,6 +538,11 @@ public class ChannelTest {
 	@AfterClass
 	public static void endTesting() {
 		
+		//LOGS OUT before closing the tab/window
+//		driver.findElement(arrowButton).click();
+//		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(buttonLogout));
+//		driver.findElement(buttonLogout).click();
+		
 		driver.close();
 		driver.quit();
 	}	
@@ -510,4 +551,3 @@ public class ChannelTest {
 	
 	
 	
-
