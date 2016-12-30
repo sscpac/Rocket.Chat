@@ -172,12 +172,12 @@ public class RoomInfo {
 //    	}
 //    }
     
-    @After
-    public void checksForCancelButton() {
-    	if (detectElement(CancelLocator) == true) {
-    		driver.findElement(CancelLocator).click();
-    	}
-    }
+//    @After	//Everything works but slows down the tests BY A LOT
+//    public void checksForCancelButton() {
+//    	if (detectElement(CancelLocator) == true) {
+//    		driver.findElement(CancelLocator).click();
+//    	}
+//    }
     
     @AfterClass 
     public static void closeDriver() throws Exception{
@@ -288,7 +288,7 @@ public class RoomInfo {
     }
     	
     @Test
-    public void nameChange4() throws Exception{
+    public void nameChangeOriginal() throws Exception{
     	channelNameChange(originalChannelName);
         System.out.println(originalName);
     	Assert.assertEquals(originalChannelName, driver.findElement(nameLocator).getText());
