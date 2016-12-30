@@ -1,24 +1,3 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * * *
- * @organization: SPAWAR System Center Pacific                             *
- * @usage:        Automated Application Testing using Selenium Webdriver   *
- * @environment:  Eclipse Neon.2 IDE for Java Developers v4.6.2/64-bit     *
- * @plugins:      Maven Integration for Eclipse v1.7.0                     *
- * @browser:      Google Chrome v55.0.0/64-bit (See line: 61)              *
- * @application:  Rocket.Chat v0.48.2/64-bit                               *
- * @filename:     PinnedMessagesTest.java                                  *
- * @feature:      'Pinned Messages' tab on the left panel                  *
- *                JUnit v5.0.0                                             *
- *                                                                         *
- * NOTE:    By default Maven uses the following naming conventions for     *
- *          the class file when looking for tests to run:                  *
- *                                                                         *
- *              Test*, *Test, or *TestCase                                 *
- *                                                                         *
- *          Otherwise it will NOT recognize the test in this program.      *
- *                                                                         *
- *          Based on a Behavior Driven Design.                             *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 package myPackage;
 
 import org.junit.*;
