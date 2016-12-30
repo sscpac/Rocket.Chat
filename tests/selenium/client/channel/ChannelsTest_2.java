@@ -1,6 +1,8 @@
-package testRocketChatPackage.channel;
+package RocketChatTestPackage;
 
 import static org.junit.Assert.*;
+
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,51 +16,84 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.Select;
 
-public class ChannelsTest_2 {
-	static WebDriver wd; 
+public class ChannelsTest {
+	
+	public	static WebDriver wd = RocketChatTestPackage.ForgotPassTest.wd; 
+	
 	private static By buttonCreate = By.className("button primary save-channel");
 	private static By buttonCancel = By.className("button cancel-channel");
-	private static By buttonCloseChnnl = By.className("arrow close");
-	private static By statusBar = By.cssSelector("div.data");
+	//private static By buttonCloseChnnl = By.className("arrow close");
 	private static By buttonLogout = By.className("icon-logout");
+	
+	
 	private static By autoCompleteOption = By.cssSelector("div.-autocomplete-container");
+	private static By statusBar = By.cssSelector("div.data");
+	private static By rightPanelOptions = By.cssSelector("div.tab-button");
 	//private static By errorMessages = By.cssSelector("div.input-error");
+	private static By trashButt = By.cssSelector("button.button.danger.delete");
+	private static By rightPanelClose = By.cssSelector("div.tab-button.active");
+	private static By PopUpYes = By.className("confirm");
+	
+	 
 	public static void close(){
-		if(detectElement(buttonCancel) == false){
-			wd.findElement(buttonCancel).click();
-			System.out.println("Cancel Pressed");
+		//Click user status bar and logout
+		wd.findElement(statusBar).click();
+		System.out.println("Clicked on user status bar");
+		wd.findElement(buttonLogout).click();
+		System.out.println("Logout successful");
+		
+		//Close left panel if it is open
+//		if(detectElement(buttonCancel) == true){
+//	
+//			wd.findElement(buttonCancel).click();
+//			System.out.println("Cancel Pressed");
 //			wd.findElement(statusBar).click();
-//			System.out.println("Fin 2");
+//			System.out.println("Clicked on user status bar");
 //			wd.findElement(buttonLogout).click();
-//			System.out.println("Fin 3");
-		}
-		else{
+//			System.out.println("Logout successful");
+//		}
+//		else{
 //			wd.findElement(statusBar).click();
-//			System.out.println("Fin 4");
+//			System.out.println("Clicked status bar");
 //			wd.findElement(buttonLogout).click();
-			System.out.println("Created Channel");
-		}
-//		wd.findElement(statusBar).click();
-//		System.out.println("Fin 4");
-//		wd.findElement(buttonLogout).click();
-//		System.out.println("Fin 5");
-	}
-	public static void sleep() throws Exception{
-		Thread.sleep(1000);
+//			System.out.println("Logout successful");
+//		}
+		
 	}
 	
-	private static boolean detectElement(By element) {
-		
-		//boolean ElementDetected = wd.findElements(element).size() > 0;
-		int ElementDetected = wd.findElements(element).size();
-		//if (ElementDetected) {
-		if (ElementDetected > 0) {
-			return true;
-		}
-		else {
-			return false;
-		}
+	public static void sleep() throws Exception{
+		Thread.sleep(1500);
 	}
+	
+	//Detect if left channels panel is open
+//	private static boolean detectElement(By element) {
+//		
+//		boolean ElementDetected = wd.findElements(element).size() > 0;
+//		//int ElementDetected = wd.findElements(element).size();
+//		System.out.println(ElementDetected);
+//		if (ElementDetected) {
+//			return true;
+//		}
+//		else {
+//			return false;
+//		}
+//	}
+	
+	public void DeleteChannel() throws Exception {
+	WebElement infoIconButt = wd.findElements(rightPanelOptions).get(1);
+	infoIconButt.click();
+	sleep();
+	
+	wd.findElement(trashButt).click();
+	sleep();
+	
+	wd.findElement(PopUpYes).click();
+	sleep();
+	
+	wd.findElement(rightPanelClose).click();
+	System.out.print("Channel has been deleted.");
+}	
+	
 	private static void searchAddUsers() throws Exception{
 		WebElement curUsers = wd.findElement(By.id("channel-members"));
 		curUsers.sendKeys("test");
@@ -107,7 +142,7 @@ public class ChannelsTest_2 {
 		searchAddUsers();
 		wd.findElement(buttonCreate).click();
 		Name.clear();
-		close();
+		DeleteChannel();
 	}
 	
 	//Test Private Group Entry
@@ -120,7 +155,7 @@ public class ChannelsTest_2 {
 		searchAddUsers();
 		wd.findElement(buttonCreate).click();
 		Name.clear();
-		close();
+		DeleteChannel();
 	}
 	
 	//Test Read Only Channel
@@ -133,6 +168,7 @@ public class ChannelsTest_2 {
 		wd.findElement(buttonCreate).click();
 		Name.clear();
 		close();
+		DeleteChannel();
 	}
 	
 	//Test Read Only Channel and Private Group Entry
@@ -144,7 +180,7 @@ public class ChannelsTest_2 {
 		searchAddUsers();
 		wd.findElement(buttonCreate).click();
 		Name.clear();
-		close();
+		DeleteChannel();
 	}
 	
 	
@@ -172,10 +208,11 @@ public class ChannelsTest_2 {
 	public static void end(){
 		close();
 		
-		wd.findElement(statusBar).click();
-		System.out.println("Status Bar Clicked");
-		wd.findElement(buttonLogout).click();
-		System.out.println("Logged Out");
+//		wd.findElement(statusBar).click();
+//		System.out.println("Status Bar Clicked");
+//		wd.findElement(buttonLogout).click();
+//		System.out.println("Logged Out");
+		
 		System.out.println("All tests finished and logged out\n");
 		wd.quit();
 	}
