@@ -1,4 +1,4 @@
-package testRocketChatPackage;
+package testRocketChatPackage.channel;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +13,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -322,12 +323,13 @@ public class ChannelTest {
 	public static void setupTest() throws Exception{
 		
 		// Sets webdriver to Chrome
-		System.setProperty(
-				"webdriver.chrome.driver",
-				"/home/osboxes/Documents/Selenium Library/chromedriver.exe"
-				);
-	
-		driver = new ChromeDriver(); 
+//		System.setProperty(
+//				"webdriver.chrome.driver",
+//				"/home/osboxes/Documents/Selenium Library/chromedriver.exe"
+//				);
+//	
+//		driver = new ChromeDriver(); 
+		driver = new SafariDriver();
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		
 		// Logging In
