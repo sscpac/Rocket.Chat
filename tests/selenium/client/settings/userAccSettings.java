@@ -47,6 +47,7 @@ public class userAccSettings {
   @BeforeClass
   	public static void beforeClass() throws Exception {
 	  	driver = new SafariDriver();
+	  	driver.manage().window().maximize();
 	  	driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 	  	testRocketChatPackage.login.loginTest.login("test", "test", driver);
 		driver.findElement(openMenuLocator).click();

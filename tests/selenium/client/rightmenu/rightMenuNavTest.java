@@ -43,6 +43,7 @@ public class rightMenuNavTest {
     public static void setupTheDriverObject(){
         //driver setup with
     	driver = new SafariDriver();
+    	driver.manage().window().maximize();
     	driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     	testRocketChatPackage.login.loginTest.login("test", "test", driver);
     	driver.findElement(channelLocation).click();

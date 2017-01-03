@@ -1,5 +1,10 @@
 package testRocketChatPackage.rightmenu;
 
+/*
+ * Assumes a file is already uploaded by default (or automate the process if possible)
+ * @TODO: All tests need to be asserted properly
+ */
+
 import org.junit.*;
 import org.junit.rules.*;
 import org.openqa.selenium.*;
@@ -9,8 +14,6 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.support.ui.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.safari.SafariDriver;
-// import org.openqa.selenium.firefox.FirefoxDriver;
-// import org.openqa.selenium.safari.SafariDriver;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public final class FilesListTest {  
@@ -56,6 +59,8 @@ public final class FilesListTest {
       
       public static void safari() {
           driver = new SafariDriver();
+          driver.manage().window().maximize();
+          driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
       }
         
 //        public static void chrome() {
@@ -64,7 +69,6 @@ public final class FilesListTest {
 //        }
         
         public static void userLogin(String myUsername, String myPassword) {
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             driver.get(generalChannel);
             driver.findElement(username).sendKeys(myUsername);
             driver.findElement(password).sendKeys(myPassword);
@@ -72,31 +76,26 @@ public final class FilesListTest {
         }
 
         public void filesListTabButton() throws Exception {
-            new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(filesListTabButton));
             driver.findElement(filesListTabButton).click();
         }
         
         public void fileExist() throws Exception {
-            new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(openFileButton));
+        	driver.findElement(openFileButton);
         }
         
         public void openFileButton() throws Exception {
-            new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(openFileButton));
             driver.findElement(openFileButton).click();
         }
         
         public void downloadFileButton() throws Exception {
-            new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(downloadFileButton));
             driver.findElement(downloadFileButton).click();
         }
         
         public void deleteFileButton() throws Exception {
-            new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(deleteFileButton));
             driver.findElement(deleteFileButton).click();
         }
         
         public void confirmButton() throws Exception {
-            new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(deleteFileButton));
             driver.findElement(confirmButton).click();
         }
         
@@ -112,7 +111,17 @@ public final class FilesListTest {
         };
         
         @BeforeClass            
-        public static void beforeTest() { safari(); userLogin("admin","admin"); } // firefox(); chrome();
+        public static void beforeClass() { 
+        	safari(); // firefox(); chrome();
+        	userLogin("admin","admin"); 
+        	
+        } 
+        
+        @AfterClass
+        public static void afterClass(){
+        	driver.close();
+        	driver.quit();
+        }
             
         @Test // #1
         public void testA_OpenFilesListTab() throws Exception { filesListTabButton(); }

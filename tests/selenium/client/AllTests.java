@@ -7,7 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	testRocketChatPackage.login.LoginSuite.class,		
-	testRocketChatPackage.messages.MessagesSuite.class,		
+	//testRocketChatPackage.messages.MessagesSuite.class,		
 	testRocketChatPackage.channel.ChannelSuite.class,
 	testRocketChatPackage.rightmenu.RightMenuSuite.class,
 	testRocketChatPackage.settings.SettingSuite.class

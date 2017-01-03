@@ -18,6 +18,11 @@ import org.openqa.selenium.support.ui.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 // import org.openqa.selenium.firefox.FirefoxDriver;
 // import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariDriver;
+
+/*
+ * @TODO: Need to fix errors in all tests (not working properly. Cannot open mini message menu)
+ */
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public final class PinnedMessagesTest {  
@@ -67,15 +72,14 @@ public final class PinnedMessagesTest {
     //      driver = new firefoxDriver();
     //  }
       
-    //  public static void safari() {
-    //      System.setProperty(safariDriver,safariDirectory);
-    //      driver = new safariDriver();
-    //  }
-        
-        public static void chrome() {
-            System.setProperty(chromeDriver,chromeDirectory);
-            driver = new ChromeDriver();
+        public static void safari() {     
+        	driver = new SafariDriver();
         }
+        
+//        public static void chrome() {
+//            System.setProperty(chromeDriver,chromeDirectory);
+//            driver = new ChromeDriver();
+//        }
         
         public static void userLogin(String myUsername, String myPassword) {
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -137,10 +141,10 @@ public final class PinnedMessagesTest {
         
         @BeforeClass            
         public static void beforeTest() {
-            chrome();
+            //chrome();
             // firefox();
-            // safari();
-            userLogin("Your username","Your password");
+            safari();
+            userLogin("admin","admin");
         }
         
         @Rule

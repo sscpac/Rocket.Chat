@@ -236,7 +236,6 @@ public class ChannelTest {
 
 		createChannelWith("unique", "unique", false, false);
 		LeaveOrDeleteChannel();
-
 	}
 	
 	
