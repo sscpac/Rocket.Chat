@@ -9,7 +9,7 @@
  * only works if the channel is the first and only channel created
  */
 
-package testRocketChatPackage;
+package testRocketChatPackage.rightmenu;
 
 import org.junit.*;
 import org.openqa.selenium.By;
@@ -137,15 +137,15 @@ public class RoomInfo {
      
     @BeforeClass 
     public static void setupTheDriverObject() throws Exception{
-    	//driver = new SafariDriver();
+    	driver = new SafariDriver();
     	
 		// Sets webdriver to Chrome
-		System.setProperty(
-				"webdriver.chrome.driver",
-				"/home/osboxes/Documents/Selenium Library/chromedriver.exe"
-				);
-	
-		driver = new ChromeDriver(); 
+//		System.setProperty(
+//				"webdriver.chrome.driver",
+//				"/home/osboxes/Documents/Selenium Library/chromedriver.exe"
+//				);
+//	
+//		driver = new ChromeDriver(); 
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get(URL_CHATLOCKER_MAIN);
         //new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(usernameOrEmailFieldLocator));

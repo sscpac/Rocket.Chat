@@ -1,4 +1,4 @@
-package myPackage;
+package testRocketChatPackage.rightmenu;
 
 import org.junit.*;
 import java.util.List;

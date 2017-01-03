@@ -6,9 +6,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	forgotPassTest.class, 			
-	loginTest.class, 				
-	registerNewUserTest.class 		
+	forgotPassTest.class, 
+	loginTest.class, 
+	registerNewUserTest.class 
 	})
 public class LoginSuite {
 

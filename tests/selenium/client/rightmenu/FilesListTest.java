@@ -1,4 +1,4 @@
-package myPackage;
+package testRocketChatPackage.rightmenu;
 
 import org.junit.*;
 import org.junit.rules.*;
@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.support.ui.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.safari.SafariDriver;
 // import org.openqa.selenium.firefox.FirefoxDriver;
 // import org.openqa.selenium.safari.SafariDriver;
 
@@ -53,15 +54,14 @@ public final class FilesListTest {
     //      driver = new firefoxDriver();
     //  }
       
-    //  public static void safari() {
-    //      System.setProperty(safariDriver,safariDirectory);
-    //      driver = new safariDriver();
-    //  }
+      public static void safari() {
+          driver = new SafariDriver();
+      }
         
-        public static void chrome() {
-            System.setProperty(chromeDriver,chromeDirectory);
-            driver = new ChromeDriver();
-        }
+//        public static void chrome() {
+//            System.setProperty(chromeDriver,chromeDirectory);
+//            driver = new ChromeDriver();
+//        }
         
         public static void userLogin(String myUsername, String myPassword) {
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -112,7 +112,7 @@ public final class FilesListTest {
         };
         
         @BeforeClass            
-        public static void beforeTest() { chrome(); userLogin("test","test"); } // firefox(); safari();
+        public static void beforeTest() { safari(); userLogin("admin","admin"); } // firefox(); chrome();
             
         @Test // #1
         public void testA_OpenFilesListTab() throws Exception { filesListTabButton(); }

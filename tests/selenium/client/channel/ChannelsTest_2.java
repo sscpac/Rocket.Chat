@@ -1,4 +1,4 @@
-package RocketChatTestPackage;
+package testRocketChatPackage.channel;
 
 import static org.junit.Assert.*;
 
@@ -16,9 +16,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.Select;
 
-public class ChannelsTest {
+public class ChannelsTest_2 {
 	
-	public	static WebDriver wd = RocketChatTestPackage.ForgotPassTest.wd; 
+	public	static WebDriver wd; 
 	
 	private static By buttonCreate = By.className("button primary save-channel");
 	private static By buttonCancel = By.className("button cancel-channel");

@@ -1,5 +1,7 @@
 package testRocketChatPackage.settings;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -28,16 +30,14 @@ public class statusTest {
   public static String currentUserStatus;
 
   private static By usernameOrEmailFieldLocator = By.id("emailOrUsername");
-  private static By passwordFieldLocator = By.id("pass");
-  private static By loginButtonLocator = By.cssSelector("button.button.primary.login");
-
-  private static By openMenuLocator = By.cssSelector("span.arrow.bottom");
-
-  private static By onlineButtonLocator = By.cssSelector("button.status.online");
-  private static By awayButtonLocator = By.cssSelector("button.status.away");
-  private static By busyButtonLocator = By.cssSelector("button.status.busy");
-  private static By invisibleButtonLocator = By.cssSelector("button.status.offline");
-  private static By userStatus = By.className("thumb");
+  private static By passwordFieldLocator 		= By.id("pass");
+  private static By loginButtonLocator		 	= By.cssSelector("button.button.primary.login");
+  private static By openMenuLocator 			= By.cssSelector("span.arrow.bottom");
+  private static By onlineButtonLocator 		= By.cssSelector("button.status.online");
+  private static By awayButtonLocator 			= By.cssSelector("button.status.away");
+  private static By busyButtonLocator 			= By.cssSelector("button.status.busy");
+  private static By invisibleButtonLocator 		= By.cssSelector("button.status.offline");
+  private static By userStatus 					= By.className("thumb");
 
   /*
    * Before the test we want to naviagte to the main menu after we login by clicking on the 
@@ -47,23 +47,24 @@ public class statusTest {
   @BeforeClass
   public static void beforeClass() {
     driver.get(HOME_URL);
+    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);		//Note: Even though we use implicit wait, we need thread.sleep due to menu animations
+    driver.manage().window().maximize();
     driver.findElement(usernameOrEmailFieldLocator).sendKeys("test");
     driver.findElement(passwordFieldLocator).sendKeys("test");
     driver.findElement(loginButtonLocator).click();
-    new WebDriverWait(driver, 3).until(ExpectedConditions.presenceOfElementLocated(openMenuLocator)).click();
-    new WebDriverWait(driver, 3).until(ExpectedConditions.presenceOfElementLocated(onlineButtonLocator)).click();
+    driver.findElement(openMenuLocator).click();
+    driver.findElement(onlineButtonLocator).click();
   }
   
   /*
    * After every test open the main  drop down menu and click on a random status to make sure we are still
-   * 
    */
 
   @After
   public void before() throws Exception {
-    new WebDriverWait(driver, 3).until(ExpectedConditions.presenceOfElementLocated(openMenuLocator)).click();
-    Thread.sleep(100);
-    new WebDriverWait(driver, 3).until(ExpectedConditions.presenceOfElementLocated(onlineButtonLocator)).click();
+    Thread.sleep(250);
+    driver.findElement(openMenuLocator).click();
+    driver.findElement(onlineButtonLocator).click();
   }
   
   /*
@@ -82,9 +83,9 @@ public class statusTest {
    */
 
   private static void changeStatusTo(By statusLocator) throws Exception {
-    Thread.sleep(100);
-    new WebDriverWait(driver, 3).until(ExpectedConditions.presenceOfElementLocated(statusLocator)).click();
-    Thread.sleep(100);
+	Thread.sleep(250);
+    driver.findElement(statusLocator).click();
+    Thread.sleep(250);
     currentUserStatus = driver.findElement(userStatus).getAttribute("data-status");
   }
   

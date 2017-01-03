@@ -19,45 +19,39 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.junit.Assert;
 
-
+/*
+ * Creates Direct Messages and Sends, Searches, DMs
+ * @TODO: Test 4 & 5 - Need to complete asserts (May need to split up Test 5 into multiple tests)
+ */
 
 public class DirectMessagesTest {
 	
 	
 	public static WebDriver driver;
 
-	public static String Home = "http://localhost:3000/channel/general";
-	public static String loginUser = "test";	
-	public static String loginPW = "test";	
+	public static String Home 				= "http://localhost:3000/channel/general";
+	public static String loginUser 			= "test";	
+	public static String loginPW 			= "test";	
 	
-	public static String ValidFriend = "rocket.cat";
-	public static String InvalidFriend = "Santa";
+	public static String ValidFriend 		= "rocket.cat";
+	public static String InvalidFriend 		= "Santa";
 	
 	
-	private static By userName = By.id("emailOrUsername");
-	private static By password = By.id("pass");
-	private static By loginButton = By.cssSelector("button");
-	
-	private static By addRoomElement = By.className("add-room");
-	private static By findFriendTextField = By.id("who");
-	private static By buttonCancel = By.cssSelector("button.button.cancel-direct-message");
-	private static By buttonCreate = By.cssSelector("button.button.primary.save-direct-message");
-	//private static By buttonMoreDMsg = By.cssSelector("button.more.more-direct-messages");
-	private static By buttonMoreDMsg = By.xpath("//*[@id=\"rocket-chat\"]/aside/div[2]/div/ul[2]/button");
-	
-	//private static By SearchDM = By.id("channel-search");
-	private static By SearchDM = By.cssSelector("input#channel-search.search");
-	
-	//private static By sortOption = By.cssSelector("select#sort.c-select");
-	private static By foundfriendDM = By.cssSelector("a.channel-link");
-	private static By textFriend = By.cssSelector("textarea.input-message.autogrow-short");
-	private static By sendMessageButton = By.cssSelector("i.icon-paper-plane");
-	private static By panelLeft = By.cssSelector("div.rooms-list");
-	private static By autoCompleteOption = By.cssSelector("div.-autocomplete-container");
-	
-	private static By roomTitleLocator = By.className("room-title");
-	//private static By closeDMButtonLocator = By.className("arrow.close");	//DOESN'T WORK - Just use buttonCancel
-	private static By createRoomOptions = By.cssSelector("a.open-room");
+	private static By userName 				= By.id("emailOrUsername");
+	private static By password 				= By.id("pass");
+	private static By loginButton 			= By.cssSelector("button");
+	private static By addRoomElement 		= By.className("add-room");
+	private static By findFriendTextField 	= By.id("who");
+	private static By buttonCancel 			= By.cssSelector("button.button.cancel-direct-message");
+	private static By buttonCreate			= By.cssSelector("button.button.primary.save-direct-message");
+	private static By buttonMoreDMsg 		= By.xpath("//*[@id=\"rocket-chat\"]/aside/div[2]/div/ul[2]/button");
+	private static By SearchDM 				= By.cssSelector("input#channel-search.search");
+	private static By foundfriendDM 		= By.cssSelector("a.channel-link");
+	private static By textFriend 			= By.cssSelector("textarea.input-message.autogrow-short");
+	private static By sendMessageButton 	= By.cssSelector("i.icon-paper-plane");
+	private static By autoCompleteOption	= By.cssSelector("div.-autocomplete-container");
+	private static By roomTitleLocator 		= By.className("room-title");
+	private static By createRoomOptions		= By.cssSelector("a.open-room");
 	
 /*TEST Order:
  * 
@@ -91,13 +85,12 @@ public class DirectMessagesTest {
 		driver.findElement(buttonMoreDMsg).click();
 		
 		Thread.sleep(2000);
-		//new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(SearchDM));
-		//driver.findElement(sortOption).click();	//An OPTION, but not yet bothered with
+		//driver.findElement(sortOption).click();	//An OPTION, but not yet tested with
 		driver.findElement(SearchDM).clear();
 		driver.findElement(SearchDM).sendKeys(user);
 		
 		Thread.sleep(1000);
-		//new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(foundfriendDM));
+
 		driver.findElement(foundfriendDM).click();	
 		driver.findElement(textFriend).sendKeys(message);
 		driver.findElement(sendMessageButton).click();
@@ -127,10 +120,7 @@ public class DirectMessagesTest {
 
 	private void searchInDM(String user) throws Exception{
 		
-		//new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(panelLeft));
 		driver.findElement(buttonMoreDMsg).click();
-		
-		//new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(SearchDM)); //Doesn't work so Thread.sleep is used for now
 		Thread.sleep(2000);
 		driver.findElement(SearchDM).clear();
 		driver.findElement(SearchDM).sendKeys(user);	
@@ -154,21 +144,17 @@ public class DirectMessagesTest {
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		
 		driver.get(Home);
-		//driver.manage().window().maximize();
+		driver.manage().window().maximize();
 		
 		driver.findElement(userName).sendKeys(loginUser);
 		driver.findElement(password).sendKeys(loginPW);
 		driver.findElement(loginButton).click();
-		//Thread.sleep(500);
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(addRoomElement));
-		
 		
 	}
 	
 	@Before
 	public void checkDMMenu() throws Exception {
 		
-//		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(panelLeft));
 		clicksAchannelToMakeDirectMessagesNotActive();
 		Thread.sleep(1000);
 
@@ -179,7 +165,6 @@ public class DirectMessagesTest {
 
 		searchForFriend(ValidFriend);
 		Thread.sleep(2000);
-		//new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(roomTitleLocator)); //DOES NOT WORK - Use Thread.sleep for now
 		String actualRoomTitle = driver.findElement(roomTitleLocator).getAttribute("innerText");
 		System.out.println(actualRoomTitle);
 		Assert.assertEquals(actualRoomTitle, ValidFriend);
@@ -219,22 +204,22 @@ public class DirectMessagesTest {
 	@Test //5	//send message to another user, logout and confirm message was received, then send back a message
 	public void sendDMBetweenUsers() throws Exception{
 		//search for friend
-		searchForFriend("test2");	//get the first result
+		searchForFriend("admin");	//get the first result
 		Thread.sleep(1000);
-		//send dm to test2 user
+		//send dm to admin user
 		driver.findElement(textFriend).sendKeys("Hello there test how ar you?!");
 		driver.findElement(sendMessageButton).click();
 		Thread.sleep(1000);
 		
 		testRocketChatPackage.login.loginTest.logout(driver);
-		//loginTest.logout(driver);
 		//then login and check for message then logout
-		testRocketChatPackage.login.loginTest.login("test2", "test2", driver);
+		testRocketChatPackage.login.loginTest.login("admin", "admin", driver);
 		searchForFriend("test");
-		driver.findElement(textFriend).sendKeys("Hello there test2, I am doing well!");
+		driver.findElement(textFriend).sendKeys("Hello there test, I am doing well!");
 		driver.findElement(sendMessageButton).click();
 		//@TODO need to assert for this test
 		testRocketChatPackage.login.loginTest.logout(driver);
+		testRocketChatPackage.login.loginTest.login("test", "test", driver);
 	}
 	
 	

@@ -8,6 +8,8 @@ package testRocketChatPackage.login;
 
 import static org.junit.Assert.*;
 
+import java.util.concurrent.TimeUnit;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -17,28 +19,25 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class forgotPassTest {
 	public static WebDriver driver;
 	
-	public static String INVALID_EMAIL = "The email entered is invalid";
-	public static String SUCCESS_MESSAGE = "We have sent you an email";
+	public static String INVALID_EMAIL 		= "The email entered is invalid";
+	public static String SUCCESS_MESSAGE 	= "We have sent you an email";
 	
-	private static By forgotPassLink = By.className("forgot-password");
-	private static By emailFieldLocator = By.id("email");
-	private static By confirmButtonLocator = By.className("button primary login");
-	private static By errorMessageLocator = By.className("input-error");
+	private static By forgotPassLink	 	= By.className("forgot-password");
+	private static By emailFieldLocator 	= By.id("email");
+	private static By confirmButtonLocator 	= By.className("button primary login");
+	private static By errorMessageLocator 	= By.className("input-error");
+	private By bannerLocator 				= By.id("toast-container");
 	private static String emailError;
-	private By bannerLocator = By.id("toast-container");
 	
 	/*
 	 * Pass in an email into the text email elements, then click submit
 	 */
 	
 	private void fillFormWith(String email){
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(emailFieldLocator));
 		driver.findElement(emailFieldLocator).sendKeys(email);
 		driver.findElement(confirmButtonLocator).click();
 	}
@@ -46,14 +45,20 @@ public class forgotPassTest {
 	@BeforeClass
 	public static void setupDriver (){
 		driver = new SafariDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	}
 	
 	@Before
 	public void beforeEach(){
 		driver.get("http://localhost:3000");
 		//add this wait to make sure that the webpage loads if there are any issues with loading time
-		new WebDriverWait(driver, 30).until(ExpectedConditions.presenceOfElementLocated(forgotPassLink)).click();
-		
+		driver.findElement(forgotPassLink).click();
+	}
+	
+	@AfterClass
+	public static void closeDriver(){
+		driver.quit();
 	}
 	
 	/*
@@ -71,21 +76,17 @@ public class forgotPassTest {
 	
 	@Test
 	public void invalidEmailShouldFail(){
-		fillFormWith("someEmail");
+		fillFormWith("someRandomEmail");
 		emailError = driver.findElement(errorMessageLocator).getText();
 		assertEquals(INVALID_EMAIL, emailError);
 	}
 	
+	//Note that there is no email validation against the mongoDB
 	@Test
 	public void validEmailShouldPass(){
-		fillFormWith("sample@gmail.com");
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(bannerLocator));
+		fillFormWith("sample@mail.com");
 		String message = driver.findElement(bannerLocator).getText();
 		Assert.assertThat(message, CoreMatchers.containsString(SUCCESS_MESSAGE));
 	}
 	
-	@AfterClass
-	public static void closeDriver(){
-		driver.quit();
-	}
 }

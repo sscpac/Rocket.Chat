@@ -24,6 +24,7 @@ public class rightMenuNavTest {
     public static WebDriver driver;     
  
     private By channelsLocator = By.className("name");
+    private static By channelLocation 			= By.cssSelector("a.open-room"); 
     private By flexTabBarLocator = By.className("flex-tab-bar");
     private static By currentTabTitleLocator = By.xpath("//*[@id=\"rocket-chat\"]/div[3]/div/div/section/div/div/div/h2");
     private static String tabTitle;
@@ -44,14 +45,15 @@ public class rightMenuNavTest {
     	driver = new SafariDriver();
     	driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     	testRocketChatPackage.login.loginTest.login("test", "test", driver);
+    	driver.findElement(channelLocation).click();
     }
     
-    @Before 
-    public void getThePageWeWantToTest() {
-        //Page Load
-        driver.findElements(channelsLocator).get(0).click();
-        new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(flexTabBarLocator));
-    }
+//    @Before 
+//    public void getThePageWeWantToTest() {
+//        //Page Load
+//        driver.findElement(channelLocation).click();
+//        //new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(flexTabBarLocator));
+//    }
     
     @AfterClass 
     public static void closeDriver(){

@@ -31,13 +31,14 @@ public class userChannelProfile {
 	private static By memberList = By.xpath("//button[contains(@aria-label,'Members List')]");
 	private static By user = By.xpath("//li[contains(@class,'user-image user-card-room status-online')]");
 	private static By viewAllButton = By.xpath("//button[contains(@class, 'button back')]");
-	private static By muteUserButton = By.xpath("//button[contains(@class, 'mute-user')]");
+	private static By muteUserButton = By.xpath("//button[@class, 'button-block danger mute-user']");
 	
 	@BeforeClass
 	public static void beforeClass(){
 		driver = new SafariDriver();
+		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-		testRocketChatPackage.login.loginTest.login("test", "test", driver);
+		testRocketChatPackage.login.loginTest.login("admin", "admin", driver);
 		//go into a channel
 		
 	}
@@ -58,7 +59,7 @@ public class userChannelProfile {
 	
 
 	@Test
-	public void muteUser() {	//only if channel mod
+	public void muteUser() {	
 		driver.findElement(generalChannel).click();
 		driver.findElement(memberList).click();
 		driver.findElement(user).click();

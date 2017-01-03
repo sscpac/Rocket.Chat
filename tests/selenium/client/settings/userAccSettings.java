@@ -20,11 +20,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class userAccSettings {
 
@@ -33,26 +29,28 @@ public class userAccSettings {
   public static String HOME_URL = "http://localhost:3000";
 
   private static By usernameOrEmailFieldLocator = By.id("emailOrUsername");
-  private static By passwordFieldLocator = By.id("pass");
-  private static By loginButtonLocator = By.cssSelector("button.button.primary.login");
-  private static By openMenuLocator = By.cssSelector("div#rocket-chat > aside > span.arrow.bottom"); //span.arrow.bottom" //with sleeps
-  private static By myAccountBtnLocator = By.cssSelector("div#rocket-chat > aside > header > div > nav.options > div.wrapper > button#account"); //button.account-link
-  private static By preferencesLinkLocator = By.cssSelector("div.flex-nav > section > div.content > div.wrapper > ul > li > a:nth-of-type(1)");
+  private static By passwordFieldLocator 		= By.id("pass");
+  private static By loginButtonLocator 			= By.cssSelector("button.button.primary.login");
+  private static By openMenuLocator 			= By.cssSelector("div#rocket-chat > aside > span.arrow.bottom"); //span.arrow.bottom" //with sleeps
+  private static By myAccountBtnLocator 		= By.cssSelector("div#rocket-chat > aside > header > div > nav.options > div.wrapper > button#account"); //button.account-link
+  private static By preferencesLinkLocator 		= By.cssSelector("div.flex-nav > section > div.content > div.wrapper > ul > li > a:nth-of-type(1)");
   
-  private static By headerLocator = By.cssSelector("h4");
-  private static By menuItemsLocator = By.cssSelector("a.account-link");
-  private static By mainPageHeader = By.className("span.room-title");
+  private static By headerLocator 				= By.cssSelector("h4");
+  private static By menuItemsLocator 			= By.cssSelector("a.account-link");
+  private static By mainPageHeader 				= By.className("span.room-title");
+  
+  private static By profileBtn 					= By.xpath("//a[@href, '/account/profile']");
+  
 
 
 
   @BeforeClass
   	public static void beforeClass() throws Exception {
 	  	driver = new SafariDriver();
-	  	//driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+	  	driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 	  	testRocketChatPackage.login.loginTest.login("test", "test", driver);
-	    Thread.sleep(1000);
 		driver.findElement(openMenuLocator).click();
-		Thread.sleep(1000);
+		Thread.sleep(250);
 		driver.findElement(myAccountBtnLocator).click();
   }
   
@@ -63,10 +61,24 @@ public class userAccSettings {
   
   @Test
   public void checkIfWeAreInSettingsMenu() throws Exception {
-	  Thread.sleep(1000);
 	  String menuTitle = driver.findElements(headerLocator).get(1).getText();
 	  Thread.sleep(1000);
 	  Assert.assertEquals(menuTitle, "My Account");
+  }
+  
+  /*
+   * check if we click on Profile we go to the Profile Menu assuming it is 
+   * the second item
+   * Main Menu > Profile
+   */
+  
+  //@Test @TODO Need to finish this; Reference to the profileBtn is not working
+  public void checkProfileMenu() throws Exception{
+	  driver.findElement(profileBtn).click();
+//	  WebElement profileLink = driver.findElements(menuItemsLocator).get(1);
+//	  profileLink.click();
+	  String pageTitle = driver.findElement(mainPageHeader).getText();
+	  Assert.assertEquals(pageTitle, "Profile");
   }
   
   /*
@@ -75,7 +87,7 @@ public class userAccSettings {
    * Main Menu > Preferences
    */
   
-  @Test
+  //@Test @TODO Need to finish this; Reference to the preferencesLinkLocator is not working
   public void navigateToPreferencesMenu() throws Exception{
 	  Thread.sleep(1000);
 	  //System.out.println(driver.findElements(menuItemsLocator).get(0).getText());
@@ -86,29 +98,12 @@ public class userAccSettings {
   }
   
   /*
-   * check if we click on Profile we go to the Profile Menu assuming it is 
-   * the second item
-   * Main Menu > Profile
-   */
-  
-  @Test
-  public void checkProfileMenuExist() throws Exception{
-	  Thread.sleep(1000);
-	  System.out.println(driver.findElements(menuItemsLocator).get(1).getText());
-	  Thread.sleep(1000);
-	  WebElement profileLink = driver.findElements(menuItemsLocator).get(1);
-	  profileLink.click();
-	  String pageTitle = driver.findElement(mainPageHeader).getText();
-	  Assert.assertEquals(pageTitle, "Profile");
-  }
-  
-  /*
    * check if we click on Avatar we go to the Avatar Menu assuming it is 
    * the third item
    * Main Menu > Avatar
    */
   
-  @Test
+  //@Test @TODO Need to finish this; Reference to the profileLink is not working
   public void checkAvatarMenuExist() throws Exception{
 	  Thread.sleep(1000);
 	  System.out.println(driver.findElements(menuItemsLocator).get(2).getText());
